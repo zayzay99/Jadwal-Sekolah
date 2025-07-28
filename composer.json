@@ -7,7 +7,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
-        "laravel/framework": "^12.0",
+        "laravel/framework": "12.0",
         "laravel/tinker": "^2.10.1"
     },
     "require-dev": {
@@ -24,7 +24,12 @@
             "App\\": "app/",
             "Database\\Factories\\": "database/factories/",
             "Database\\Seeders\\": "database/seeders/"
-        }
+        },
+        "exclude-from-classmap": [
+            "vendor/league/flysystem-local/",
+            "vendor/league/flysystem/src/Local/",
+            "vendor/laravel/pint/app/"
+        ]
     },
     "autoload-dev": {
         "psr-4": {
