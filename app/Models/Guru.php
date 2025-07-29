@@ -10,8 +10,13 @@ class Guru extends Authenticatable
     use Notifiable;
 
     protected $fillable = [
-        'nama', 'nip', 'pengampu', 'email', 'password',
+        'nama', 'nip', 'pengampu', 'email', 'password', 'kelas_id',
     ];
+
+    public function kelas()
+    {
+        return $this->belongsTo(Kelas::class);
+    }
 
     protected $hidden = [
         'password',

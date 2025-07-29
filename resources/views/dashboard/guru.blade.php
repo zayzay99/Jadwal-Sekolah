@@ -125,7 +125,7 @@
   </div>
 
   <div class="sidebar">
-    <a href="#" class="menu-item">Jadwal</a>
+    <a href="{{ route('guru.jadwal') }}" class="menu-item">Jadwal</a>
     <a href="#" class="menu-item">Siswa</a>
     <a href="#" class="menu-item">Profile</a>
     <button class="logout-btn" onclick="window.location.href='{{ route('logout') }}'">Keluar</button>
@@ -147,12 +147,37 @@
       <div class="info">
         <div><strong>Nama Guru:</strong> {{ Auth::guard('guru')->user()->nama }}</div>
         <div><strong>NIP Guru:</strong> {{ Auth::guard('guru')->user()->nip }}</div>
-
-          <div><strong>Pengampu Pelajaran:</strong> {{ Auth::guard('guru')->user()->pengampu }}</div>
-          <div><strong>E-mail:</strong> {{ Auth::guard('guru')->user()->email }}</div>
-        </div>
+        <div><strong>Pengampu Pelajaran:</strong> {{ Auth::guard('guru')->user()->pengampu }}</div>
+        <div><strong>E-mail:</strong> {{ Auth::guard('guru')->user()->email }}</div>
+      </div>
       </div>
     </div>
+
+    @isset($jadwals)
+    <div style="margin-top:30px">
+      <h2>Jadwal Mengajar</h2>
+      <table border="1" cellpadding="10" style="width:100%;background:#fff;">
+        <thead>
+          <tr>
+            <th>Mata Pelajaran</th>
+            <th>Kelas</th>
+            <th>Hari</th>
+            <th>Jam</th>
+          </tr>
+        </thead>
+        <tbody>
+          @foreach($jadwals as $jadwal)
+          <tr>
+            <td>{{ $jadwal->mapel }}</td>
+            <td>{{ $jadwal->kelas ? $jadwal->kelas->nama_kelas : '-' }}</td>
+            <td>{{ $jadwal->hari }}</td>
+            <td>{{ $jadwal->jam }}</td>
+          </tr>
+          @endforeach
+        </tbody>
+      </table>
+    </div>
+    @endisset
   </div>
 </body>
 </html>
