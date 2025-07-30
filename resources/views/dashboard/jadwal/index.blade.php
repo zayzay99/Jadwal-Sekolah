@@ -1,29 +1,17 @@
-@extends('dashboard.admin')
-@section('content')
-<div>
-    <h2>Daftar Jadwal</h2>
-    <a href="{{ route('jadwal.create') }}" class="menu-item" style="width:fit-content;display:inline-block;">Tambah Jadwal</a>
-    <table border="1" cellpadding="10" style="margin-top:20px;width:100%;background:#fff;">
-        <thead>
-            <tr>
-                <th>Mata Pelajaran</th>
-                <th>Kelas</th>
-                <th>Guru</th>
-                <th>Hari</th>
-                <th>Jam</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach($jadwals as $jadwal)
-            <tr>
-                <td>{{ $jadwal->mapel }}</td>
-                <td>{{ $jadwal->kelas ? $jadwal->kelas->nama_kelas : '-' }}</td>
-                <td>{{ $jadwal->guru->nama }}</td>
-                <td>{{ $jadwal->hari }}</td>
-                <td>{{ $jadwal->jam }}</td>
-            </tr>
-            @endforeach
-        </tbody>
-    </table>
+{{-- Notifikasi Modal --}}
+@if(session('success'))
+<div id="notifModal" style="
+    position: fixed; left: 0; top: 0; width: 100vw; height: 100vh; background: #0005; z-index: 9999; display: flex; align-items: center; justify-content: center;">
+    <div style="background: #fff; padding: 32px 40px; border-radius: 12px; box-shadow: 0 4px 24px #0002; text-align: center;">
+        <h3 style="margin-bottom: 16px; color: #2d6a4f;">Sukses!</h3>
+        <div style="margin-bottom: 18px;">{{ session('success') }}</div>
+        <button onclick="document.getElementById('notifModal').style.display='none'" style="padding: 8px 24px; background: #2d6a4f; color: #fff; border: none; border-radius: 6px; cursor: pointer;">Tutup</button>
+    </div>
 </div>
-@endsection
+<script>
+    // Tutup modal otomatis setelah 2.5 detik dan redirect
+    setTimeout(function(){
+        window.location.href = "{{ route('jadwal.pilihKelasLihat') }}";
+    }, 2500);
+</script>
+@endif

@@ -31,7 +31,13 @@ Route::middleware('auth:guru')->group(function () {
 Route::middleware('auth:web')->group(function () {
     Route::get('/dashboard/admin', [AdminController::class, 'index'])->name('admin.dashboard');
     Route::resource('jadwal', JadwalController::class)->except(['show', 'edit', 'update', 'destroy']);
-    Route::resource('manage/guru', ManageGuruController::class, ['names' => [
+        Route::get('/dashboard/admin', [AdminController::class, 'index'])->name('admin.dashboard');
+        Route::get('/jadwal/kelas', [JadwalController::class, 'pilihKelasLihat'])->name('jadwal.pilihKelasLihat');
+Route::get('/jadwal/kelas/{kelas}', [JadwalController::class, 'jadwalPerKelas'])->name('jadwal.perKelas');
+    Route::get('/jadwal/pilih-kelas', [JadwalController::class, 'pilihKelas'])->name('jadwal.pilihKelas');
+    Route::get('/jadwal/create/{kelas}', [JadwalController::class, 'create'])->name('jadwal.create');
+    Route::resource('jadwal', JadwalController::class)->except(['show', 'edit', 'update', 'destroy', 'create']);
+       Route::resource('manage/guru', ManageGuruController::class, ['names' => [
         'index' => 'manage.guru.index',
         'create' => 'manage.guru.create',
         'store' => 'manage.guru.store',
@@ -50,5 +56,6 @@ Route::middleware('auth:web')->group(function () {
         'show' => 'manage.siswa.show',
     ]]);
 });
-
 Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
+
+

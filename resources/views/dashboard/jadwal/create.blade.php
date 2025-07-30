@@ -8,15 +8,13 @@
             <label>Mata Pelajaran</label>
             <input type="text" name="mapel" required class="form-control">
         </div>
-        <div>
-            <label>Kelas</label>
-            <select name="kelas_id" required class="form-control">
-                <option value="">-- Pilih Kelas --</option>
-                @foreach($kelas as $k)
-                    <option value="{{ $k->id }}">{{ $k->nama_kelas }}</option>
-                @endforeach
-            </select>
-        </div>
+            <label for="kelas_id">Kelas</label>
+    <select name="kelas_id" id="kelas_id" required>
+        <option value="">-- Pilih Kelas --</option>
+        @foreach($kelas as $k)
+            <option value="{{ $k->id }}">{{ $k->nama_kelas }}</option>
+        @endforeach
+    </select>
         <div>
             <label>Guru</label>
             <select name="guru_id" required class="form-control">

@@ -131,7 +131,6 @@
   </div>
   
   <div class="sidebar">
-    <a href="{{ route('siswa.jadwal') }}" class="menu-item">Jadwal</a>
     <a href="#" class="menu-item">Profile</a>
     <button class="logout-btn" onclick="window.location.href='{{ route('logout') }}'">Keluar</button>
     <div class="cs-btn">
@@ -153,7 +152,7 @@
       <div class="info">
         <div><strong>Nama Siswa:</strong> {{ Auth::guard('siswa')->user()->nama }}</div>
         <div><strong>NIS Siswa:</strong> {{ Auth::guard('siswa')->user()->nis }}</div>
-        <div><strong>Kelas:</strong> {{ Auth::guard('siswa')->user()->kelas }}</div>
+        <div><strong>Kelas:</strong> {{ Auth::guard('siswa')->user()->kelas ? Auth::guard('siswa')->user()->kelas->nama_kelas : '-' }}</div>
         <div><strong>E-mail:</strong> {{ Auth::guard('siswa')->user()->email }}</div>
       </div>
       </div>

@@ -29,15 +29,6 @@
             <input type="text" name="pengampu" required class="form-control">
         </div>
         <div>
-            <label>Kelas</label>
-            <select name="kelas_id" required class="form-control">
-                <option value="">-- Pilih Kelas --</option>
-                @foreach($kelas as $k)
-                    <option value="{{ $k->id }}">{{ $k->nama_kelas }}</option>
-                @endforeach
-            </select>
-        </div>
-        <div>
             <label>Email</label>
             <input type="email" name="email" required class="form-control">
         </div>

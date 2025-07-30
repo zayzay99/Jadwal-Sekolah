@@ -55,11 +55,10 @@
   </div>
   <div class="sidebar">
     <a href="{{ route('admin.dashboard') }}" class="menu-item">Home Admin</a>
-    <a href="{{ route('jadwal.index') }}" class="menu-item">Jadwal</a>
+   <a href="{{ route('jadwal.pilihKelasLihat') }}" class="menu-item">Jadwal</a>
+       <a href="{{ route('jadwal.pilihKelas') }}" class="menu-item">Manajemen Jadwal</a> 
     <a href="{{ route('manage.guru.index') }}" class="menu-item">Manajemen Guru</a>
     <a href="{{ route('manage.siswa.index') }}" class="menu-item">Manajemen Siswa</a>
-    <a href="{{ route('guru.dashboard') }}" class="menu-item">Halaman Guru</a>
-    <a href="{{ route('siswa.dashboard') }}" class="menu-item">Halaman Siswa</a>
     <a href="{{ route('logout') }}" class="menu-item" style="background:#f86a6a;color:white;">Logout</a>
   </div>
   <div class="main-content">

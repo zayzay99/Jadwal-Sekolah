@@ -1,8 +1,10 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\Controller; // Tambahkan ini kalau belum
 
 class GuruController extends Controller
 {
@@ -17,14 +19,8 @@ class GuruController extends Controller
         return view('dashboard.guru', compact('guru'));
     }
 
-    public function tambah(){
-        // ...
-    }
 
-    public function jadwal()
-    {
-        $guru = Auth::guard('guru')->user();
-        $jadwals = \App\Models\Jadwal::where('guru_id', $guru->id)->get();
-        return view('dashboard.guru_jadwal', compact('jadwals'));
+    public function tambah(){
+        
     }
 }

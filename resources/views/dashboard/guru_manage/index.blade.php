@@ -9,7 +9,6 @@
                 <th>Nama</th>
                 <th>NIP</th>
                 <th>Pengampu</th>
-                <th>Kelas</th>
                 <th>Email</th>
                 <th>Aksi</th>
             </tr>
@@ -20,7 +19,6 @@
                 <td>{{ $guru->nama }}</td>
                 <td>{{ $guru->nip }}</td>
                 <td>{{ $guru->pengampu }}</td>
-                <td>{{ $guru->kelas ? $guru->kelas->nama_kelas : '-' }}</td>
                 <td>{{ $guru->email }}</td>
                 <td>
                     <a href="{{ route('manage.guru.edit', $guru->id) }}">Edit</a> |
