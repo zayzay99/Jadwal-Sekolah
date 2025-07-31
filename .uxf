@@ -1,0 +1,27 @@
+<diagram program="umletino" version="15.1"><zoom_level>15</zoom_level><element><id>UMLActor</id><coordinates><x>0</x><y>0</y><w>90</w><h>165</h></coordinates><panel_attributes>Actor</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLUseCase</id><coordinates><x>90</x><y>30</y><w>180</w><h>60</h></coordinates><panel_attributes>Login</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>45</x><y>45</y><w>75</w><h>45</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>30;10;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>255</x><y>45</y><w>150</w><h>45</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>80;10;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>255</x><y>45</y><w>150</w><h>255</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>80;150;10;150;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>255</x><y>255</y><w>150</w><h>285</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>80;170;10;170;10;10</additional_attributes></element><element><id>UMLNote</id><coordinates><x>375</x><y>45</y><w>210</w><h>180</h></coordinates><panel_attributes>Siswa
+-
+- Halaman Utama
+- Bio Data Siswa
+- Lihat Jadwal
+- Profile
+- Keluar
+- CS</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLNote</id><coordinates><x>375</x><y>255</y><w>210</w><h>210</h></coordinates><panel_attributes>Guru
+-
+- Halaman utama 
+- Bio Data Guru
+- Lihat Jadwal
+- Data Siswa
+- Profile
+- Keluar
+- CS
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLNote</id><coordinates><x>375</x><y>495</y><w>210</w><h>225</h></coordinates><panel_attributes>Admin
+-
+- Halaman utama 
+- Bio Data Admin
+- CRUD Jadwal
+- Data Siswa
+- Data Guru
+- Profile
+- Keluar
+- CS
+</panel_attributes><additional_attributes></additional_attributes></element></diagram>

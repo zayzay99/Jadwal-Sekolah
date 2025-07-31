@@ -35,12 +35,6 @@
       border-right: 1px solid #ccc;
     }
 
-    .sidebar h3 {
-      text-align: center;
-      color: #333;
-      font-weight: bold;
-    }
-
     .menu-item {
       display: block;
       padding: 15px;
@@ -123,6 +117,20 @@
       margin-top: 15px;
       box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     }
+
+    .info-row {
+      display: flex;
+      margin-bottom: 6px;
+    }
+
+    .info-label {
+      width: 140px;
+      font-weight: bold;
+    }
+
+    .info-value {
+      flex: 1;
+    }
   </style>
 </head>
 <body>
@@ -131,8 +139,8 @@
   </div>
   
   <div class="sidebar">
-    <a href="{{ route('siswa.jadwal') }}" class="menu-item">Jadwal</a>
-    <a href="#" class="menu-item">Profile</a>
+    <a href="#Jadwal" class="menu-item">Jadwal</a>
+    <a href="#Profile" class="menu-item">Profile</a>
     <button class="logout-btn" onclick="window.location.href='{{ route('logout') }}'">Keluar</button>
     <div class="cs-btn">
       <img src="/img/CS.svg" alt="CS" width="20"> 
@@ -150,45 +158,26 @@
       </div>
 
       <div class="info-box">
-      <div class="info">
-        <div><strong>Nama Siswa:</strong> {{ Auth::guard('siswa')->user()->nama }}</div>
-        <div><strong>NIS Siswa:</strong> {{ Auth::guard('siswa')->user()->nis }}</div>
-        <div><strong>Kelas:</strong> {{ Auth::guard('siswa')->user()->kelas }}</div>
-        <div><strong>E-mail:</strong> {{ Auth::guard('siswa')->user()->email }}</div>
+        <div class="info">
+          <div class="info-row">
+            <div class="info-label">Nama Siswa</div>
+            <div class="info-value"> <strong>:</strong> {{ Auth::guard('siswa')->user()->nama }}</div>
+          </div>
+          <div class="info-row">
+            <div class="info-label">NIS Siswa</div>
+            <div class="info-value"> <strong>:</strong> {{ Auth::guard('siswa')->user()->nis }}</div>
+          </div>
+          <div class="info-row">
+            <div class="info-label">Kelas</div>
+            <div class="info-value"> <strong>:</strong> {{ Auth::guard('siswa')->user()->kelas }}</div>
+          </div>
+          <div class="info-row">
+            <div class="info-label">E-mail</div>
+            <div class="info-value"> <strong>:</strong> {{ Auth::guard('siswa')->user()->email }}</div>
+          </div>
+        </div>
       </div>
-      </div>
     </div>
-
-    @if(isset($jadwals) && count($jadwals) > 0)
-    <div style="margin-top:30px">
-      <h2>Jadwal Pelajaran Kelas {{ $kelas }}</h2>
-      <table border="1" cellpadding="10" style="width:100%;background:#fff;">
-        <thead>
-          <tr>
-            <th>Mata Pelajaran</th>
-            <th>Guru</th>
-            <th>Hari</th>
-            <th>Jam</th>
-          </tr>
-        </thead>
-        <tbody>
-          @foreach($jadwals as $jadwal)
-          <tr>
-            <td>{{ $jadwal->mapel }}</td>
-            <td>{{ $jadwal->guru->nama }}</td>
-            <td>{{ $jadwal->hari }}</td>
-            <td>{{ $jadwal->jam }}</td>
-          </tr>
-          @endforeach
-        </tbody>
-      </table>
-    </div>
-    @else
-    <div style="margin-top:30px">
-      <h2>Jadwal Pelajaran Kelas {{ $kelas }}</h2>
-      <p>Belum ada jadwal untuk kelas ini.</p>
-    </div>
-    @endif
   </div>
 </body>
 </html>

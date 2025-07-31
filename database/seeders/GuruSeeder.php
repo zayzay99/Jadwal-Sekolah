@@ -11,10 +11,10 @@ class GuruSeeder extends Seeder
     public function run()
     {
         Guru::create([
-            'nama' => 'Pak Budi',
+            'nama' => 'Budi Setyawan',
             'nip' => '19876543',
             'pengampu' => 'Matematika',
-            'email' => 'guru@example.com',
+            'email' => 'budisetya@gmail.com',
             'password' => Hash::make('password123')
         ]);
     }

@@ -153,9 +153,9 @@
     const hour = new Date().getHours();
     let backgroundPath = '/img/Kantor Pagi.png'; // default
 
-    if (hour >= 5 && hour < 9) {
+    if (hour >= 5 && hour < 8) {
       backgroundPath = '/img/Kantor Pagi.png'; // Pagi
-    } else if (hour >= 9 && hour < 15) {
+    } else if (hour >= 8 && hour < 15) {
       backgroundPath = '/img/Kantor Siang.png'; // Siang
     } else if (hour >= 15 && hour < 18) {
       backgroundPath = '/img/Kantor Sore.png'; // Sore

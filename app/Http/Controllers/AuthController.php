@@ -12,19 +12,18 @@ class AuthController extends Controller
         $credentials = $request->only('username', 'password');
 
         // Login untuk admin (User)
-        if (Auth::guard('web')->attempt(['email' => $credentials['username'], 'password' => $credentials['password']])) {
-            return redirect()->route('admin.dashboard');
-        }
-
-        // Login untuk siswa
-        if (Auth::guard('siswa')->attempt(['nama' => $credentials['username'], 'password' => $credentials['password']])) {
-            return redirect()->route('siswa.dashboard');
-        }
-
+        if (Auth::guard('admin')->attempt(['nama' => $credentials['username'], 'password' => $credentials['password']])) {
+        return redirect()->route('dashboard.admin.index');
+    }
         // Login untuk guru
         if (Auth::guard('guru')->attempt(['nama' => $credentials['username'], 'password' => $credentials['password']])) {
-            return redirect()->route('guru.dashboard');
-        }
+            return redirect()->route('dashboard.guru.index');
+    }
+        // Login untuk siswa
+        if (Auth::guard('siswa')->attempt(['nama' => $credentials['username'], 'password' => $credentials['password']])) {
+            return redirect()->route('dashboard.siswa.index');
+    }
+
 
         return back()->withErrors(['login' => 'Username atau password salah.']);
     }

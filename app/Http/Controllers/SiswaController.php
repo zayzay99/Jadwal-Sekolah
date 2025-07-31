@@ -9,16 +9,10 @@ class SiswaController extends Controller
     public function index()
     {
         $siswa = Auth::guard('siswa')->user();
-        $jadwals = \App\Models\Jadwal::where('kelas', $siswa->kelas)->with('guru')->get();
         $kelas = $siswa->kelas;
-        return view('dashboard.siswa', compact('siswa', 'jadwals', 'kelas'));
+        return view('dashboard.siswa.index', compact('siswa', 'kelas'));
     }
 
-    public function jadwal()
-    {
-        $siswa = Auth::guard('siswa')->user();
-        $jadwals = \App\Models\Jadwal::where('kelas', $siswa->kelas)->with('guru')->get();
-        $kelas = $siswa->kelas;
-        return view('dashboard.siswa_jadwal', compact('jadwals', 'kelas'));
+   
     }
-}
+

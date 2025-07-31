@@ -4,9 +4,6 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\SiswaController;
 use App\Http\Controllers\GuruController;
 use App\Http\Controllers\AdminController;
-use App\Http\Controllers\JadwalController;
-use App\Http\Controllers\ManageGuruController;
-use App\Http\Controllers\ManageSiswaController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -17,38 +14,18 @@ Route::get('/', function () {
 Route::get('/login', function() { return redirect('/'); });
 Route::post('/login', [AuthController::class, 'login'])->name('login');
 
-Route::middleware('auth:siswa')->group(function () {
-    Route::get('/dashboard/siswa', [SiswaController::class, 'index'])->name('siswa.dashboard');
-    Route::get('/dashboard/siswa/jadwal', [SiswaController::class, 'jadwal'])->name('siswa.jadwal');
+
+Route::middleware('auth:admin')->group(function () {
+    Route::get('/dashboard/admin', [AdminController::class, 'index'])->name('dashboard.admin.index');
 });
 
 Route::middleware('auth:guru')->group(function () {
-    Route::get('/dashboard/guru', [GuruController::class, 'index'])->name('guru.dashboard');
-    Route::get('/dashboard/guru/jadwal', [GuruController::class, 'jadwal'])->name('guru.jadwal');
+    Route::get('/dashboard/guru', [GuruController::class, 'index'])->name('dashboard.guru.index');
 });
 
-
-Route::middleware('auth:web')->group(function () {
-    Route::get('/dashboard/admin', [AdminController::class, 'index'])->name('admin.dashboard');
-    Route::resource('jadwal', JadwalController::class)->except(['show', 'edit', 'update', 'destroy']);
-    Route::resource('manage/guru', ManageGuruController::class, ['names' => [
-        'index' => 'manage.guru.index',
-        'create' => 'manage.guru.create',
-        'store' => 'manage.guru.store',
-        'edit' => 'manage.guru.edit',
-        'update' => 'manage.guru.update',
-        'destroy' => 'manage.guru.destroy',
-        'show' => 'manage.guru.show',
-    ]]);
-    Route::resource('manage/siswa', ManageSiswaController::class, ['names' => [
-        'index' => 'manage.siswa.index',
-        'create' => 'manage.siswa.create',
-        'store' => 'manage.siswa.store',
-        'edit' => 'manage.siswa.edit',
-        'update' => 'manage.siswa.update',
-        'destroy' => 'manage.siswa.destroy',
-        'show' => 'manage.siswa.show',
-    ]]);
+Route::middleware('auth:siswa')->group(function () {
+    Route::get('/dashboard/siswa', [SiswaController::class, 'index'])->name('dashboard.siswa.index');
 });
+
 
 Route::get('/logout', [AuthController::class, 'logout'])->name('logout');

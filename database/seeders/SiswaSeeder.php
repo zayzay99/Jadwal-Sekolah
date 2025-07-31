@@ -11,10 +11,10 @@ class SiswaSeeder extends Seeder
     public function run()
     {
         Siswa::create([
-            'nama' => 'Maulana Al Maliki',
-            'nis' => '12300978',
-            'kelas' => 'XII - HTL ',
-            'email' => 'maulana@gmail.com',
+            'nama' => 'Kesya Apri Pujiatmoko',
+            'nis' => '12300914',
+            'kelas' => 'XII PPLG',
+            'email' => 'kesyapujiatmoko@gmail.com',
             'password' => Hash::make('password123')
         ]);
     }

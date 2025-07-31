@@ -13,15 +13,25 @@ return [
             'provider' => 'users',
         ],
 
+        // Guard untuk siswa
         'siswa' => [
             'driver' => 'session',
             'provider' => 'siswas',
         ],
 
+        // Guard untuk guru
         'guru' => [
             'driver' => 'session',
             'provider' => 'gurus',
         ],
+
+        // Guard untuk admin 
+        'admin' => [
+            'driver' => 'session',
+            'provider' => 'admins',
+    ],
+
+
     ],
 
     'providers' => [
@@ -42,6 +52,14 @@ return [
             'driver' => 'eloquent',
             'model' => App\Models\Guru::class,
         ],
+        
+        // Provider untuk admin 
+        'admins' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Admin::class,
+    ],
+
+
     ],
 
     'passwords' => [

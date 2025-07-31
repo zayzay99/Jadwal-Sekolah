@@ -14,17 +14,13 @@ class GuruController extends Controller
     public function index()
     {
         $guru = Auth::guard('guru')->user();
-        return view('dashboard.guru', compact('guru'));
-    }
-
-    public function tambah(){
-        // ...
+        return view('dashboard.guru.index', compact('guru'));
     }
 
     public function jadwal()
     {
-        $guru = Auth::guard('guru')->user();
-        $jadwals = \App\Models\Jadwal::where('guru_id', $guru->id)->get();
-        return view('dashboard.guru_jadwal', compact('jadwals'));
+        // ...
     }
+
+    
 }
