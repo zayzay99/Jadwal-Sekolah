@@ -59,3 +59,4 @@ Route::get('/jadwal/kelas/{kelas}', [JadwalController::class, 'jadwalPerKelas'])
 Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 
 
+

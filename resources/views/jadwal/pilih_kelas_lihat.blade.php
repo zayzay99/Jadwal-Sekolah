@@ -1,25 +1,27 @@
 {{-- filepath: resources/views/jadwal/pilih_kelas_lihat.blade.php --}}
 @extends('dashboard.admin')
 @section('content')
-    <h2>Pilih Kelas untuk Melihat Jadwal</h2>
+
+<div class="content-header">
+    <h1>Pilih Kelas untuk Melihat Jadwal</h1>
+        <p>Pilih kelas untuk melihat jadwal baru</p>
+</div>
+
+    <div class="form-container">
     <form>
-        <select id="kelas_id" required>
+        <div class="form-group">
+            <label>Pilih Kelas</label>
+        <select id="kelas_id" class="form-control" required>
             <option value="">-- Pilih Kelas --</option>
             @foreach($kelas as $k)
                 <option value="{{ $k->id }}">{{ $k->nama_kelas }}</option>
             @endforeach
         </select>
-        <button type="button" onclick="if(document.getElementById('kelas_id').value) window.location.href='{{ url('/jadwal/kelas') }}/' + document.getElementById('kelas_id').value">Lihat Jadwal</button>
+        </div>
+        <button type="button" class="btn btn-primary" onclick="if(document.getElementById('kelas_id').value) window.location.href='{{ url('/jadwal/kelas') }}/' + document.getElementById('kelas_id').value">Lihat Jadwal</button>
     </form>
-    {{-- <h2>Manajemen Jadwal</h2>
-    <p>Tambah jadwal pelajaran untuk kelas tertentu:</p>
-    <form>
-        <select id="kelas_id_tambah" required>
-            <option value="">-- Pilih Kelas --</option>
-            @foreach($kelas as $k)
-                <option value="{{ $k->id }}">{{ $k->nama_kelas }}</option>
-            @endforeach
-        </select>
-        <button type="button" onclick="if(document.getElementById('kelas_id_tambah').value) window.location.href='{{ url('/jadwal/create') }}/' + document.getElementById('kelas_id_tambah').value">Tambah Jadwal</button>
-    </form> --}}
+</div>
+
 @endsection
+
+{{-- onclick="if(document.getElementById('kelas_id').value) window.location.href='{{ url('/jadwal/kelas') }}/'+document.getElementById('kelas_id').value">Lihat Jadwal</button> --}}
