@@ -13,10 +13,17 @@
             <label>NIS</label>
             <input type="text" name="nis" value="{{ $siswa->nis }}" required class="form-control">
         </div>
-        <div>
-            <label>Kelas</label>
-            <input type="text" name="kelas" value="{{ $siswa->kelas }}" required class="form-control">
-        </div>
+<div>
+    <label>Kelas</label>
+    <select name="kelas_id" class="form-control" required>
+        @foreach($kelas as $k)
+            <option value="{{ $k->id }}"
+                {{ $siswa->kelas->contains('id', $k->id) ? 'selected' : '' }}>
+                {{ $k->nama_kelas }}
+            </option>
+        @endforeach
+    </select>
+</div>
         <div>
             <label>Email</label>
             <input type="email" name="email" value="{{ $siswa->email }}" required class="form-control">

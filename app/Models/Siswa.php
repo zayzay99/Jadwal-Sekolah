@@ -21,7 +21,7 @@ class Siswa extends Authenticatable
     public function kelas()
     {
         // return $this->belongsTo(Kelas::class);
-        return $this->belongsToMany(Kelas::class, 'kelas_siswa', 'siswa_id', 'kelas_id');
+        return $this->belongsToMany(\App\Models\Kelas::class, 'kelas_siswa', 'siswa_id', 'kelas_id');
     }
 
     protected $hidden = [

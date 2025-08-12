@@ -19,13 +19,11 @@
                 <td>{{ $siswa->nama }}</td>
                 <td>{{ $siswa->nis }}</td>
                 <td>
-                    @if($siswa->kelas->count())
-                        @foreach($siswa->kelas as $kelas)
-                            {{ $kelas->nama_kelas }}{{ !$loop->last ? ', ' : '' }}
-                        @endforeach
-                    @else
-                        -
-                    @endif
+    @if($siswa->kelas->count())
+        {{ $siswa->kelas->pluck('nama_kelas')->join(', ') }}
+    @else
+        -
+    @endif
                 </td>
                 <td>{{ $siswa->email }}</td>
                 <td>

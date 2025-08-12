@@ -1,0 +1,1 @@
+@php -r "file_exists('database/database.sqlite') || touch('database/database.sqlite');"

@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
@@ -10,7 +9,7 @@ class ManageSiswaController extends Controller
 {
     public function index()
     {
-        $siswas = Siswa::all();
+        $siswas = Siswa::with('kelas')->get();
         return view('dashboard.siswa_manage.index', compact('siswas'));
     }
 
@@ -29,20 +28,23 @@ class ManageSiswaController extends Controller
             'email' => 'required|email|unique:siswas',
             'password' => 'required|min:6',
         ]);
-        Siswa::create([
+        $siswa = Siswa::create([
             'nama' => $request->nama,
             'nis' => $request->nis,
-            'kelas_id' => $request->kelas_id,
             'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);
+        // Simpan ke pivot
+        $siswa->kelas()->attach($request->kelas_id);
+
         return redirect()->route('manage.siswa.index')->with('success', 'Siswa berhasil ditambahkan!');
     }
 
     public function edit($id)
     {
-        $siswa = Siswa::findOrFail($id);
-        return view('dashboard.siswa_manage.edit', compact('siswa'));
+        $siswa = Siswa::with('kelas')->findOrFail($id);
+        $kelas = \App\Models\Kelas::all();
+        return view('dashboard.siswa_manage.edit', compact('siswa', 'kelas'));
     }
 
     public function update(Request $request, $id)
@@ -51,22 +53,26 @@ class ManageSiswaController extends Controller
         $request->validate([
             'nama' => 'required',
             'nis' => 'required|unique:siswas,nis,'.$id,
-            'kelas' => 'required',
+            'kelas_id' => 'required|exists:kelas,id',
             'email' => 'required|email|unique:siswas,email,'.$id,
         ]);
         $siswa->update([
             'nama' => $request->nama,
             'nis' => $request->nis,
-            'kelas' => $request->kelas,
             'email' => $request->email,
             'password' => $request->password ? Hash::make($request->password) : $siswa->password,
         ]);
+        // Update relasi pivot
+        $siswa->kelas()->sync([$request->kelas_id]);
+
         return redirect()->route('manage.siswa.index')->with('success', 'Siswa berhasil diupdate!');
     }
 
     public function destroy($id)
     {
-        Siswa::destroy($id);
+        $siswa = Siswa::findOrFail($id);
+        $siswa->kelas()->detach();
+        $siswa->delete();
         return redirect()->route('manage.siswa.index')->with('success', 'Siswa berhasil dihapus!');
     }
 }
