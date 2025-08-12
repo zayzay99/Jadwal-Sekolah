@@ -1,19 +1,18 @@
 @extends('dashboard.admin')
 @section('content')
-<div class="content-header">
+<div>
     <h2>Tambah Siswa</h2>
-    <form action="{{ route('manage.siswa.store') }}" method="POST">
+    <form action="{{ route('manage.siswa.store') }}" method="POST" style="max-width:400px;">
         @csrf
-        <div class="form-container">
-            <div class="form-group">
+        <div>
             <label>Nama</label>
             <input type="text" name="nama" required class="form-control">
         </div>
-        <div class="form-group">
+        <div>
             <label>NIS</label>
             <input type="text" name="nis" required class="form-control">
         </div>
-        <div class="form-group">
+        <div>
             <label>Kelas</label>
             <select name="kelas_id" required class="form-control">
                 <option value="">-- Pilih Kelas --</option>
@@ -22,18 +21,15 @@
                 @endforeach
             </select>
         </div>
-        <div class="form-group">
+        <div>
             <label>Email</label>
             <input type="email" name="email" required class="form-control">
         </div>
-        <div class="form-group">
+        <div>
             <label>Password</label>
             <input type="password" name="password" required class="form-control">
         </div>
-        <button type="submit" class="btn btn-primary">Simpan</button>
-<a href="{{ route('manage.guru.index') }}" class="btn btn-secondary">Batal</a>
-        </div>
+        <button type="submit" class="menu-item" style="margin-top:15px;">Simpan</button>
     </form>
 </div>
-
 @endsection

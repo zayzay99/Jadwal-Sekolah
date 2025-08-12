@@ -9,7 +9,8 @@ return new class extends Migration {
     {
         Schema::create('kelas', function (Blueprint $table) {
             $table->id();
-            $table->string('nama_kelas'); // contoh: X, XI, XII
+            $table->string('nama_kelas');
+            $table->foreignId('guru_id')->nullable()->constrained('gurus')->onDelete('set null');
             $table->timestamps();
         });
     }

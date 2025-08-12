@@ -11,6 +11,7 @@ class SiswaController extends Controller
     public function index()
     {
         $siswa = Auth::guard('siswa')->user();
+        // $siswa->kelas()->sync($request->kelas_ids ?? []);
         return view('dashboard.siswa', compact('siswa'));
     }
 }

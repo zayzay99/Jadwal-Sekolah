@@ -1,24 +1,23 @@
 @extends('dashboard.admin')
 @section('content')
-<div class="content-header">
+<div>
     <h2>Edit Guru</h2>
-</div>
-    <form action="{{ route('manage.guru.update', $guru->id) }}" method="POST">
+    <form action="{{ route('manage.guru.update', $guru->id) }}" method="POST" style="max-width:400px;">
         @csrf
         @method('PUT')
-        <div class="form-group">
+        <div>
             <label>Nama</label>
             <input type="text" name="nama" value="{{ $guru->nama }}" required class="form-control">
         </div>
-        <div class="form-group">
+        <div>
             <label>NIP</label>
             <input type="text" name="nip" value="{{ $guru->nip }}" required class="form-control">
         </div>
-        <div class="form-group">
+        <div>
             <label>Pengampu</label>
             <input type="text" name="pengampu" value="{{ $guru->pengampu }}" required class="form-control">
         </div>
-        <div class="form-group">
+        <div>
             <label>Kelas</label>
             <select name="kelas_id" required class="form-control">
                 <option value="">-- Pilih Kelas --</option>
@@ -27,16 +26,15 @@
                 @endforeach
             </select>
         </div>
-        <div class="form-group">
+        <div>
             <label>Email</label>
             <input type="email" name="email" value="{{ $guru->email }}" required class="form-control">
         </div>
-        <div class="form-group">
+        <div>
             <label>Password (isi jika ingin ganti)</label>
             <input type="password" name="password" class="form-control">
         </div>
-        <button type="submit" class="btn btn-primary">Update</button>
-        <a href="{{ route('manage.guru.index') }}" class="btn btn-secondary">Batal</a>
+        <button type="submit" class="menu-item" style="margin-top:15px;">Update</button>
     </form>
 </div>
 @endsection

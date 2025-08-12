@@ -1,18 +1,9 @@
 @extends('dashboard.admin')
 @section('content')
-<div class="content-header">
+<div>
     <h2>Manajemen Siswa</h2>
-    <a href="{{ route('manage.siswa.create') }}" class="btn btn-primary">
-        <i class="fas fa-plus"></i>Tambah Siswa</a>
-</div>
-
-<div class="table-container">
-    <div class="table-header">
-        <h1>Daftar siswa</h1>
-    </div>
-
-    <div class="table-responsive">
-    <table class="custom-table">
+    <a href="{{ route('manage.siswa.create') }}" class="menu-item" style="width:fit-content;display:inline-block;">Tambah Siswa</a>
+    <table border="1" cellpadding="10" style="margin-top:20px;width:100%;background:#fff;">
         <thead>
             <tr>
                 <th>Nama</th>
@@ -23,34 +14,31 @@
             </tr>
         </thead>
         <tbody>
-            @forelse($siswas as $siswa)
+            @foreach($siswas as $siswa)
             <tr>
                 <td>{{ $siswa->nama }}</td>
                 <td>{{ $siswa->nis }}</td>
-                <td>{{ $siswa->kelas ? $siswa->kelas->nama_kelas : '-' }}</td>
+                <td>
+                    @if($siswa->kelas->count())
+                        @foreach($siswa->kelas as $kelas)
+                            {{ $kelas->nama_kelas }}{{ !$loop->last ? ', ' : '' }}
+                        @endforeach
+                    @else
+                        -
+                    @endif
+                </td>
                 <td>{{ $siswa->email }}</td>
                 <td>
-                    <div class="action-buttons">
-                    <a href="{{ route('manage.siswa.edit', $siswa->id) }}" class="btn btn-sm btn-success"><i class="fas fa-edit"></i>>Edit</a> |
-                    <form action="{{ route('manage.siswa.destroy', $siswa->id) }}" method="POST" style="display:inline" onsubmit="return confirm('Yakin hapus?')">
+                    <a href="{{ route('manage.siswa.edit', $siswa->id) }}">Edit</a> |
+                    <form action="{{ route('manage.siswa.destroy', $siswa->id) }}" method="POST" style="display:inline">
                         @csrf
                         @method('DELETE')
-                        <button type="submit" class="btn btn-sm btn-danger">
-                            <i class="fas fa-trash"></i>Hapus</button>
+                        <button type="submit" onclick="return confirm('Yakin hapus?')">Hapus</button>
                     </form>
-                    </div>
                 </td>
             </tr>
-             @empty
-            <tr>
-                    <td colspan="6" class="no-data">
-                        <i class="fas fa-info-circle"></i> Tidak ada data siswa
-                    </td>
-                </tr>
-                @endforelse
-            
+            @endforeach
         </tbody>
     </table>
-</div>
 </div>
 @endsection

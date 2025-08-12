@@ -7,6 +7,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\JadwalController;
 use App\Http\Controllers\ManageGuruController;
 use App\Http\Controllers\ManageSiswaController;
+use App\Http\Controllers\ManageKelasController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -55,8 +56,16 @@ Route::get('/jadwal/kelas/{kelas}', [JadwalController::class, 'jadwalPerKelas'])
         'destroy' => 'manage.siswa.destroy',
         'show' => 'manage.siswa.show',
     ]]);
+        Route::resource('manage/kelas', \App\Http\Controllers\ManageKelasController::class, ['names' => [
+        'index' => 'manage.kelas.index',
+        'create' => 'manage.kelas.create',
+        'store' => 'manage.kelas.store',
+        'edit' => 'manage.kelas.edit',
+        'update' => 'manage.kelas.update',
+        'destroy' => 'manage.kelas.destroy',
+        'show' => 'manage.kelas.show',
+    ]]);
 });
 Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
-
 
 

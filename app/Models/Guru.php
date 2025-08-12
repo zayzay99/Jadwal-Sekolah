@@ -16,6 +16,7 @@ class Guru extends Authenticatable
     public function kelas()
     {
         return $this->belongsTo(Kelas::class);
+        return $this->hasMany(Kelas::class);
     }
 
     protected $hidden = [

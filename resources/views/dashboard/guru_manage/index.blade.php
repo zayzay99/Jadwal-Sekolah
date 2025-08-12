@@ -1,19 +1,9 @@
 @extends('dashboard.admin')
 @section('content')
-<link rel="stylesheet" href="{{ asset('css/style3.css') }}">
-<div class="content-header">
-    <h1>Manajemen Guru</h1>
-    <a href="{{ route('manage.guru.create') }}" class="btn btn-primary">
-        <i class="fas fa-plus"></i>Tambah Guru</a>
-</div>
-
-<div class="table-container">
-    <div class="table-header">
-        <h1>Daftar guru</h1>
-    </div>
-
-    <div class="table-responsive">
-    <table class="custom-table">
+<div>
+    <h2>Manajemen Guru</h2>
+    <a href="{{ route('manage.guru.create') }}" class="menu-item" style="width:fit-content;display:inline-block;">Tambah Guru</a>
+    <table border="1" cellpadding="10" style="margin-top:20px;width:100%;background:#fff;">
         <thead>
             <tr>
                 <th>Nama</th>
@@ -24,33 +14,23 @@
             </tr>
         </thead>
         <tbody>
-            @forelse($gurus as $guru)
+            @foreach($gurus as $guru)
             <tr>
                 <td>{{ $guru->nama }}</td>
                 <td>{{ $guru->nip }}</td>
                 <td>{{ $guru->pengampu }}</td>
                 <td>{{ $guru->email }}</td>
                 <td>
-                    <div class="action-buttons">
-                    <a href="{{ route('manage.guru.edit', $guru->id) }}" class="btn btn-sm btn-success"><i class="fas fa-edit"></i>Edit</a> |
-                    <form action="{{ route('manage.guru.destroy', $guru->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Yakin hapus?')">
+                    <a href="{{ route('manage.guru.edit', $guru->id) }}">Edit</a> |
+                    <form action="{{ route('manage.guru.destroy', $guru->id) }}" method="POST" style="display:inline">
                         @csrf
                         @method('DELETE')
-                        <button type="submit" class="btn btn-sm btn-danger">
-                            <i class="fas fa-trash"></i>Hapus</button>
+                        <button type="submit" onclick="return confirm('Yakin hapus?')">Hapus</button>
                     </form>
-                    </div>
                 </td>
             </tr>
-            @empty
-            <tr>
-                    <td colspan="6" class="no-data">
-                        <i class="fas fa-info-circle"></i> Tidak ada data guru
-                    </td>
-                </tr>
-                @endforelse
+            @endforeach
         </tbody>
     </table>
-    </div>
 </div>
 @endsection
