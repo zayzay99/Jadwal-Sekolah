@@ -8,6 +8,7 @@ use App\Http\Controllers\JadwalController;
 use App\Http\Controllers\ManageGuruController;
 use App\Http\Controllers\ManageSiswaController;
 use App\Http\Controllers\ManageKelasController;
+use App\Http\Controllers\KelasKategoriController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -66,6 +67,9 @@ Route::get('/jadwal/kelas/{kelas}', [JadwalController::class, 'jadwalPerKelas'])
         'show' => 'manage.kelas.show',
     ]]);
 });
+Route::get('/kelas', [\App\Http\Controllers\KelasKategoriController::class, 'index'])->name('kelas.kategori');
+Route::get('/kelas/{kategori}', [\App\Http\Controllers\KelasKategoriController::class, 'show'])->name('kelas.show');
+Route::get('/kelas/{kategori}/{kelas}', [KelasKategoriController::class, 'detail'])->name('kelas.detail');
 Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 
 

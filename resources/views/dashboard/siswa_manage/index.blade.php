@@ -6,6 +6,7 @@
     <table border="1" cellpadding="10" style="margin-top:20px;width:100%;background:#fff;">
         <thead>
             <tr>
+                <th>No</th>
                 <th>Nama</th>
                 <th>NIS</th>
                 <th>Kelas</th>
@@ -16,6 +17,7 @@
         <tbody>
             @foreach($siswas as $siswa)
             <tr>
+                <td>{{$siswa->id}}</td>
                 <td>{{ $siswa->nama }}</td>
                 <td>{{ $siswa->nis }}</td>
                 <td>

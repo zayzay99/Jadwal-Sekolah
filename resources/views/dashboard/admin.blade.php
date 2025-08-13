@@ -38,6 +38,10 @@
                         <i class="fas fa-calendar-alt"></i>
                         <span>Jadwal</span>
                     </a></li>
+                        <li><a href="{{ route('kelas.kategori') }}" class="menu-item">
+            <i class="fas fa-layer-group"></i>
+            <span>Kelas</span>
+        </a></li>
                 <li><a href="{{ route('jadwal.pilihKelas') }}" class="menu-item">
                         <i class="fas fa-calendar-check"></i>
                         <span>Manajemen Jadwal</span>
