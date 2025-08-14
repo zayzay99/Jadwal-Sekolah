@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Admin</title>
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 
 <body>
@@ -21,6 +21,7 @@
                 <i class="fas fa-user"></i>
             </div>
         </div>
+
     </nav>
 
     <div class="main-layout">
@@ -36,12 +37,17 @@
                     </a></li>
                 <li><a href="{{ route('jadwal.pilihKelasLihat') }}" class="menu-item">
                         <i class="fas fa-calendar-alt"></i>
-                        <span>Jadwal</span>
+                        <span>Lihat Jadwal</span>
                     </a></li>
-                        <li><a href="{{ route('kelas.kategori') }}" class="menu-item">
-            <i class="fa-solid fa-people-roof"></i>
-            <span>Kelas</span>
-        </a></li>
+                <li><a href="{{ route('kelas.kategori') }}" class="menu-item">
+                        <i class="fas fa-layer-group"></i>
+                        <span>Lihat Kelas</span>
+                    </a></li>
+                <li><a href="{{ route('kelas.kategori') }}" class="menu-item">
+                        <i class="fa-solid fa-people-roof"></i>
+                        <span>Kelas</span>
+                    </a></li>
+
                 <li><a href="{{ route('jadwal.pilihKelas') }}" class="menu-item">
                         <i class="fas fa-calendar-check"></i>
                         <span>Manajemen Jadwal</span>
@@ -72,6 +78,7 @@
             <div class="content-header">
                 <h1>Dashboard Overview</h1>
                 <p>Kelola data guru, siswa, kelas, dan jadwal dengan mudah</p>
+
             </div>
 
             <!-- Stats Section -->
@@ -116,6 +123,7 @@
                 </div>
             </div>
         </main>
+
     </div>
     <script src="{{ asset('js/script.js') }}"></script>
 </body>
