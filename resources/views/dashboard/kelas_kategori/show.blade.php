@@ -1,29 +1,44 @@
 {{-- filepath: resources/views/dashboard/kelas_kategori/show.blade.php --}}
 @extends('dashboard.admin')
 @section('content')
-<h2>Lihat Kelas</h2>
-<p>Lihat kelas {{ $kategori }}</p>
-<a href="{{ route('kelas.kategori') }}" class="btn btn-success" style="margin-bottom:10px;">
-    &larr; Kembali
-</a>
-<table style="width:100%;background:#fff;">
-    <thead>
-        <tr style="background:#217867;color:#fff;">
-            <th style="padding:10px;">Kelas</th>
-            <th style="padding:10px;">Aksi</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach($subkelas as $k)
-        <tr>
-            <td style="padding:10px;">{{ $k->nama_kelas }}</td>
-            <td style="padding:10px;">
-                <a href="{{ route('kelas.detail', [$kategori, $k->nama_kelas]) }}" class="btn btn-success">
-                    <i class="fas fa-search"></i> Lihat
-                </a>
-            </td>
-        </tr>
-        @endforeach
-    </tbody>
-</table>
+<div class="content-header">
+    <h2>Lihat Kelas</h2>
+    <p class="subtitle">Lihat kelas {{ $kategori }}</p>
+</div>
+
+<div class="table-container">
+    <div class="table-header">
+        <h2>Daftar Sub Kelas</h2>
+        <div class="header-actions">
+            <a href="{{ route('kelas.kategori') }}" class="btn btn-secondary btn-tiny">
+                <i class="fas fa-arrow-left"></i> Kembali
+            </a>
+        </div>
+    </div>
+    
+    <div class="table-responsive">
+        <table class="custom-table">
+            <thead>
+                <tr>
+                    <th>Kelas</th>
+                    <th style="text-align: center;">Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($subkelas as $k)
+                <tr>
+                    <td>{{ $k->nama_kelas }}</td>
+                    <td style="text-align: center;">
+                        <div class="action-buttons">
+                            <a href="{{ route('kelas.detail', [$kategori, $k->nama_kelas]) }}" class="btn btn-success btn-tiny">
+                                <i class="fas fa-search"></i> Lihat
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
+</div>
 @endsection

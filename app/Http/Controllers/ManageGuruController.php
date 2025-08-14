@@ -54,14 +54,14 @@ class ManageGuruController extends Controller
             'nip' => 'required|unique:gurus,nip,'.$id,
             'pengampu' => 'required',
             'email' => 'required|email|unique:gurus,email,'.$id,
-            'kelas_id' => 'required|exists:kelas,id',
+            
         ]);
         $guru->update([
             'nama' => $request->nama,
             'nip' => $request->nip,
             'pengampu' => $request->pengampu,
             'email' => $request->email,
-            'kelas_id' => $request->kelas_id,
+            
             'password' => $request->password ? Hash::make($request->password) : $guru->password,
         ]);
         return redirect()->route('manage.guru.index')->with('success', 'Guru berhasil diupdate!');

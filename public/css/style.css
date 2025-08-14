@@ -436,6 +436,81 @@
     }
 
     /* Ripple effect for button */
+    /* Tombol Success */
+.btn-success {
+    background: linear-gradient(135deg, #28a745, #1e7e34);
+    color: white;
+    padding: 8px 16px; /* Ukuran sedang */
+    font-size: 13px; /* Ukuran font sedang */
+    border-radius: 7px; /* Radius sedang */
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px; /* Jarak antar icon dan teks */
+    box-shadow: 0 2px 6px rgba(40, 167, 69, 0.2);
+    min-width: 100px; /* Lebar minimum yang konsisten */
+}
+
+.btn-success:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(40, 167, 69, 0.3);
+    background: linear-gradient(135deg, #218838, #1e7e34);
+}
+
+/* Tombol Warning */
+.btn-warning {
+    background: linear-gradient(135deg, #ffc107, #e0a800);
+    color: #212529;
+    padding: 6px 10px;
+    font-size: 12px;
+    border-radius: 6px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(255, 193, 7, 0.2);
+}
+
+.btn-warning:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(255, 193, 7, 0.3);
+    background: linear-gradient(135deg, #e0a800, #d39e00);
+}
+
+/* Tombol Danger */
+.btn-danger {
+    background: linear-gradient(135deg, #dc3545, #c82333);
+    color: white;
+    padding: 6px 10px;
+    font-size: 12px;
+    border-radius: 6px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(220, 53, 69, 0.2);
+}
+
+.btn-danger:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(220, 53, 69, 0.3);
+    background: linear-gradient(135deg, #c82333, #bd2130);
+}
+
+.btn-sm {
+    padding: 8px 12px;
+    font-size: 12px;
+}
     .btn::after {
         content: "";
         position: absolute;
@@ -568,28 +643,30 @@
             padding: 12px 15px;
         }
 
-        .action-buttons {
+        /* .action-buttons {
             flex-direction: column;
             gap: 5px;
-        }
+        } */
 
-        .btn-success {
-        background: linear-gradient(135deg, #28a745, #1e7e34);
-        color: white;
-        padding: 8px 12px;
-        font-size: 12px;
     }
+    /* Alert Messages */
+.alert {
+    padding: 12px 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-size: 14px;
+}
+.alert-success {
+    background: linear-gradient(135deg, #d4edda, #c3e6cb);
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
 
-    .btn-danger {
-        background: linear-gradient(135deg, #dc3545, #c82333);
-        color: white;
-    }
-
-    .btn-sm {
-        padding: 8px 12px;
-        font-size: 12px;
-    }
-    }
+.alert-danger {
+    background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
 
 /* buat create */
 
@@ -702,8 +779,331 @@
         display: block;
     }
 
-    .action-buttons {
+    /* .action-buttons {
         display: flex;
         gap: 8px;
         flex-wrap: wrap;
+    } */
+
+    /* show kelas */
+    /* Header Konten */
+.content-header {
+    margin-bottom: 30px;
+}
+
+.content-header h2 {
+    color: #2d6a4f;
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    color: #666;
+    font-size: 16px;
+    margin-bottom: 20px;
+}
+
+/* Tabel Container */
+.table-container {
+    background: white;
+    border-radius: 16px;
+    padding: 30px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+    border: 1px solid rgba(0,0,0,0.05);
+    margin-top: 20px;
+}
+
+/* Table Header */
+.table-header {
+    margin-bottom: 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.table-header h2 {
+    color: #2d6a4f;
+    font-size: 24px;
+    margin: 0;
+}
+
+/* Tombol Kembali */
+.btn-secondary {
+    background: linear-gradient(135deg, #6c757d, #495057);
+    color: white;
+    padding: 8px 16px;
+    font-size: 14px;
+    border-radius: 8px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(108, 117, 125, 0.2);
+}
+
+.btn-secondary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(108, 117, 125, 0.3);
+    background: linear-gradient(135deg, #5a6268, #495057);
+}
+
+/* Tabel */
+.table-responsive {
+    overflow-x: auto;
+}
+
+.custom-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.custom-table thead {
+    background: linear-gradient(135deg, #2d6a4f, #1c3d2e);
+    color: white;
+}
+
+.custom-table th {
+    padding: 16px 20px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 15px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.custom-table tbody tr {
+    border-bottom: 1px solid #eee;
+    transition: all 0.3s ease;
+}
+
+.custom-table tbody tr:hover {
+    background-color: #f8fff9;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+}
+
+.custom-table tbody tr:last-child {
+    border-bottom: none;
+}
+
+.custom-table td {
+    padding: 16px 20px;
+    color: #555;
+    font-size: 15px;
+}
+
+/* Action Buttons Centered */
+.action-buttons {
+    display: flex;
+    gap: 5px;
+    flex-wrap: nowrap;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Button Tiny */
+.btn-tiny {
+    padding: 6px 10px !important;
+    font-size: 12px !important;
+    min-width: auto !important;
+    width: auto !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 4px !important;
+    border-radius: 6px !important;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .content-header h2 {
+        font-size: 20px;
     }
+    
+    .table-container {
+        padding: 20px;
+        margin: 15px;
+    }
+    
+    .table-header {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+    
+    
+    /* .action-buttons {
+        justify-content: center;
+    } */
+    
+    .custom-table th,
+    .custom-table td {
+        padding: 12px 15px;
+        font-size: 14px;
+    }
+}
+
+/* bagian kelas siswa */
+
+/* Header Konten */
+.content-header {
+    margin-bottom: 30px;
+}
+
+.content-header h2 {
+    color: #2d6a4f;
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+/* Tabel Container */
+.table-container {
+    background: white;
+    border-radius: 16px;
+    padding: 30px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+    border: 1px solid rgba(0,0,0,0.05);
+    margin-top: 20px;
+}
+
+/* Table Header */
+.table-header {
+    margin-bottom: 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.table-header h2 {
+    color: #2d6a4f;
+    font-size: 24px;
+    margin: 0;
+}
+
+/* Tombol Kembali */
+
+
+/* Tombol Extra Small */
+
+/* Tabel */
+.table-responsive {
+    overflow-x: auto;
+}
+
+.custom-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.custom-table thead {
+    background: linear-gradient(135deg, #2d6a4f, #1c3d2e);
+    color: white;
+}
+
+.custom-table th {
+    padding: 16px 20px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 15px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.custom-table tbody tr {
+    border-bottom: 1px solid #eee;
+    transition: all 0.3s ease;
+}
+
+.custom-table tbody tr:hover {
+    background-color: #f8fff9;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+}
+
+.custom-table tbody tr:last-child {
+    border-bottom: none;
+}
+
+.custom-table td {
+    padding: 16px 20px;
+    color: #555;
+    font-size: 15px;
+}
+
+/* Empty State */
+.custom-table tbody tr td[colspan] {
+    text-align: center;
+    padding: 20px;
+    color: #666;
+    font-style: italic;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .content-header h2 {
+        font-size: 20px;
+    }
+    
+    .table-container {
+        padding: 20px;
+        margin: 15px;
+    }
+    
+    .table-header {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+    
+    .btn-secondary {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .btn-tiny {
+        padding: 3px 6px !important;
+        font-size: 11px !important;
+    }
+    
+    .custom-table th,
+    .custom-table td {
+        padding: 12px 15px;
+        font-size: 14px;
+    }
+    
+    .custom-table th:first-child,
+    .custom-table td:first-child {
+        padding-left: 10px;
+    }
+    
+    .custom-table th:last-child,
+    .custom-table td:last-child {
+        padding-right: 10px;
+    }
+}
+
+/* .action-buttons {
+    display: flex;
+    gap: 5px;
+    flex-wrap: nowrap;
+    justify-content: center; /* Mengatur tombol di tengah kolom Aksi */
+    /* align-items: center;
+} */ 
+.custom-table td:nth-child(5) {
+    text-align: center; /* Menyelaraskan tombol di tengah kolom Aksi */
+}
