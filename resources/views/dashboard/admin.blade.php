@@ -39,13 +39,10 @@
                         <i class="fas fa-calendar-alt"></i>
                         <span>Lihat Jadwal</span>
                     </a></li>
-                <li><a href="{{ route('kelas.kategori') }}" class="menu-item">
-                        <i class="fas fa-layer-group"></i>
-                        <span>Lihat Kelas</span>
-                    </a></li>
+                
                 <li><a href="{{ route('kelas.kategori') }}" class="menu-item">
                         <i class="fa-solid fa-people-roof"></i>
-                        <span>Kelas</span>
+                        <span>Lihat Kelas</span>
                     </a></li>
 
                 <li><a href="{{ route('jadwal.pilihKelas') }}" class="menu-item">

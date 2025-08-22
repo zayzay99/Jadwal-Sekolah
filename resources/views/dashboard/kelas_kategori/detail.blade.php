@@ -26,7 +26,7 @@
             <tbody>
                 @forelse($siswas as $siswa)
                 <tr>
-                    <td>{{ $siswa->id }}</td>
+                    <td>{{ $loop->iteration }}</td>
                     <td>{{ $siswa->nama }}</td>
                     <td>{{ $siswa->nis }}</td>
                     <td>{{ $siswa->email }}</td>

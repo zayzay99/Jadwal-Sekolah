@@ -13,10 +13,7 @@ class Kelas extends Model
 
 
 
-    // public function gurus()
-    // {
-    //     return $this->hasMany(Guru::class);
-    // }
+    
     public function siswas()
     {
         return $this->belongsToMany(Siswa::class, 'kelas_siswa', 'kelas_id', 'siswa_id');
@@ -31,4 +28,9 @@ class Kelas extends Model
     {
         return $this->belongsTo(Guru::class);
     }
+    public function siswasOrdered()
+{
+    return $this->belongsToMany(Siswa::class, 'kelas_siswa', 'kelas_id', 'siswa_id')
+                ->orderBy('nama', 'asc');
+}
 }

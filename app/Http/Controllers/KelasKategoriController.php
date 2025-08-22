@@ -23,7 +23,8 @@ class KelasKategoriController extends Controller
     public function detail($kategori, $kelas)
     {
         $kelasObj = Kelas::where('nama_kelas', $kelas)->firstOrFail();
-        $siswas = $kelasObj->siswas; // pastikan relasi di model Kelas: siswas()
+        // Ambil siswa dengan scope ordered
+    $siswas = $kelasObj->siswasOrdered()->get(); // pastikan relasi di model Kelas: siswas()
         return view('dashboard.kelas_kategori.detail', compact('kelasObj', 'siswas', 'kategori'));
     }
 }

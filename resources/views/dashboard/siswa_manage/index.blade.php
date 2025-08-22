@@ -43,7 +43,7 @@
             <tbody>
                 @foreach($siswas as $siswa)
                 <tr>
-                    <td style="text-align: center">{{$siswa->id}}</td>
+                    <td style="text-align: center">{{$loop->iteration}}</td>
                     <td style="text-align: center">{{ $siswa->nama }}</td>
                     <td style="text-align: center">{{ $siswa->nis }}</td>
                     <td style="text-align: center">

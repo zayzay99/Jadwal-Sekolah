@@ -9,7 +9,7 @@ class ManageSiswaController extends Controller
 {
     public function index()
     {
-        $siswas = Siswa::with('kelas')->get();
+        $siswas = Siswa::with('kelas')->orderBy('nama', 'asc')->get();
         return view('dashboard.siswa_manage.index', compact('siswas'));
     }
 
