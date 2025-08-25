@@ -19,26 +19,38 @@ class ManageSiswaController extends Controller
         return view('dashboard.siswa_manage.create', compact('kelas'));
     }
 
-    public function store(Request $request)
-    {
-        $request->validate([
-            'nama' => 'required',
-            'nis' => 'required|unique:siswas',
-            'kelas_id' => 'required|exists:kelas,id',
-            'email' => 'required|email|unique:siswas',
-            'password' => 'required|min:6',
-        ]);
-        $siswa = Siswa::create([
-            'nama' => $request->nama,
-            'nis' => $request->nis,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
-        // Simpan ke pivot
-        $siswa->kelas()->attach($request->kelas_id);
+public function store(Request $request)
+{
+    $request->validate([
+        'nama' => 'required',
+        'nis' => 'required|unique:siswas',
+        'kelas_id' => 'required|exists:kelas,id',
+        'email' => 'required|email|unique:users,email',
+        'password' => 'required|min:6',
+    ]);
 
-        return redirect()->route('manage.siswa.index')->with('success', 'Siswa berhasil ditambahkan!');
-    }
+    // Buat user baru untuk siswa
+    $user = \App\Models\User::create([
+        'name' => $request->nama,
+        'email' => $request->email,
+        'password' => Hash::make($request->password),
+        'role' => 'murid', // pastikan field 'role' ada di tabel users
+    ]);
+
+    // Buat data siswa dan relasikan dengan user
+    $siswa = Siswa::create([
+        'user_id' => $user->id, // pastikan field user_id ada di tabel siswas
+        'nama' => $request->nama,
+        'nis' => $request->nis,
+        'email' => $request->email,
+        'password' => Hash::make($request->password),
+    ]);
+
+    // Simpan ke pivot
+    $siswa->kelas()->attach($request->kelas_id);
+
+    return redirect()->route('manage.siswa.index')->with('success', 'Siswa berhasil ditambahkan!');
+}
 
     public function edit($id)
     {
