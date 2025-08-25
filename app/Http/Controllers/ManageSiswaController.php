@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Siswa;
 use Illuminate\Support\Facades\Hash;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\DB;
+
 
 class ManageSiswaController extends Controller
 {
@@ -25,21 +28,21 @@ public function store(Request $request)
         'nama' => 'required',
         'nis' => 'required|unique:siswas',
         'kelas_id' => 'required|exists:kelas,id',
-        'email' => 'required|email|unique:users,email',
+        'email' => 'required|email|unique:siswas,email',
         'password' => 'required|min:6',
     ]);
 
     // Buat user baru untuk siswa
-    $user = \App\Models\User::create([
-        'name' => $request->nama,
-        'email' => $request->email,
-        'password' => Hash::make($request->password),
-        'role' => 'murid', // pastikan field 'role' ada di tabel users
-    ]);
+    // $user = \App\Models\User::create([
+    //     'name' => $request->nama,
+    //     'email' => $request->email,
+    //     'password' => Hash::make($request->password),
+    //     'role' => 'siswa', // pastikan field 'role' ada di tabel users
+    // ]);
 
     // Buat data siswa dan relasikan dengan user
     $siswa = Siswa::create([
-        'user_id' => $user->id, // pastikan field user_id ada di tabel siswas
+        // 'user_id' => $user->id, // pastikan field user_id ada di tabel siswas
         'nama' => $request->nama,
         'nis' => $request->nis,
         'email' => $request->email,

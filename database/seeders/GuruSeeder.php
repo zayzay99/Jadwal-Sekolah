@@ -10,6 +10,8 @@ class GuruSeeder extends Seeder
 {
     public function run()
     {
+            // Hapus data guru dengan NIP yang sama jika sudah ada
+    Guru::where('nip', '19876543')->delete();
         Guru::create([
             'nama' => 'Pak Budi',
             'nip' => '19876543',

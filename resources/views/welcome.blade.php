@@ -61,7 +61,7 @@
       }
     }
 
-    input[type="text"], 
+    input[type="email"], 
     input[type="password"] { /* Gaya untuk input teks dan password */
       width: 100%;
       padding: 15px;
@@ -132,7 +132,7 @@
     <!-- Form login -->
     <form method="POST" action="{{ route('login') }}">
       @csrf
-      <input type="text" name="username" placeholder="Masukan E-mail" required>
+      <input type="email" name="email" placeholder="Masukan E-mail" required>
       <input type="password" name="password" placeholder="Masukan Password" required>
       <button type="submit">Masuk</button>
     </form>
