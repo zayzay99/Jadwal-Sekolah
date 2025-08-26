@@ -12,6 +12,6 @@ class SiswaController extends Controller
     {
         $siswa = Auth::guard('siswa')->user();
     $siswas = \App\Models\Siswa::with('kelas')->get();
-    return view('dashboard.siswa_manage.index', compact('siswas'));
+    return view('dashboard/siswa', compact('siswas'));
     }
 }

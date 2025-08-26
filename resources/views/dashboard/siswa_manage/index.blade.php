@@ -1,4 +1,4 @@
-@extends('dashboard.siswa')
+@extends('dashboard.admin')
 @section('content')
 <div class="content-header">
     <h2>Manajemen Siswa</h2>

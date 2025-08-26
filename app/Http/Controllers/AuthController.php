@@ -23,10 +23,10 @@ class AuthController extends Controller
         $identifier = $request->input('nis');
         $password   = $request->input('password');
 
-        // === 1) Login siswa (guard: siswa, kolom: nis) ===
-        if (Auth::guard('siswa')->attempt(['nis' => $identifier, 'password' => $password])) {
+        // === 1) Login admin (guard: web, kolom: nip) ===
+        if (Auth::guard('web')->attempt(['nip' => $identifier, 'password' => $password])) {
             $request->session()->regenerate();
-            return redirect()->route('siswa.dashboard');
+            return redirect()->route('admin.dashboard');
         }
 
         // === 2) Login guru (guard: guru, kolom: nip) ===
@@ -35,10 +35,10 @@ class AuthController extends Controller
             return redirect()->route('guru.dashboard');
         }
 
-        // === 3) Login admin (guard: web, kolom: nip) ===
-        if (Auth::guard('web')->attempt(['nip' => $identifier, 'password' => $password])) {
+        // === 3) Login siswa (guard: siswa, kolom: nis) ===
+        if (Auth::guard('siswa')->attempt(['nis' => $identifier, 'password' => $password])) {
             $request->session()->regenerate();
-            return redirect()->route('admin.dashboard');
+            return redirect()->route('siswa.dashboard');
         }
 
         // Jika semua gagal
