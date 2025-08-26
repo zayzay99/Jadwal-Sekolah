@@ -152,7 +152,7 @@
       <div class="info">
         <div><strong>Nama Siswa:</strong> {{ Auth::guard('siswa')->user()->nama }}</div>
         <div><strong>NIS Siswa:</strong> {{ Auth::guard('siswa')->user()->nis }}</div>
-        <div><strong>Kelas:</strong> {{ Auth::guard('siswa')->user()->kelas ? Auth::guard('siswa')->user()->kelas->nama_kelas : '-' }}</div>
+        <div><strong>Kelas:</strong> {{ Auth::guard('siswa')->user()->kelas ?? '-' }}</div>
         <div><strong>E-mail:</strong> {{ Auth::guard('siswa')->user()->email }}</div>
       </div>
       </div>
@@ -160,7 +160,7 @@
 
     @if(isset($jadwals) && count($jadwals) > 0)
     <div style="margin-top:30px">
-      <h2>Jadwal Pelajaran Kelas {{ $kelas }}</h2>
+      <h2>Jadwal Pelajaran Kelas {{ Auth::guard('siswa')->user()->kelas ?? '-' }}</h2>
       <table border="1" cellpadding="10" style="width:100%;background:#fff;">
         <thead>
           <tr>
@@ -184,7 +184,7 @@
     </div>
     @else
     <div style="margin-top:30px">
-      <h2>Jadwal Pelajaran Kelas {{ $kelas }}</h2>
+      {{ Auth::guard('siswa')->user()->kelas ?? '-' }}
       <p>Belum ada jadwal untuk kelas ini.</p>
     </div>
     @endif

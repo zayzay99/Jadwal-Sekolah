@@ -1,4 +1,4 @@
-@extends('dashboard.admin')
+@extends('dashboard.siswa')
 @section('content')
 <div class="content-header">
     <h2>Manajemen Siswa</h2>
@@ -47,11 +47,7 @@
                     <td style="text-align: center">{{ $siswa->nama }}</td>
                     <td style="text-align: center">{{ $siswa->nis }}</td>
                     <td style="text-align: center">
-                        @if($siswa->kelas->count())
-                            {{ $siswa->kelas->pluck('nama_kelas')->join(', ') }}
-                        @else
-                            -
-                        @endif
+                        {{ $siswa->kelas ?? '-' }}
                     </td>
                     <td style="text-align: center">{{ $siswa->email }}</td>
                     <td style="text-align: center; padding: 16px 20px;">

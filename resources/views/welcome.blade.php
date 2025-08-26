@@ -5,13 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Login Page</title>
   <style>
-    * { /* Reset semua margin dan padding */
+    * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
     }
 
-    body { /* Gaya umum untuk body */
+    body {
       font-family: 'Segoe UI', sans-serif;
       background: no-repeat center center fixed;
       background-size: cover;
@@ -22,7 +22,7 @@
       transition: background-image 1s ease-in-out;
     }
 
-    .container { /* untuk membuat kontainer */
+    .container {
       background-color: rgba(240, 248, 255, 0.26);
       padding: 40px;
       margin: auto;
@@ -34,7 +34,7 @@
       z-index: 1;
     }
 
-    .marquee { /* Gaya untuk teks berjalan */
+    .marquee {
       overflow: hidden;
       white-space: nowrap;
       box-sizing: border-box;
@@ -46,13 +46,13 @@
       font-weight: bold;
     }
 
-    .marquee span { /* Gaya untuk teks di dalam marquee */
+    .marquee span {
       display: inline-block;
       padding-left: 100%;
       animation: marqueeMove 10s linear infinite;
     }
 
-    @keyframes marqueeMove { /* Animasi untuk teks berjalan */
+    @keyframes marqueeMove {
       from {
         transform: translateX(0%);
       }
@@ -61,8 +61,8 @@
       }
     }
 
-    input[type="email"], 
-    input[type="password"] { /* Gaya untuk input teks dan password */
+    input[type="text"], 
+    input[type="password"] {
       width: 100%;
       padding: 15px;
       margin-bottom: 20px;
@@ -72,7 +72,7 @@
       font-size: 1em;
     }
 
-    button { /* Gaya untuk tombol */
+    button {
       padding: 10px 20px;
       background-color: #a7d6f5;
       color: black;
@@ -84,11 +84,11 @@
       transition: transform 0.1s ease;
     }
 
-    button:active { /* Gaya untuk tombol ketika diklik */
+    button:active {
       transform: scale(0.95);
     }
 
-    .circle { /* Lingkaran di kanan atas */
+    .circle {
       width: 200px;
       height: 200px;
       background-image: url('/img/logo.png');
@@ -102,7 +102,7 @@
       z-index: 2;
     }
 
-    .footer { /* Footer di bawah */
+    .footer {
       text-align: center;
       padding: 10px;
       font-size: 0.9em;
@@ -112,7 +112,7 @@
       margin-top: auto;
     }
 
-    .footer a { /* Gaya untuk link di footer */
+    .footer a {
       color: #0066cc;
       text-decoration: none;
     }
@@ -120,11 +120,9 @@
 </head>
 <body>
 
-  <!-- Lingkaran kanan atas -->
   <div class="circle"></div>
 
   <div class="container">
-    <!-- Teks berjalan -->
     <div class="marquee">
       <span>Selamat Datang!! Silakan login untuk melanjutkan.</span>
     </div>
@@ -132,35 +130,34 @@
     <!-- Form login -->
     <form method="POST" action="{{ route('login') }}">
       @csrf
-      <input type="email" name="email" placeholder="Masukan E-mail" required>
+      <!-- Ganti name dari email ke nis -->
+      <input type="text" name="nis" placeholder="Masukan NIS/NIP" required>
       <input type="password" name="password" placeholder="Masukan Password" required>
       <button type="submit">Masuk</button>
     </form>
-    @if($errors->has('login'))
-    <div style="color:red">{{ $errors->first('login') }}</div>
-@endif
-  </div>
-  
 
-  <!-- Footer -->
+    @if($errors->has('login'))
+      <div style="color:red">{{ $errors->first('login') }}</div>
+    @endif
+  </div>
+
   <div class="footer">
     🔒 Jika ada kendala silahkan hubungi <a href="#">Customer Service</a><br>
     &copy; 2025. Semua hak dilindungi. <br>Jangan menyalin atau menggunakan tanpa izin, ya.
   </div>
 
-  <!-- Script Ganti Background Berdasarkan Waktu -->
   <script>
     const hour = new Date().getHours();
-    let backgroundPath = '/img/Kantor Pagi.png'; // default
+    let backgroundPath = '/img/Kantor Pagi.png';
 
     if (hour >= 5 && hour < 9) {
-      backgroundPath = '/img/Kantor Pagi.png'; // Pagi
+      backgroundPath = '/img/Kantor Pagi.png';
     } else if (hour >= 9 && hour < 15) {
-      backgroundPath = '/img/Kantor Siang.png'; // Siang
+      backgroundPath = '/img/Kantor Siang.png';
     } else if (hour >= 15 && hour < 18) {
-      backgroundPath = '/img/Kantor Sore.png'; // Sore
+      backgroundPath = '/img/Kantor Sore.png';
     } else {
-      backgroundPath = '/img/Kantor Malam.png'; // Malam
+      backgroundPath = '/img/Kantor Malam.png';
     }
 
     document.body.style.backgroundImage = `url('${backgroundPath}')`;

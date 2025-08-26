@@ -15,37 +15,33 @@ return [
 
         'siswa' => [
             'driver' => 'session',
-            'provider' => 'siswas',
+            'provider' => 'siswa', // singular
         ],
 
         'guru' => [
             'driver' => 'session',
-            'provider' => 'gurus',
+            'provider' => 'guru', // singular
         ],
     ],
 
     'providers' => [
-        // Default user (optional, bisa tidak dipakai tapi harus ada)
         'users' => [
             'driver' => 'eloquent',
             'model' => App\Models\User::class,
         ],
 
-        // Provider untuk siswa
-        'siswas' => [
+        'siswa' => [
             'driver' => 'eloquent',
             'model' => App\Models\Siswa::class,
         ],
 
-        // Provider untuk guru
-        'gurus' => [
+        'guru' => [
             'driver' => 'eloquent',
             'model' => App\Models\Guru::class,
         ],
     ],
 
     'passwords' => [
-        // Untuk user biasa (default Laravel)
         'users' => [
             'provider' => 'users',
             'table' => 'password_reset_tokens',
@@ -53,17 +49,15 @@ return [
             'throttle' => 60,
         ],
 
-        // Untuk guru (jika ingin pakai reset password juga)
-        'gurus' => [
-            'provider' => 'gurus',
+        'guru' => [
+            'provider' => 'guru',
             'table' => 'password_reset_tokens',
             'expire' => 60,
             'throttle' => 60,
         ],
 
-        // Untuk siswa (jika ingin pakai reset password juga)
-        'siswas' => [
-            'provider' => 'siswas',
+        'siswa' => [
+            'provider' => 'siswa',
             'table' => 'password_reset_tokens',
             'expire' => 60,
             'throttle' => 60,
