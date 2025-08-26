@@ -13,7 +13,7 @@ class AdminSeeder extends Seeder
         User::where('email', 'admin@example.com')->delete();
 
         User::create([
-            'nama' => 'Admin',
+            'name' => 'Admin',
             'email' => 'admin@example.com',
             'password' => Hash::make('admin123'),
             'nip' => 'ADM001',
