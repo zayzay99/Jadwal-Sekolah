@@ -53,7 +53,7 @@
                     <td style="text-align: center; padding: 16px 20px;">
                         <div class="action-buttons">
                             <a href="{{ route('manage.siswa.edit', $siswa->id) }}" class="btn btn-warning" title="Edit">
-                                <i class="fas fa-edit"></i>Edit
+                                <i class="fas fa-edit"></i>
                             </a>
                             <form action="{{ route('manage.siswa.destroy', $siswa->id) }}" method="POST" style="display:inline;">
                                 @csrf
