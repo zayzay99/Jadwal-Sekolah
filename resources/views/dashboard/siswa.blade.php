@@ -14,16 +14,19 @@
     </header>
 
     <div class="container">
-        <aside class="sidebar">
-            <h2>Menu</h2>
-            <hr>
-            <a href="{{ route('jadwal.siswa') }}" class="menu-btn">Jadwal</a>
-            <button class="logout-btn" onclick="window.location.href='{{ route('logout') }}'">Keluar</button>
-            <div class="cs-section">
-                <img src="/img/CS.svg" alt="CS" width="30">
-                <span>CS</span>
-            </div>
-        </aside>
+       <aside class="sidebar">
+    <div class="sidebar-menu-title">
+        <i class="fas fa-bars"></i> Menu
+    </div>
+    <a href="" class="menu-btn"><i class="fas fa-calendar-alt"></i> Jadwal</a>
+    <button class="logout-btn" onclick="window.location.href='{{ route('logout') }}'">
+        <i class="fas fa-sign-out-alt"></i> Keluar
+    </button>
+    <div class="cs-section">
+        <img src="/img/CS.svg" alt="CS" width="30">
+        <span>CS</span>
+    </div>
+</aside>
 
         <main class="main-content">
             <section class="greeting">
@@ -34,12 +37,12 @@
             <section class="profile-section">
                 <div class="profile-pic">profile<br>150 × 150</div>
                 <div class="profile-info">
-                    <p><strong>Nama:</strong> {{ $user?->nama ?? '-' }}</p>
-                    <p><strong>NIS:</strong> {{ $user?->nis ?? '-' }}</p>
-                    <p><strong>Kelas:</strong> {{ $user?->kelas ?? '-' }}</p>
-                    <p><strong>Email:</strong> {{ $user?->email ?? '-' }}</p>
+                    <p><strong>Nama&nbsp;&nbsp;&nbsp;&nbsp;</strong> : {{ $user?->nama ?? '-' }}</p>
+                    <p><strong>NIS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong> : {{ $user?->nis ?? '-' }}</p>
+                    <p><strong>Kelas&nbsp;&nbsp;&nbsp;</strong> : {{ $user?->kelas ?? '-' }}</p>
+                    <p><strong>Email&nbsp;&nbsp;&nbsp;</strong> : {{ $user?->email ?? '-' }}</p>
+                    <button class="profile-btn">Profile</button>
                 </div>
-                <button class="profile-btn">Profile</button>
             </section>
 
             <section class="jadwal-section">
