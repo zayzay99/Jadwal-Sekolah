@@ -1,0 +1,146 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #d8e6f2;
+    color: #333;
+}
+
+.header {
+    background: #1e5f84;
+    color: #fff;
+    padding: 15px 20px;
+    font-size: 22px;
+    font-weight: bold;
+}
+
+.container {
+    display: flex;
+}
+
+.sidebar {
+    background: #4d86a2;
+    width: 200px;
+    padding: 20px;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+.sidebar h2 {
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+.menu-btn {
+    display: block;
+    width: 100%;
+    background: #a5c1d4;
+    color: #000;
+    padding: 10px;
+    text-align: center;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.menu-btn:hover {
+    background: #87afc6;
+}
+
+.logout-btn {
+    background: #e74c3c;
+    color: #fff;
+    padding: 10px;
+    width: 100%;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.logout-btn:hover {
+    background: #c0392b;
+}
+
+.cs-section {
+    margin-top: auto;
+    text-align: center;
+    font-size: 14px;
+}
+
+.main-content {
+    flex: 1;
+    padding: 20px;
+}
+
+.greeting {
+    background: #8cb6d6;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.profile-section {
+    display: flex;
+    align-items: center;
+    background: #e9f0f5;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    box-shadow: 0px 2px 5px rgba(0,0,0,0.1);
+}
+
+.profile-pic {
+    width: 150px;
+    height: 150px;
+    background: #ccc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-size: 14px;
+    text-align: center;
+    margin-right: 20px;
+}
+
+.profile-info p {
+    margin: 5px 0;
+}
+
+.profile-btn {
+    background: #88b6d8;
+    border: none;
+    padding: 8px 12px;
+    margin-left: auto;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.profile-btn:hover {
+    background: #6da1c5;
+}
+
+.jadwal-section {
+    background: #f8f7ed;
+    padding: 15px;
+    border-radius: 8px;
+}
+
+.jadwal-section table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    background: white;
+}
+
+.jadwal-section th, .jadwal-section td {
+    border: 1px solid #ccc;
+    padding: 8px;
+    text-align: center;
+}
+
+.jadwal-section th {
+    background: #e3e3e3;
+}
