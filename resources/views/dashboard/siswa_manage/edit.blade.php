@@ -38,8 +38,8 @@
             <label for="kelas_id">Kelas</label>
             <select id="kelas_id" name="kelas_id" required class="form-control">
                 @foreach($kelas as $k)
-                    <option value="{{ $k->id }}"
-                        {{ $siswa->kelas_id == $k->id ? 'selected' : '' }}>
+                    {{-- Cek apakah ID kelas ini sama dengan ID kelas pertama yang dimiliki siswa --}}
+                    <option value="{{ $k->id }}" {{ $siswa->kelas->first()?->id == $k->id ? 'selected' : '' }}>
                         {{ $k->nama_kelas }}
                     </option>
                 @endforeach

@@ -17,7 +17,7 @@
         <aside class="sidebar">
             <h2>Menu</h2>
             <hr>
-            <a href="{{ route('jadwal.siswa') }}" class="menu-btn">Jadwal</a>
+            <a href="{{ route('siswa.jadwal') }}" class="menu-btn">Jadwal</a>
             <button class="logout-btn" onclick="window.location.href='{{ route('logout') }}'">Keluar</button>
             <div class="cs-section">
                 <img src="/img/CS.svg" alt="CS" width="30">
@@ -36,14 +36,14 @@
                 <div class="profile-info">
                     <p><strong>Nama:</strong> {{ $user?->nama ?? '-' }}</p>
                     <p><strong>NIS:</strong> {{ $user?->nis ?? '-' }}</p>
-                    <p><strong>Kelas:</strong> {{ $user?->kelas ?? '-' }}</p>
+                    <p><strong>Kelas:</strong> {{ $user?->kelas?->first()?->nama_kelas ?? '-' }}</p>
                     <p><strong>Email:</strong> {{ $user?->email ?? '-' }}</p>
                 </div>
                 <button class="profile-btn">Profile</button>
             </section>
 
             <section class="jadwal-section">
-                <h4>Jadwal Pelajaran Untuk Kelas {{ $user?->kelas ?? '-' }}</h4>
+                <h4>Jadwal Pelajaran Untuk Kelas {{ $user?->kelas?->first()?->nama_kelas ?? '-' }}</h4>
                 @if(isset($jadwals) && count($jadwals) > 0)
                     <table>
                         <thead>

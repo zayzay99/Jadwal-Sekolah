@@ -13,10 +13,8 @@ class Siswa extends Authenticatable
         'nama',
         // 'user_id',
         'nis',
-        'kelas',
         'email',
         'password',
-        'kelas_id',
     ];
 
     public function kelas()
