@@ -39,7 +39,7 @@
             <select id="kelas_id" name="kelas_id" required class="form-control">
                 @foreach($kelas as $k)
                     {{-- Cek apakah ID kelas ini sama dengan ID kelas pertama yang dimiliki siswa --}}
-                    <option value="{{ $k->id }}" {{ $siswa->kelas->first()?->id == $k->id ? 'selected' : '' }}>
+                    <option value="{{ $k->id }}" {{ optional($siswa->kelas)->first()?->id == $k->id ? 'selected' : '' }}>
                         {{ $k->nama_kelas }}
                     </option>
                 @endforeach

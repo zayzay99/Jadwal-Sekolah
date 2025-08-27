@@ -48,7 +48,7 @@
                             <td style="text-align: center">{{ $siswa->nis }}</td>
                             <td style="text-align: center">
                                 {{-- Ambil nama kelas pertama dari relasi. Jika tidak ada, tampilkan strip. --}}
-                                {{ $siswa->kelas->first()?->nama_kelas ?? 'Belum Terdaftar di Kelas' }}
+                                {{ optional($siswa->kelas)->first()?->nama_kelas ?? 'Belum Terdaftar di Kelas' }}
                             </td>
                             <td style="text-align: center">{{ $siswa->email }}</td>
                             <td style="text-align: center; padding: 16px 20px;">
