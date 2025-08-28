@@ -7,10 +7,9 @@
     <link rel="stylesheet" href="{{ asset('css/siswa.css') }}">
 </head>
 <body>
-    @php $user = Auth::guard('siswa')->user(); @endphp
 
     <header class="header">
-        Selamat Datang di Ruang Kelas <strong>{{ $user?->nama ?? '-' }}</strong>
+        Selamat Datang di Ruang Kelas <strong>{{ $siswa?->nama ?? '-' }}</strong>
     </header>
 
     <div class="container">
@@ -34,15 +33,15 @@
             <section class="profile-section">
                 <div class="profile-pic">profile<br>150 × 150</div>
                 <div class="profile-info">
-                    <p><strong>Nama:</strong> {{ $user?->nama ?? '-' }}</p>
-                    <p><strong>NIS:</strong> {{ $user?->nis ?? '-' }}</p>
-                    <p><strong>Kelas:</strong> {{ $user?->kelas->first()?->nama_kelas ?? '-' }}</p>
-                    <p><strong>Email:</strong> {{ $user?->email ?? '-' }}</p>
+                    <p><strong>Nama:</strong> {{ $siswa?->nama ?? '-' }}</p>
+                    <p><strong>NIS:</strong> {{ $siswa?->nis ?? '-' }}</p>
+                    <p><strong>Kelas:</strong> {{ $siswa?->kelas->first()?->nama_kelas ?? '-' }}</p>
+                    <p><strong>Email:</strong> {{ $siswa?->email ?? '-' }}</p>
                 </div>
             </section>
 
             <section class="jadwal-section">
-                <h4>Jadwal Pelajaran Untuk Kelas {{ $user?->kelas?->first()?->nama_kelas ?? '-' }}</h4>
+                <h4>Jadwal Pelajaran Untuk Kelas {{ $siswa?->kelas?->first()?->nama_kelas ?? '-' }}</h4>
                 @if(isset($jadwals) && count($jadwals) > 0)
                     <table>
                         <thead>
@@ -57,7 +56,7 @@
                             @foreach($jadwals as $jadwal)
                             <tr>
                                 <td>{{ $jadwal->mapel }}</td>
-                                <td>{{ $jadwal->guru->nama }}</td>
+                                <td>{{ $jadwal->guru?->nama ?? 'N/A' }}</td>
                                 <td>{{ $jadwal->hari }}</td>
                                 <td>{{ $jadwal->jam }}</td>
                             </tr>
