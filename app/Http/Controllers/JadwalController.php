@@ -10,8 +10,8 @@ class JadwalController extends Controller
 {
     public function index()
     {
-        $jadwals = Jadwal::with('guru')->get();
-        return view('dashboard.jadwal.index', compact('jadwals'));
+        $jadwals = Jadwal::with(['guru', 'kelas'])->get();
+        return view('dashboard.admin_jadwal', compact('jadwals'));
     }
 
    public function create($kelas_id)
