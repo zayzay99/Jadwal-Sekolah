@@ -36,7 +36,7 @@
                 <div class="profile-info">
                     <p><strong>Nama:</strong> {{ $user?->nama ?? '-' }}</p>
                     <p><strong>NIS:</strong> {{ $user?->nis ?? '-' }}</p>
-                    <p><strong>Kelas:</strong> {{ $user?->kelas ?? '-' }}</p>
+                    <p><strong>Kelas:</strong> {{ $user?->kelas->first()?->nama_kelas ?? '-' }}</p>
                     <p><strong>Email:</strong> {{ $user?->email ?? '-' }}</p>
                 </div>
             </section>
