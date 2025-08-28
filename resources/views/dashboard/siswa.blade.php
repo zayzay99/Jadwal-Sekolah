@@ -17,7 +17,7 @@
         <aside class="sidebar">
             <h2>Menu</h2>
             <hr>
-            <a href="{{ route('siswa.jadwal') }}" class="menu-btn">Jadwal</a>
+            {{-- <a href="{{ route('siswa.jadwal') }}" class="menu-btn">Jadwal</a> --}}
             <button class="logout-btn" onclick="window.location.href='{{ route('logout') }}'">Keluar</button>
             <div class="cs-section">
                 <img src="/img/CS.svg" alt="CS" width="30">
