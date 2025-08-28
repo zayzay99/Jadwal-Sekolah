@@ -26,17 +26,27 @@ class ManageKelasController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nama_kelas' => 'required|string|max:50',
+            'tingkat_kelas' => 'required|string|in:VII,VIII,IX,X,XI,XII',
+            'sub_kelas' => 'required|string|max:10',
             'guru_id' => 'required|exists:gurus,id',
             'siswa_ids' => 'array',
             'siswa_ids.*' => 'exists:siswas,id',
         ]);
+
+        // Gabungkan tingkat dan sub kelas, lalu validasi keunikannya
+        $nama_kelas = $request->tingkat_kelas . '-' . $request->sub_kelas;
+        if (Kelas::where('nama_kelas', $nama_kelas)->exists()) {
+            return back()
+                ->withErrors(['sub_kelas' => 'Nama kelas "' . $nama_kelas . '" sudah ada.'])
+                ->withInput();
+        }
+
         $kelas = Kelas::create([
-            'nama_kelas' => $request->nama_kelas,
+            'nama_kelas' => $nama_kelas,
             'guru_id' => $request->guru_id,
         ]);
         $kelas->siswas()->sync($request->siswa_ids ?? []);
-        return redirect()->route('manage.kelas.index')->with('success', 'Kelas berhasil ditambahkan');
+        return redirect()->route('manage.kelas.index')->with('success', 'Kelas "' . $nama_kelas . '" berhasil ditambahkan.');
     }
 
     public function edit($id)
@@ -44,25 +54,52 @@ class ManageKelasController extends Controller
         $kelas = Kelas::with('siswas')->findOrFail($id);
         $gurus = Guru::all();
         $siswas = Siswa::all();
-        $kelas->siswas()->sync($request->siswa_ids ?? []);
-        return view('dashboard.kelas_manage.edit', compact('kelas', 'gurus', 'siswas'));
+
+        // Pisahkan nama kelas menjadi tingkat dan sub-kelas
+        $nama_kelas_parts = explode('-', $kelas->nama_kelas, 2);
+        $tingkat_kelas_val = $nama_kelas_parts[0] ?? '';
+        $sub_kelas_val = $nama_kelas_parts[1] ?? '';
+        
+        $kategori = ['VII', 'VIII', 'IX', 'X', 'XI', 'XII'];
+
+        // Jika format nama kelas lama tidak sesuai (tidak ada '-'), anggap semua sebagai sub_kelas
+        // agar admin bisa memperbaikinya.
+        if (!in_array($tingkat_kelas_val, $kategori) || count($nama_kelas_parts) < 2) {
+            $tingkat_kelas = '';
+            $sub_kelas = $kelas->nama_kelas;
+        } else {
+            $tingkat_kelas = $tingkat_kelas_val;
+            $sub_kelas = $sub_kelas_val;
+        }
+
+        return view('dashboard.kelas_manage.edit', compact('kelas', 'gurus', 'siswas', 'tingkat_kelas', 'sub_kelas'));
     }
 
     public function update(Request $request, $id)
     {
         $request->validate([
-            'nama_kelas' => 'required|string|max:50',
+            'tingkat_kelas' => 'required|string|in:VII,VIII,IX,X,XI,XII',
+            'sub_kelas' => 'required|string|max:10',
             'guru_id' => 'required|exists:gurus,id',
             'siswa_ids' => 'array',
             'siswa_ids.*' => 'exists:siswas,id',
         ]);
         $kelas = Kelas::findOrFail($id);
+
+        // Gabungkan tingkat dan sub kelas, lalu validasi keunikannya
+        $nama_kelas = $request->tingkat_kelas . '-' . $request->sub_kelas;
+        if (Kelas::where('nama_kelas', $nama_kelas)->where('id', '!=', $id)->exists()) {
+            return back()
+                ->withErrors(['sub_kelas' => 'Nama kelas "' . $nama_kelas . '" sudah ada.'])
+                ->withInput();
+        }
+
         $kelas->update([
-            'nama_kelas' => $request->nama_kelas,
+            'nama_kelas' => $nama_kelas,
             'guru_id' => $request->guru_id,
         ]);
         $kelas->siswas()->sync($request->siswa_ids ?? []);
-        return redirect()->route('manage.kelas.index')->with('success', 'Kelas berhasil diupdate');
+        return redirect()->route('manage.kelas.index')->with('success', 'Kelas "' . $nama_kelas . '" berhasil diupdate.');
     }
 
     public function destroy($id)

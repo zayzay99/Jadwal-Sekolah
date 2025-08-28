@@ -25,8 +25,21 @@
         @csrf
         @method('PUT')
         <div class="form-group">
-            <label for="nama_kelas">Nama Kelas</label>
-            <input type="text" name="nama_kelas" id="nama_kelas" value="{{ $kelas->nama_kelas }}" required class="form-control">
+            <label for="tingkat_kelas">Tingkat Kelas</label>
+            <select name="tingkat_kelas" id="tingkat_kelas" required class="form-control">
+                <option value="">-- Pilih Tingkat --</option>
+                @foreach(['VII', 'VIII', 'IX', 'X', 'XI', 'XII'] as $tingkat)
+                    <option value="{{ $tingkat }}" {{ $tingkat_kelas == $tingkat ? 'selected' : '' }}>{{ $tingkat }}</option>
+                @endforeach
+            </select>
+            @if(empty($tingkat_kelas) && !empty($sub_kelas))
+                <small class="form-text text-warning" style="color: orange;">Nama kelas '{{ $sub_kelas }}' tidak mengikuti format standar. Harap perbaiki.</small>
+            @endif
+        </div>
+        <div class="form-group">
+            <label for="sub_kelas">Nama Sub Kelas (Contoh: 1, A, atau Bahasa)</label>
+            <input type="text" name="sub_kelas" id="sub_kelas" value="{{ $sub_kelas }}" required class="form-control" placeholder="Contoh: 1">
+            <small class="form-text">Nama kelas lengkap akan digabung menjadi: [Tingkat]-[Sub Kelas], contoh: VII-1</small>
         </div>
         
         <div class="form-group">

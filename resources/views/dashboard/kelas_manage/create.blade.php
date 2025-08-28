@@ -24,8 +24,21 @@
     <form action="{{ route('manage.kelas.store') }}" method="POST">
         @csrf
         <div class="form-group">
-            <label for="nama_kelas">Nama Kelas</label>
-            <input type="text" name="nama_kelas" id="nama_kelas" required class="form-control">
+            <label for="tingkat_kelas">Tingkat Kelas</label>
+            <select name="tingkat_kelas" id="tingkat_kelas" required class="form-control">
+                <option value="">-- Pilih Tingkat --</option>
+                <option value="VII">VII</option>
+                <option value="VIII">VIII</option>
+                <option value="IX">IX</option>
+                <option value="X">X</option>
+                <option value="XI">XI</option>
+                <option value="XII">XII</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="sub_kelas">Nama Sub Kelas (Contoh: 1, A, atau Bahasa)</label>
+            <input type="text" name="sub_kelas" id="sub_kelas" required class="form-control" placeholder="Contoh: 1" value="{{ old('sub_kelas') }}">
+            <small class="form-text">Nama kelas lengkap akan digabung menjadi: [Tingkat]-[Sub Kelas], contoh: VII-1</small>
         </div>
         
         <div class="form-group">
