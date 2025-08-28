@@ -17,7 +17,7 @@
             @foreach($jadwals as $jadwal)
             <tr>
                 <td>{{ $jadwal->mapel }}</td>
-                <td>{{ $jadwal->kelas }}</td>
+                <td>{{ $jadwal->kelas->nama_kelas ?? '-' }}</td>
                 <td>{{ $jadwal->guru->nama }}</td>
                 <td>{{ $jadwal->hari }}</td>
                 <td>{{ $jadwal->jam }}</td>

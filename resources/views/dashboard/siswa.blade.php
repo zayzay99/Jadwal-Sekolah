@@ -16,7 +16,7 @@
         <aside class="sidebar">
             <h2>Menu</h2>
             <hr>
-            <a href="{{ route('siswa.jadwal') }}" class="menu-btn">Jadwal</a>
+            {{-- <a href="{{ route('siswa.jadwal') }}" class="menu-btn">Jadwal</a> --}}
             <button class="logout-btn" onclick="window.location.href='{{ route('logout') }}'">Keluar</button>
             <div class="cs-section">
                 <img src="/img/CS.svg" alt="CS" width="30">
@@ -56,7 +56,7 @@
                             @foreach($jadwals as $jadwal)
                             <tr>
                                 <td>{{ $jadwal->mapel }}</td>
-                                <td>{{ $jadwal->guru->nama }}</td>
+                                <td>{{ $jadwal->guru?->nama ?? 'N/A' }}</td>
                                 <td>{{ $jadwal->hari }}</td>
                                 <td>{{ $jadwal->jam }}</td>
                             </tr>
