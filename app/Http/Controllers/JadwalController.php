@@ -10,8 +10,8 @@ class JadwalController extends Controller
 {
     public function index()
     {
-        $jadwals = Jadwal::with('guru')->get();
-        return view('dashboard.jadwal.index', compact('jadwals'));
+        // Alihkan ke halaman "pilih kelas" sebagai tindakan default untuk index.
+        return redirect()->route('jadwal.pilihKelasLihat');
     }
 
    public function create($kelas_id)
@@ -26,15 +26,23 @@ public function store(Request $request)
     $request->validate([
         'mapel' => 'required',
         'kelas_id' => 'required|exists:kelas,id',
-        'guru_id' => 'required|exists:gurus,id',
+        'guru_id' => [
+            'required',
+            'exists:gurus,id',
+            function ($attribute, $value, $fail) use ($request) {
+                $jumlahJam = Jadwal::where('guru_id', $value)
+                                       ->where('hari', $request->input('hari'))
+                                       ->count();
+                if ($jumlahJam >= 8) {
+                    $fail('Guru ini sudah mencapai batas maksimal 8 jam mengajar pada hari yang dipilih.');
+                }
+            },
+        ],
         'hari' => 'required',
         'jam' => 'required',
     ]);
-    \App\Models\Jadwal::create($request->all());
-    return redirect()->route('jadwal.index')->with('success', 'Jadwal berhasil ditambahkan');
-    
-// JadwalController.php
-return redirect()->route('jadwal.index')->with('success', 'Penambahan jadwal telah berhasil');
+    Jadwal::create($request->all());
+    return redirect()->route('jadwal.perKelas', ['kelas' => $request->kelas_id])->with('success', 'Jadwal berhasil ditambahkan');
 }
 
 public function pilihKelas()
@@ -56,5 +64,11 @@ public function jadwalPerKelas($kelas_id)
     return view('jadwal.jadwal_per_kelas', compact('kelas', 'jadwals'));
 }
 
+public function destroy($id)
+{
+    $jadwal = Jadwal::findOrFail($id);
+    $jadwal->delete();
 
+    return back()->with('success', 'Jadwal berhasil dihapus.');
+}
 }

@@ -5,10 +5,10 @@ use App\Models\Kelas;
 
 class KelasKategoriController extends Controller
 {
-    // Halaman kategori utama (X, XI, XII)
+    // Halaman kategori utama ( VII, VIII, IX, X, XI, XII)
     public function index()
     {
-        $kategori = ['X', 'XI', 'XII'];
+        $kategori = [ 'VII', 'VIII', 'IX', 'X', 'XI', 'XII'];
         return view('dashboard.kelas_kategori.index', compact('kategori'));
     }
 

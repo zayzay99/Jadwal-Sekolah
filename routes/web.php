@@ -32,14 +32,12 @@ Route::middleware('auth:guru')->group(function () {
 
 Route::middleware('auth:web')->group(function () {
     Route::get('/dashboard/admin', [AdminController::class, 'index'])->name('admin.dashboard');
-    Route::resource('jadwal', JadwalController::class)->except(['show', 'edit', 'update', 'destroy']);
-        Route::get('/dashboard/admin', [AdminController::class, 'index'])->name('admin.dashboard');
-        Route::get('/jadwal/kelas', [JadwalController::class, 'pilihKelasLihat'])->name('jadwal.pilihKelasLihat');
-Route::get('/jadwal/kelas/{kelas}', [JadwalController::class, 'jadwalPerKelas'])->name('jadwal.perKelas');
     Route::get('/jadwal/pilih-kelas', [JadwalController::class, 'pilihKelas'])->name('jadwal.pilihKelas');
     Route::get('/jadwal/create/{kelas}', [JadwalController::class, 'create'])->name('jadwal.create');
-    Route::resource('jadwal', JadwalController::class)->except(['show', 'edit', 'update', 'destroy', 'create']);
-       Route::resource('manage/guru', ManageGuruController::class, ['names' => [
+    Route::get('/jadwal/kelas', [JadwalController::class, 'pilihKelasLihat'])->name('jadwal.pilihKelasLihat');
+    Route::get('/jadwal/kelas/{kelas}', [JadwalController::class, 'jadwalPerKelas'])->name('jadwal.perKelas');
+    Route::resource('jadwal', JadwalController::class)->except(['show', 'edit', 'update', 'create']);  
+    Route::resource('manage/guru', ManageGuruController::class, ['names' => [
         'index' => 'manage.guru.index',
         'create' => 'manage.guru.create',
         'store' => 'manage.guru.store',
@@ -57,7 +55,7 @@ Route::get('/jadwal/kelas/{kelas}', [JadwalController::class, 'jadwalPerKelas'])
         'destroy' => 'manage.siswa.destroy',
         'show' => 'manage.siswa.show',
     ]]);
-        Route::resource('manage/kelas', \App\Http\Controllers\ManageKelasController::class, ['names' => [
+    Route::resource('manage/kelas', \App\Http\Controllers\ManageKelasController::class, ['names' => [
         'index' => 'manage.kelas.index',
         'create' => 'manage.kelas.create',
         'store' => 'manage.kelas.store',
@@ -66,10 +64,9 @@ Route::get('/jadwal/kelas/{kelas}', [JadwalController::class, 'jadwalPerKelas'])
         'destroy' => 'manage.kelas.destroy',
         'show' => 'manage.kelas.show',
     ]]);
+
+    Route::get('/kelas', [KelasKategoriController::class, 'index'])->name('kelas.kategori');
+    Route::get('/kelas/{kategori}', [KelasKategoriController::class, 'show'])->name('kelas.show');
+    Route::get('/kelas/{kategori}/{kelas}', [KelasKategoriController::class, 'detail'])->name('kelas.detail');
 });
-Route::get('/kelas', [KelasKategoriController::class, 'index'])->name('kelas.kategori');
-Route::get('/kelas/{kategori}', [KelasKategoriController::class, 'show'])->name('kelas.show');
-Route::get('/kelas/{kategori}/{kelas}', [KelasKategoriController::class, 'detail'])->name('kelas.detail');
 Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
-
-

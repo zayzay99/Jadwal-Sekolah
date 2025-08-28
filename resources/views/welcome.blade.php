@@ -142,8 +142,9 @@
   </div>
 
   <div class="footer">
-    🔒 Jika ada kendala silahkan hubungi <a href="#">Customer Service</a><br>
-    &copy; 2025. Semua hak dilindungi. <br>Jangan menyalin atau menggunakan tanpa izin, ya.
+    <strong>Klipaa Students</strong> <br>
+    Jika ada kendala silahkan hubungi <a href="#"><strong>Customer Service</strong></a><br>
+   <strong> &copy; 2025. Semua hak dilindungi.</strong>
   </div>
 
   <script>

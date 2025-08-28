@@ -7,6 +7,12 @@
 </div>
 
 <div class="table-container">
+    @if(session('success'))
+        <div class="alert alert-success">
+            {{ session('success') }}
+        </div>
+    @endif
+
     <div class="table-header">
          <button class="btn btn-secondary" onclick="window.history.back()">
             <i class="fas fa-arrow-left"></i> Kembali
@@ -22,6 +28,7 @@
                 <th>Guru</th>
                 <th>Hari</th>
                 <th>Jam</th>
+                <th>Aksi</th>
             </tr>
         </thead>
         <tbody>
@@ -31,6 +38,15 @@
                 <td>{{ $jadwal->guru->nama }}</td>
                 <td>{{ $jadwal->hari }}</td>
                 <td>{{ $jadwal->jam }}</td>
+                <td>
+                    <form action="{{ route('jadwal.destroy', $jadwal->id) }}" method="POST" style="display:inline;">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-danger" title="Hapus" onclick="return confirm('Yakin ingin menghapus jadwal ini?')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </form>
+                </td>
             </tr>
 
             @empty

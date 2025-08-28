@@ -16,7 +16,7 @@
         </div>
 
         <div class="form-group">
-        <label>Guru</label>
+        <label>Guru</label> 
         <select name="guru_id" class="form-control" required>
             <option value="">-- Pilih Guru --</option>
             @foreach($guru as $g)
@@ -36,7 +36,6 @@
         <input type="text" name="jam" class="form-control" placeholder="Misal: 08:00-09:00" required>
             </div>
         </div>
-
         <div class="form-actions">
             <button type="button" class="btn btn-secondary" onclick="window.history.back()">Batal</button>
             <button type="submit" class="btn btn-primary">Simpan Jadwal</button>
