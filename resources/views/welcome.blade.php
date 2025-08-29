@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="icon" type="image/png" href="{{ asset('img/Tut Wuri Handayani.jpeg') }}">
-  <title>Login Page</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('img/Klipaa Original.png') }}">
+  <title>Login Page - Klipaa Solusi Indonesia</title>
   <style>
     * {
       margin: 0;
@@ -90,12 +90,12 @@
     }
 
     .circle {
-      width: 200px;
-      height: 200px;
-      background-image: url('/img/logo.png');
+      width: 250px;
+      height: 100px;
+      background-image: url('/img/klipaa Student.png');
       background-size: cover;
       background-position: center;
-      border-radius: 50%;
+      border-radius: 5%;
       position: absolute;
       top: 30px;
       right: 30px;

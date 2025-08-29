@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Siswa</title>
+    <title>Beranda Siswa - Klipaa Solusi Indonesia</title>
     <link rel="stylesheet" href="{{ asset('css/siswa.css') }}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
-     <link rel="icon" type="image/png" href="{{ asset('img/Tut Wuri Handayani.jpeg') }}">
+  <link rel="icon" type="image/png" href="{{ asset('img/Klipaa Original.png') }}">
 </head>
 <body>
     @php $user = Auth::guard('siswa')->user(); @endphp
