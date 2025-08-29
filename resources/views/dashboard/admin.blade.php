@@ -145,6 +145,23 @@
             });
         }
 
+<<<<<<< HEAD
+        // Tampilkan notifikasi toast untuk pesan sukses
+        @if (session('success'))
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.addEventListener('mouseenter', Swal.stopTimer)
+                    toast.addEventListener('mouseleave', Swal.resumeTimer)
+                }
+            });
+            Toast.fire({ icon: 'success', title: '{{ session('success') }}' });
+        @endif
+=======
         function showLogoutConfirmation(event) {
             event.preventDefault();
             let link = event.currentTarget.href;
@@ -163,57 +180,6 @@
                 }
             });
         }
-
-        document.addEventListener('DOMContentLoaded', function() {
-            @if(session('login_success'))
-                Swal.fire({
-                    toast: true,
-                    position: 'top-end',
-                    icon: 'success',
-                    title: 'Login Berhasil!',
-                    text: '{{ session('login_success') }}',
-                    showConfirmButton: false,
-                    timer: 3500,
-                    timerProgressBar: true
-                });
-            @endif
-
-            // Menangani notifikasi sukses dari session
-            @if(session('success'))
-                Swal.fire({
-                    toast: true,
-                    position: 'top-end',
-                    icon: 'success',
-                    title: '{{ session('success') }}',
-                    showConfirmButton: false,
-                    timer: 3500,
-                    timerProgressBar: true
-                });
-            @endif
-
-            // Menangani notifikasi error dari session
-            @if(session('error'))
-                Swal.fire({
-                    toast: true,
-                    position: 'top-end',
-                    icon: 'error',
-                    title: '{{ session('error') }}',
-                    showConfirmButton: false,
-                    timer: 5000,
-                    timerProgressBar: true
-                });
-            @endif
-
-            // Menangani error validasi form
-            @if($errors->any())
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Terjadi Kesalahan Validasi',
-                    html: `{!! implode('<br>', $errors->all()) !!}`,
-                    confirmButtonText: 'Mengerti'
-                });
-            @endif
-        });
     </script>
 </body>
 
