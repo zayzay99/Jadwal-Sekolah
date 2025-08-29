@@ -42,7 +42,7 @@
                     <form action="{{ route('jadwal.destroy', $jadwal->id) }}" method="POST" style="display:inline;">
                         @csrf
                         @method('DELETE')
-                        <button type="submit" class="btn btn-danger" title="Hapus" onclick="return confirm('Yakin ingin menghapus jadwal ini?')">
+                        <button type="submit" class="btn btn-danger" title="Hapus" onclick="showDeleteConfirmation(event)">
                             <i class="fas fa-trash"></i>
                         </button>
                     </form>

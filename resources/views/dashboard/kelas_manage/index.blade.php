@@ -43,7 +43,7 @@
                             <form action="{{ route('manage.kelas.destroy', $k->id) }}" method="POST" style="display:inline;">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="btn btn-danger" title="Hapus" onclick="return confirm('Yakin hapus?')">
+                                <button type="submit" class="btn btn-danger" title="Hapus" onclick="showDeleteConfirmation(event)">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </form>

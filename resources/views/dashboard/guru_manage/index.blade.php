@@ -4,7 +4,7 @@
     <h2>Manajemen Guru</h2>
 </div>
 <div class="table-container">
-    @if (session('success'))
+    @if(session('success'))
         <div class="alert alert-success">
             {{ session('success') }}
         </div>
@@ -44,7 +44,7 @@
                             <form action="{{ route('manage.guru.destroy', $guru->id) }}" method="POST" style="display:inline;">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="btn btn-danger" title="Hapus" onclick="return confirm('Yakin hapus?')">
+                                <button type="submit" class="btn btn-danger" title="Hapus" onclick="showDeleteConfirmation(event)">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </form>
