@@ -6,6 +6,7 @@
     <title>Dashboard Siswa</title>
     <link rel="stylesheet" href="{{ asset('css/siswa.css') }}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+     <link rel="icon" type="image/png" href="{{ asset('img/Tut Wuri Handayani.jpeg') }}">
 </head>
 <body>
     @php $user = Auth::guard('siswa')->user(); @endphp

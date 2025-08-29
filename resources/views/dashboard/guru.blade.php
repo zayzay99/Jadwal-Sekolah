@@ -8,7 +8,10 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="{{ asset('css/guru.css') }}">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+   <link rel="icon" type="image/png" href="{{ asset('img/Tut Wuri Handayani.jpeg') }}">
 </head>
+
+
 <body class="bg-[#bdd7ee] font-sans text-gray-800">
   <div class="app-container">
     <!-- Mobile Menu Toggle -->
