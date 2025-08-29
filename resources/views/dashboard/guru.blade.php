@@ -8,8 +8,14 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="{{ asset('css/guru.css') }}">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<<<<<<< HEAD
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+=======
+   <link rel="icon" type="image/png" href="{{ asset('img/Tut Wuri Handayani.jpeg') }}">
+>>>>>>> 783501156d650903c173320a5c943b3fa33b15eb
 </head>
+
+
 <body class="bg-[#bdd7ee] font-sans text-gray-800">
   <div class="app-container">
     <!-- Mobile Menu Toggle -->
