@@ -147,13 +147,12 @@ body {
 .profile-info p {
     margin: 3px 0;
     font-size: 0.9rem;
-     display: grid;
+    display: grid;
     grid-template-columns: 120px 1fr;
     row-gap: 8px;
     column-gap: 12px;
     align-items: center;
     margin-top: 10px;
-    
 }
 
 .profile-btn {

@@ -39,10 +39,10 @@
 
                 </div>
                 <div class="profile-info">
-                    <p><strong>Nama:</strong> {{ $user?->nama ?? '-' }}</p>
-                    <p><strong>NIS:</strong> {{ $user?->nis ?? '-' }}</p>
-                    <p><strong>Kelas:</strong> {{ $user?->kelas->first()?->nama_kelas ?? '-' }}</p>
-                    <p><strong>Email:</strong> {{ $user?->email ?? '-' }}</p>
+                    <p><strong>Nama</strong>: {{ $user?->nama ?? '-' }}</p>
+                    <p><strong>NIS</strong>: {{ $user?->nis ?? '-' }}</p>
+                    <p><strong>Kelas</strong>: {{ $user?->kelas->first()?->nama_kelas ?? '-' }}</p>
+                    <p><strong>Email</strong>: {{ $user?->email ?? '-' }}</p>
                 </div>
             </section>
 
@@ -57,18 +57,18 @@
                     <table>
                         <thead>
                             <tr>
+                                <th>Hari</th>
                                 <th>Mata Pelajaran</th>
                                 <th>Guru</th>
-                                <th>Hari</th>
                                 <th>Jam</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach($jadwals as $jadwal)
                             <tr>
+                                <td>{{ $jadwal->hari }}</td>
                                 <td>{{ $jadwal->mapel }}</td>
                                 <td>{{ $jadwal->guru->nama }}</td>
-                                <td>{{ $jadwal->hari }}</td>
                                 <td>{{ $jadwal->jam }}</td>
                             </tr>
                             @endforeach

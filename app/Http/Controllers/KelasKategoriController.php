@@ -15,7 +15,7 @@ class KelasKategoriController extends Controller
     // Daftar subkelas (X-1, X-2, dst)
     public function show($kategori)
     {
-        $subkelas = Kelas::where('nama_kelas', 'like', $kategori.'-%')->get();
+        $subkelas = Kelas::where('nama_kelas', 'like', $kategori.' - %')->get();
         return view('dashboard.kelas_kategori.show', compact('kategori', 'subkelas'));
     }
 

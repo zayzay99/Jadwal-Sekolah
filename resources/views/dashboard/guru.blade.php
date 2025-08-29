@@ -78,10 +78,10 @@
                 <input type="file" id="profile_picture_input" name="profile_picture" accept="image/*" onchange="document.getElementById('profile-pic-form').submit();">
             </form>
             <div class="profile-info">
-              <p><strong>Nama guru:</strong> {{ Auth::guard('guru')->user()->nama }}</p>
-              <p><strong>NIP guru:</strong> {{ Auth::guard('guru')->user()->nip }}</p>
-              <p><strong>Pengampu Pelajaran:</strong> {{ Auth::guard('guru')->user()->pengampu }}</p>
-              <p><strong>E-Mail:</strong> {{ Auth::guard('guru')->user()->email }}</p>
+              <p><strong>Nama guru</strong>: {{ Auth::guard('guru')->user()->nama }}</p>
+              <p><strong>NIP guru</strong>: {{ Auth::guard('guru')->user()->nip }}</p>
+              <p><strong>Pengampu Pelajaran</strong>: {{ Auth::guard('guru')->user()->pengampu }}</p>
+              <p><strong>E-Mail</strong>: {{ Auth::guard('guru')->user()->email }}</p>
             </div>
           </div>
 

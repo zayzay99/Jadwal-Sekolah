@@ -17,9 +17,9 @@
         <table class="custom-table">
             <thead>
                 <tr>
+                    <th>Hari</th>
                     <th>Mata Pelajaran</th>
                     <th>Guru</th>
-                    <th>Hari</th>
                     <th>Jam</th>
                     <th>Aksi</th>
                 </tr>
@@ -27,9 +27,9 @@
             <tbody>
                 @forelse($jadwals as $jadwal)
                 <tr>
+                    <td>{{ $jadwal->hari }}</td>
                     <td>{{ $jadwal->mapel }}</td>
                     <td>{{ $jadwal->guru->nama }}</td>
-                    <td>{{ $jadwal->hari }}</td>
                     <td>{{ $jadwal->jam }}</td>
                     <td>
                         <form action="{{ route('jadwal.destroy', $jadwal->id) }}" method="POST" style="display:inline;">

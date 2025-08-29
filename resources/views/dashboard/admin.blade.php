@@ -163,7 +163,6 @@
             });
         }
 
-<<<<<<< HEAD
         // Tampilkan notifikasi saat login berhasil
         @if (session('login_success'))
             Swal.fire({
@@ -209,7 +208,6 @@
                 showConfirmButton: false
             });
         @endif
-=======
         document.addEventListener('DOMContentLoaded', function() {
             // Notifikasi untuk login sukses (Admin)
             @if(session('login_success'))
@@ -236,7 +234,6 @@
                 Toast.fire({ icon: 'success', title: '{{ session('success') }}' });
             @endif
         });
->>>>>>> 3afafd9297421a8c6bcbe9483f86d15cd09380c3
     </script>
 </body>
 
