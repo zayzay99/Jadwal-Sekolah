@@ -22,11 +22,13 @@ Route::post('/login', [AuthController::class, 'login'])->name('login');
 Route::middleware('auth:siswa')->group(function () {
     Route::get('/dashboard/siswa', [SiswaController::class, 'index'])->name('siswa.dashboard');
     Route::get('/dashboard/siswa/jadwal', [SiswaController::class, 'jadwal'])->name('siswa.jadwal');
+    Route::post('/dashboard/siswa/profile/update', [SiswaController::class, 'updateProfilePicture'])->name('siswa.profile.update');
 });
 
 Route::middleware('auth:guru')->group(function () {
     Route::get('/dashboard/guru', [GuruController::class, 'index'])->name('guru.dashboard');
     Route::get('/dashboard/guru/jadwal', [GuruController::class, 'jadwal'])->name('guru.jadwal');
+    Route::post('/dashboard/guru/profile/update', [GuruController::class, 'updateProfilePicture'])->name('guru.profile.update');
 });
 
 
