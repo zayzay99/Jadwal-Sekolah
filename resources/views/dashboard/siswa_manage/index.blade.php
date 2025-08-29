@@ -16,6 +16,7 @@
         <table class="custom-table">
             <thead>
                 <tr>
+                    <th style="text-align: center">Foto</th>
                     <th style="text-align: center">Nama</th>
                     <th style="text-align: center">NIS</th>
                     <th style="text-align: center">Kelas</th>
@@ -26,6 +27,9 @@
             <tbody>
                 @foreach($siswas as $siswa)
                 <tr>
+                    <td style="text-align: center; vertical-align: middle;">
+                        <img src="{{ $siswa->profile_picture ? asset('storage/' . $siswa->profile_picture) : asset('img/default-profile.png') }}" alt="Foto Profil" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid #ddd; display: inline-block;">
+                    </td>
                     <td style="text-align: center">{{ $siswa->nama }}</td>
                     <td style="text-align: center">{{ $siswa->nis }}</td>
                     <td style="text-align: center">{{ $siswa->kelas->first()?->nama_kelas ?? '-' }}</td>

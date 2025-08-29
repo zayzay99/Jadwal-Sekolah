@@ -33,7 +33,10 @@
             </section>
 
             <section class="profile-section">
-                <div class="profile-pic">profile<br>150 × 150</div>
+                <div class="profile-pic" style="cursor: pointer; padding: 0; background-color: transparent; border: 3px solid #ddd;" onclick="document.getElementById('profile_picture_input').click();" title="Klik untuk ganti foto">
+                    <img src="{{ $user->profile_picture ? asset('storage/' . $user->profile_picture) : asset('img/default-profile.png') }}" alt="Foto Profil" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+
+                </div>
                 <div class="profile-info">
                     <p><strong>Nama:</strong> {{ $user?->nama ?? '-' }}</p>
                     <p><strong>NIS:</strong> {{ $user?->nis ?? '-' }}</p>
@@ -41,6 +44,11 @@
                     <p><strong>Email:</strong> {{ $user?->email ?? '-' }}</p>
                 </div>
             </section>
+
+            <form id="profile-pic-form" action="{{ route('siswa.profile.update') }}" method="POST" enctype="multipart/form-data" style="display: none;">
+                @csrf
+                <input type="file" id="profile_picture_input" name="profile_picture" accept="image/*" onchange="document.getElementById('profile-pic-form').submit();">
+            </form>
 
             <section class="jadwal-section">
                 <h4>Jadwal Pelajaran Untuk Kelas {{ $user?->kelas?->first()?->nama_kelas ?? '-' }}</h4>
@@ -102,6 +110,28 @@
                     showConfirmButton: false,
                     timer: 3500,
                     timerProgressBar: true
+                });
+            @endif
+
+            @if(session('success'))
+                Swal.fire({
+                    toast: true,
+                    position: 'top-end',
+                    icon: 'success',
+                    title: '{{ session('success') }}',
+                    showConfirmButton: false,
+                    timer: 3500,
+                    timerProgressBar: true
+                });
+            @endif
+
+            @if($errors->any())
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal Mengunggah',
+                    html: '<ul>@foreach ($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul>',
+                    confirmButtonColor: '#d33',
+                    confirmButtonText: 'Tutup'
                 });
             @endif
         });
