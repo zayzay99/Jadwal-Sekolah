@@ -165,7 +165,7 @@
       Swal.fire({
         icon: 'error',
         title: 'Login Gagal',
-        text: '{{ $errors->first('login') }}',
+        text: '{{ $errors->first("login") }}',
         timer: 3000,
         timerProgressBar: true,
         showConfirmButton: false
@@ -173,16 +173,14 @@
     @endif
 
     @if(session('logout_success'))
-        Swal.fire({
+        const Toast = Swal.mixin({
             toast: true,
             position: 'top-end',
-            icon: 'success',
-            title: 'Logout Berhasil!',
-            text: '{{ session('logout_success') }}',
             showConfirmButton: false,
             timer: 3000,
-            timerProgressBar: true
+            timerProgressBar: true,
         });
+        Toast.fire({ icon: 'success', title: '{{ session("logout_success") }}' });
     @endif
   </script>
 

@@ -143,23 +143,6 @@
             });
         }
 
-<<<<<<< HEAD
-        // Tampilkan notifikasi toast untuk pesan sukses
-        @if (session('success'))
-            const Toast = Swal.mixin({
-                toast: true,
-                position: 'top-end',
-                showConfirmButton: false,
-                timer: 3000,
-                timerProgressBar: true,
-                didOpen: (toast) => {
-                    toast.addEventListener('mouseenter', Swal.stopTimer)
-                    toast.addEventListener('mouseleave', Swal.resumeTimer)
-                }
-            });
-            Toast.fire({ icon: 'success', title: '{{ session('success') }}' });
-        @endif
-=======
         function showLogoutConfirmation(event) {
             event.preventDefault();
             let link = event.currentTarget.href;
@@ -178,6 +161,33 @@
                 }
             });
         }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Notifikasi untuk login sukses (Admin)
+            @if(session('login_success'))
+                Swal.fire({
+                    toast: true,
+                    position: 'top-end',
+                    icon: 'success',
+                    title: '{{ session('login_success') }}',
+                    showConfirmButton: false,
+                    timer: 3500,
+                    timerProgressBar: true
+                });
+            @endif
+
+            // Notifikasi untuk aksi sukses (Tambah, Edit, Hapus Data)
+            @if (session('success'))
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true,
+                });
+                Toast.fire({ icon: 'success', title: '{{ session('success') }}' });
+            @endif
+        });
     </script>
 </body>
 
