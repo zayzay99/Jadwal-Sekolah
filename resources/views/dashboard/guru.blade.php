@@ -7,6 +7,7 @@
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="{{ asset('css/guru.css') }}">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 </head>
 <body class="bg-[#bdd7ee] font-sans text-gray-800">
   <div class="app-container">
@@ -39,8 +40,7 @@
             <img src="/img/CS.svg" alt="Customer Service" />
           </div>
           
-          <button class="logout-btn"
-                  onclick="window.location.href='{{ route('logout') }}'">
+          <button class="logout-btn" data-url="{{ route('logout') }}" onclick="showLogoutConfirmation(event)">
             Keluar
           </button>
         </div>
@@ -109,6 +109,7 @@
     </main>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script>
     function toggleMobileMenu() {
       const sidebar = document.getElementById('sidebar');
@@ -137,6 +138,25 @@
         closeMobileMenu();
       }
     });
+
+    function showLogoutConfirmation(event) {
+        event.preventDefault();
+        let url = event.currentTarget.getAttribute('data-url');
+        Swal.fire({
+            title: 'Yakin akan keluar?',
+            text: "Anda akan keluar dari sesi ini.",
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Ya, keluar!',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = url;
+            }
+        });
+    }
   </script>
 </body>
 </html>
