@@ -91,7 +91,7 @@ public function store(Request $request)
         'jam' => 'required',
     ]);
     Jadwal::create($request->all());
-    return redirect()->route('jadwal.perKelas', ['kelas' => $request->kelas_id])->with('success', 'Jadwal berhasil ditambahkan');
+    return redirect()->route('jadwal.perKelas', ['kelas' => $request->kelas_id])->with('success_create', 'Jadwal berhasil ditambahkan');
 }
 
 public function pilihKelas()
