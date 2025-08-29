@@ -4,12 +4,6 @@
     <h2>Manajemen Guru</h2>
 </div>
 <div class="table-container">
-    @if(session('success'))
-        <div class="alert alert-success">
-            {{ session('success') }}
-        </div>
-    @endif
-
 <div class="table-container">
     <div class="table-header">
         <h2>Daftar Guru</h2>

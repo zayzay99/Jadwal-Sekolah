@@ -91,6 +91,21 @@
                 }
             });
         }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            @if(session('login_success'))
+                Swal.fire({
+                    toast: true,
+                    position: 'top-end',
+                    icon: 'success',
+                    title: 'Login Berhasil!',
+                    text: '{{ session('login_success') }}',
+                    showConfirmButton: false,
+                    timer: 3500,
+                    timerProgressBar: true
+                });
+            @endif
+        });
     </script>
 </body>
 </html>

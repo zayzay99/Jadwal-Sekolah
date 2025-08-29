@@ -136,9 +136,6 @@
       <button type="submit">Masuk</button>
     </form>
 
-    @if($errors->has('login'))
-      <div style="color:red">{{ $errors->first('login') }}</div>
-    @endif
   </div>
 
   <div class="footer">
@@ -147,6 +144,7 @@
    <strong> &copy; 2025. Semua hak dilindungi.</strong>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script>
     const hour = new Date().getHours();
     let backgroundPath = '/img/Kantor Pagi.png';
@@ -162,6 +160,30 @@
     }
 
     document.body.style.backgroundImage = `url('${backgroundPath}')`;
+
+    @if($errors->has('login'))
+      Swal.fire({
+        icon: 'error',
+        title: 'Login Gagal',
+        text: '{{ $errors->first('login') }}',
+        timer: 3000,
+        timerProgressBar: true,
+        showConfirmButton: false
+      });
+    @endif
+
+    @if(session('logout_success'))
+        Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon: 'success',
+            title: 'Logout Berhasil!',
+            text: '{{ session('logout_success') }}',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true
+        });
+    @endif
   </script>
 
 </body>

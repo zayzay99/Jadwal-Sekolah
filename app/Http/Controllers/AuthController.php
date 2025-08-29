@@ -26,19 +26,19 @@ class AuthController extends Controller
         // === 1) Login admin (guard: web, kolom: nip) ===
         if (Auth::guard('web')->attempt(['nip' => $identifier, 'password' => $password])) {
             $request->session()->regenerate();
-            return redirect()->route('admin.dashboard');
+            return redirect()->route('admin.dashboard')->with('login_success', 'Anda berhasil login sebagai Admin.');
         }
 
         // === 2) Login guru (guard: guru, kolom: nip) ===
         if (Auth::guard('guru')->attempt(['nip' => $identifier, 'password' => $password])) {
             $request->session()->regenerate();
-            return redirect()->route('guru.dashboard');
+            return redirect()->route('guru.dashboard')->with('login_success', 'Anda berhasil login sebagai Guru.');
         }
 
         // === 3) Login siswa (guard: siswa, kolom: nis) ===
         if (Auth::guard('siswa')->attempt(['nis' => $identifier, 'password' => $password])) {
             $request->session()->regenerate();
-            return redirect()->route('siswa.dashboard');
+            return redirect()->route('siswa.dashboard')->with('login_success', 'Anda berhasil login sebagai Siswa.');
         }
 
         // Jika semua gagal
@@ -62,6 +62,6 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect('/');
+        return redirect('/')->with('logout_success', 'Anda telah berhasil logout.');
     }
 }
