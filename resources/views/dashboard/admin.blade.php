@@ -124,7 +124,6 @@
     <script src="{{ asset('js/script.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        // Fungsi untuk konfirmasi hapus data
         function showDeleteConfirmation(event) {
             event.preventDefault();
             let form = event.target.closest("form");
@@ -144,7 +143,23 @@
             });
         }
 
-        // Fungsi untuk konfirmasi logout
+<<<<<<< HEAD
+        // Tampilkan notifikasi toast untuk pesan sukses
+        @if (session('success'))
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.addEventListener('mouseenter', Swal.stopTimer)
+                    toast.addEventListener('mouseleave', Swal.resumeTimer)
+                }
+            });
+            Toast.fire({ icon: 'success', title: '{{ session('success') }}' });
+        @endif
+=======
         function showLogoutConfirmation(event) {
             event.preventDefault();
             let link = event.currentTarget.href;
@@ -163,52 +178,6 @@
                 }
             });
         }
-
-        // Tampilkan notifikasi saat login berhasil
-        @if (session('login_success'))
-            Swal.fire({
-                title: '<strong>Selamat Datang!</strong>',
-                icon: 'success',
-                html: `
-                    <div style="text-align: center;">
-                        <p>{{ session('login_success') }}</p>
-                        <p style="font-size: 14px; color: #666;">Silakan mulai mengelola sistem</p>
-                    </div>
-                `,
-                showCloseButton: true,
-                showConfirmButton: true,
-                confirmButtonColor: '#3085d6',
-                confirmButtonText: 'Mulai Menggunakan',
-                timer: 4000,
-                timerProgressBar: true
-            });
-        @endif
-
-        // Tampilkan notifikasi logout
-        @if (session('logout_success'))
-            Swal.fire({
-                toast: true,
-                position: 'top-end',
-                icon: 'success',
-                title: 'Logout Berhasil!',
-                text: '{{ session('logout_success') }}',
-                showConfirmButton: false,
-                timer: 3000,
-                timerProgressBar: true
-            });
-        @endif
-
-        // Tampilkan error login
-        @if ($errors->has('login'))
-            Swal.fire({
-                icon: 'error',
-                title: 'Login Gagal',
-                text: '{{ $errors->first('login') }}',
-                timer: 3000,
-                timerProgressBar: true,
-                showConfirmButton: false
-            });
-        @endif
     </script>
 </body>
 

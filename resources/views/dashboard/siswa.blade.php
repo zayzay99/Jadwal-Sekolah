@@ -98,8 +98,7 @@
                     toast: true,
                     position: 'top-end',
                     icon: 'success',
-                    title: 'Login Berhasil!',
-                    text: '{{ session('login_success') }}',
+                    title: '{{ session('login_success') }}',
                     showConfirmButton: false,
                     timer: 3500,
                     timerProgressBar: true
