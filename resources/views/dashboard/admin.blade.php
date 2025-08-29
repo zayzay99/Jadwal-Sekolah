@@ -126,6 +126,25 @@
     <script src="{{ asset('js/script.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
+        function showLogoutConfirmation(event) {
+            event.preventDefault();
+            let link = event.currentTarget.href;
+            Swal.fire({
+                title: 'Yakin akan keluar?',
+                text: "Anda akan keluar dari sesi ini.",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Ya, keluar!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = link;
+                }
+            });
+        }
+
         function showDeleteConfirmation(event) {
             event.preventDefault();
             let form = event.target.closest("form");
@@ -145,41 +164,32 @@
             });
         }
 
-<<<<<<< HEAD
-        // Tampilkan notifikasi toast untuk pesan sukses
-        @if (session('success'))
-            const Toast = Swal.mixin({
-                toast: true,
-                position: 'top-end',
-                showConfirmButton: false,
-                timer: 3000,
-                timerProgressBar: true,
-                didOpen: (toast) => {
-                    toast.addEventListener('mouseenter', Swal.stopTimer)
-                    toast.addEventListener('mouseleave', Swal.resumeTimer)
-                }
-            });
-            Toast.fire({ icon: 'success', title: '{{ session('success') }}' });
-        @endif
-=======
-        function showLogoutConfirmation(event) {
-            event.preventDefault();
-            let link = event.currentTarget.href;
-            Swal.fire({
-                title: 'Yakin akan keluar?',
-                text: "Anda akan keluar dari sesi ini.",
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Ya, keluar!',
-                cancelButtonText: 'Batal'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    window.location.href = link;
-                }
-            });
-        }
+        document.addEventListener('DOMContentLoaded', function() {
+            // Tampilkan notifikasi toast untuk pesan sukses (create, update, delete)
+            @if (session('success'))
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true,
+                });
+                Toast.fire({ icon: 'success', title: '{{ session('success') }}' });
+            @endif
+
+            // Tampilkan notifikasi toast untuk login sukses
+            @if(session('login_success'))
+                Swal.fire({
+                    toast: true,
+                    position: 'top-end',
+                    icon: 'success',
+                    title: '{{ session('login_success') }}',
+                    showConfirmButton: false,
+                    timer: 3500,
+                    timerProgressBar: true
+                });
+            @endif
+        });
     </script>
 </body>
 
