@@ -18,7 +18,8 @@ class ManageKelasController extends Controller
     public function create()
     {
         $gurus = Guru::all();
-        $siswas = Siswa::all();
+        // Ambil hanya siswa yang belum memiliki kelas, urutkan berdasarkan nama.
+        $siswas = Siswa::whereDoesntHave('kelas')->orderBy('nama', 'asc')->get();
     
         return view('dashboard.kelas_manage.create', compact('gurus', 'siswas'));
     }
@@ -53,7 +54,14 @@ class ManageKelasController extends Controller
     {
         $kelas = Kelas::with('siswas')->findOrFail($id);
         $gurus = Guru::all();
-        $siswas = Siswa::all();
+        // Ambil siswa yang belum punya kelas ATAU siswa yang sudah ada di kelas yang sedang diedit.
+        // Ini mencegah admin secara tidak sengaja memindahkan siswa dari kelas lain.
+        $siswas = Siswa::whereDoesntHave('kelas')
+                        ->orWhereHas('kelas', function ($query) use ($id) {
+                            $query->where('kelas.id', $id);
+                        })
+                        ->orderBy('nama', 'asc')
+                        ->get();
 
         // Pisahkan nama kelas menjadi tingkat dan sub-kelas
         $nama_kelas_parts = explode('-', $kelas->nama_kelas, 2);
