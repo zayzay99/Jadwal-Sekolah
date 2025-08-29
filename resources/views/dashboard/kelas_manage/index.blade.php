@@ -6,12 +6,6 @@
 </div>
 
 <div class="table-container">
-    @if(session('success'))
-        <div class="alert alert-success">
-            {{ session('success') }}
-        </div>
-    @endif
-
     <div class="table-header">
         <h2>Daftar Kelas</h2>
         <a href="{{ route('manage.kelas.create') }}" class="btn btn-success">

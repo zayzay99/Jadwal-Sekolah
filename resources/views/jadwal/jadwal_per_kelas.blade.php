@@ -7,12 +7,6 @@
 </div>
 
 <div class="table-container">
-    @if(session('success'))
-        <div class="alert alert-success">
-            {{ session('success') }}
-        </div>
-    @endif
-
     <div class="table-header">
          <button class="btn btn-secondary" onclick="window.history.back()">
             <i class="fas fa-arrow-left"></i> Kembali
