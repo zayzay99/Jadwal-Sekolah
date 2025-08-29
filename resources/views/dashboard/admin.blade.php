@@ -62,7 +62,7 @@
                         <i class="fas fa-building"></i>
                         <span>Manajemen Kelas</span>
                     </a></li>
-                <li><a href="{{ route('logout') }}" class="menu-item">
+                <li><a href="{{ route('logout') }}" class="menu-item" onclick="showLogoutConfirmation(event)">
                         <i class="fas fa-sign-out-alt"></i>
                         <span>Logout</span>
                     </a></li>
@@ -141,6 +141,25 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     form.submit();
+                }
+            });
+        }
+
+        function showLogoutConfirmation(event) {
+            event.preventDefault();
+            let link = event.currentTarget.href;
+            Swal.fire({
+                title: 'Yakin akan keluar?',
+                text: "Anda akan keluar dari sesi ini.",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Ya, keluar!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = link;
                 }
             });
         }

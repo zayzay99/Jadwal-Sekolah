@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Siswa</title>
     <link rel="stylesheet" href="{{ asset('css/siswa.css') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 </head>
 <body>
     @php $user = Auth::guard('siswa')->user(); @endphp
@@ -18,7 +19,7 @@
             <h2>Menu</h2>
             <hr>
             <a href="{{ route('siswa.jadwal') }}" class="menu-btn">Jadwal</a>
-            <button class="logout-btn" onclick="window.location.href='{{ route('logout') }}'">Keluar</button>
+            <button class="logout-btn" data-url="{{ route('logout') }}" onclick="showLogoutConfirmation(event)">Keluar</button>
             <div class="cs-section">
                 <img src="/img/CS.svg" alt="CS" width="30">
                 <span>CS</span>
@@ -70,5 +71,26 @@
             </section>
         </main>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        function showLogoutConfirmation(event) {
+            event.preventDefault();
+            let url = event.currentTarget.getAttribute('data-url');
+            Swal.fire({
+                title: 'Yakin akan keluar?',
+                text: "Anda akan keluar dari sesi ini.",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Ya, keluar!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = url;
+                }
+            });
+        }
+    </script>
 </body>
 </html>
