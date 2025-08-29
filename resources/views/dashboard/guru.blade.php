@@ -8,6 +8,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="{{ asset('css/guru.css') }}">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body class="bg-[#bdd7ee] font-sans text-gray-800">
   <div class="app-container">
@@ -81,35 +82,57 @@
           <div class="jadwal-section">
             <h2 class="jadwal-title">Jadwal Mengajar</h2>
             <div class="table-container">
-              <table class="jadwal-table">
-                <thead>
-                  <tr>
-                    <th>Mata Pelajaran</th>
-                    <th>Kelas</th>
-                    <th>Hari</th>
-                    <th>Jam</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  @foreach($jadwals as $jadwal)
-                  <tr>
-                    <td>{{ $jadwal->mapel }}</td>
-                    <td>{{ $jadwal->kelas ? $jadwal->kelas->nama_kelas : '-' }}</td>
-                    <td>{{ $jadwal->hari }}</td>
-                    <td>{{ $jadwal->jam }}</td>
-                  </tr>
-                  @endforeach
-                </tbody>
-              </table>
+              @if($jadwals && $jadwals->count() > 0)
+                <table class="jadwal-table">
+                  <thead>
+                    <tr>
+                      <th>Mata Pelajaran</th>
+                      <th>Kelas</th>
+                      <th>Hari</th>
+                      <th>Jam</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @foreach($jadwals as $jadwal)
+                    <tr>
+                      <td>{{ $jadwal->mapel }}</td>
+                      <td>{{ $jadwal->kelas ? $jadwal->kelas->nama_kelas : '-' }}</td>
+                      <td>{{ $jadwal->hari }}</td>
+                      <td>{{ $jadwal->jam }}</td>
+                    </tr>
+                    @endforeach
+                  </tbody>
+                </table>
+              @else
+                <div class="empty-jadwal">
+                  <i class="fas fa-calendar-times fa-3x"></i>
+                  <p>Belum ada jadwal mengajar untuk hari ini.</p>
+                  <p class="small-text">Silakan hubungi administrator jika ada kendala</p>
+                </div>
+              @endif
             </div>
           </div>
           @endisset
+          
+          <!-- Tambahkan ini untuk menampilkan alert -->
+          @if(session('success'))
+            <script>
+              Swal.fire({
+                position: "top-end",
+                icon: "success",
+                title: "{{ session('success') }}",
+                showConfirmButton: false,
+                timer: 1500
+              });
+            </script>
+          @endif
         </div>
       </section>
     </main>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js"></script>
   <script>
     function toggleMobileMenu() {
       const sidebar = document.getElementById('sidebar');

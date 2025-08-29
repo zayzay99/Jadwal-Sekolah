@@ -105,6 +105,8 @@
                 });
             @endif
         });
+
+        
     </script>
 </body>
 </html>
