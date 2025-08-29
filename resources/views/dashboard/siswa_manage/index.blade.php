@@ -5,12 +5,6 @@
 </div>
 
 <div class="table-container">
-    @if(session('success'))
-        <div class="alert alert-success">
-            {{ session('success') }}
-        </div>
-    @endif
-
     <div class="table-header">
         <h2>Daftar Siswa</h2>
         <a href="{{ route('manage.siswa.create') }}" class="btn btn-success">
