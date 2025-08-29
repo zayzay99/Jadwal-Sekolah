@@ -37,19 +37,22 @@ class SiswaController extends Controller
         return view('dashboard.siswa', compact('siswa', 'jadwals'));
     }
 
-    public function updateProfilePicture(Request $request)
+    public function updateProfile(Request $request)
     {
-        $request->validate([
-            'profile_picture' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ]);
+        $user = Auth::guard('siswa')->user();
 
-        $siswa = Auth::guard('siswa')->user();
+        // Retrieve the Eloquent model instance for the siswa
+        $siswaModel = \App\Models\Siswa::find($user->id);
 
-        if ($siswa->profile_picture && Storage::disk('public')->exists($siswa->profile_picture)) {
-            Storage::disk('public')->delete($siswa->profile_picture);
+        if ($request->hasFile('profile_picture') && $siswaModel) {
+            // simpan ke storage/app/public/profile-pictures/siswas
+            $path = $request->file('profile_picture')->store('profile-pictures/siswas', 'public');
+
+            // update ke DB
+            $siswaModel->profile_picture = $path;
+            $siswaModel->save();
         }
-        $path = $request->file('profile_picture')->store('profile-pictures/siswas', 'public');
-        $siswa->update(['profile_picture' => $path]);
+
         return back()->with('success', 'Foto profil berhasil diperbarui.');
     }
 }

@@ -22,7 +22,8 @@ Route::post('/login', [AuthController::class, 'login'])->name('login');
 Route::middleware('auth:siswa')->group(function () {
     Route::get('/dashboard/siswa', [SiswaController::class, 'index'])->name('siswa.dashboard');
     Route::get('/dashboard/siswa/jadwal', [SiswaController::class, 'jadwal'])->name('siswa.jadwal');
-    Route::post('/dashboard/siswa/profile/update', [SiswaController::class, 'updateProfilePicture'])->name('siswa.profile.update');
+    Route::post('/dashboard/siswa/profile/update', [App\Http\Controllers\SiswaController::class, 'updateProfile'])
+    ->name('siswa.profile.update');
 });
 
 Route::middleware('auth:guru')->group(function () {
