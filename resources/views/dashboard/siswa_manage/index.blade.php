@@ -34,7 +34,7 @@
                 <tr>
                     <td style="text-align: center">{{ $siswa->nama }}</td>
                     <td style="text-align: center">{{ $siswa->nis }}</td>
-                    <td style="text-align: center">{{ $siswa->kelas ? $siswa->kelas->nama_kelas : '-' }}</td>
+                    <td style="text-align: center">{{ $siswa->kelas->first()?->nama_kelas ?? '-' }}</td>
                     <td style="text-align: center">{{ $siswa->email }}</td>
                     <td style="text-align: center; padding: 16px 20px;">
                         <div class="action-buttons">
