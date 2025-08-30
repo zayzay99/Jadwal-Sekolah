@@ -28,14 +28,23 @@ class ManageGuruController extends Controller
             'pengampu' => 'required',
             'email' => 'required|email|unique:gurus',
             'password' => 'required|min:6',
+            'profile_picture' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
-        Guru::create([
-            'nama' => $request->nama,
-            'nip' => $request->nip,
-            'pengampu' => $request->pengampu,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
+
+        $data = $request->all();
+
+        if ($request->hasFile('profile_picture')) {
+            $image = $request->file('profile_picture');
+            $name = time().'.'.$image->getClientOriginalExtension();
+            $destinationPath = public_path('/img');
+            $image->move($destinationPath, $name);
+            $data['profile_picture'] = $name;
+        }
+
+        $data['password'] = Hash::make($request->password);
+
+        Guru::create($data);
+
         return redirect()->route('manage.guru.index')->with('success', 'Guru berhasil ditambahkan!');
     }
 
@@ -54,16 +63,27 @@ class ManageGuruController extends Controller
             'nip' => 'required|unique:gurus,nip,'.$id,
             'pengampu' => 'required',
             'email' => 'required|email|unique:gurus,email,'.$id,
-            
+            'profile_picture' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
-        $guru->update([
-            'nama' => $request->nama,
-            'nip' => $request->nip,
-            'pengampu' => $request->pengampu,
-            'email' => $request->email,
-            
-            'password' => $request->password ? Hash::make($request->password) : $guru->password,
-        ]);
+
+        $data = $request->all();
+
+        if ($request->hasFile('profile_picture')) {
+            $image = $request->file('profile_picture');
+            $name = time().'.'.$image->getClientOriginalExtension();
+            $destinationPath = public_path('/img');
+            $image->move($destinationPath, $name);
+            $data['profile_picture'] = $name;
+        }
+
+        if ($request->password) {
+            $data['password'] = Hash::make($request->password);
+        } else {
+            unset($data['password']);
+        }
+
+        $guru->update($data);
+
         return redirect()->route('manage.guru.index')->with('success', 'Guru berhasil diupdate!');
     }
 

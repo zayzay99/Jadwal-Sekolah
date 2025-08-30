@@ -14,8 +14,8 @@ return new class extends Migration
         $table->string('nip')->unique();
         $table->string('pengampu');
         $table->string('email')->unique();
+        $table->string('profile_picture')->nullable();
         $table->string('password');
         $table->timestamps();
     });
 }};
-    
