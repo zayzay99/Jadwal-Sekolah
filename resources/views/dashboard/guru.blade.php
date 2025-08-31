@@ -8,7 +8,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="{{ asset('css/guru.css') }}">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
-   <link rel="icon" type="image/png" href="{{ asset('img/Tut Wuri Handayani.jpeg') }}">
+   <link rel="icon" type="image/png" href="{{ asset('img/Tut Wuri Handayani.png') }}">
 </head>
 
 
@@ -28,26 +28,27 @@
     <aside class="sidebar" id="sidebar">
       <!-- Logo -->
       <div class="logo-container">
-        <div class="logo">logo</div>
-      </div>
+  <div class="logo">
+    <img src="{{ asset('img/Tut Wuri Handayani.png') }}" alt="Tut Wuri Handayani" class="logo-image" />
+  </div>
+</div>
 
       <!-- Menu -->
-      <nav class="menu">
-        <div class="menu-box">
-          <a href="#" class="menu-item active">Dashboard</a>
-          <a href="{{ route('guru.jadwal') }}" class="menu-item">Jadwal</a>
-          <a href="#" class="menu-item">Siswa</a>
-          <a href="#" class="menu-item">Profile</a>
-          
-          <div class="cs-btn">
-            <img src="/img/CS.svg" alt="Customer Service" />
-          </div>
-          
-          <button class="logout-btn" data-url="{{ route('logout') }}" onclick="showLogoutConfirmation(event)">
-            Keluar
-          </button>
-        </div>
-      </nav>
+      <!-- Menu -->
+<nav class="menu">
+  <div class="menu-box">
+    <a href="{{ route('guru.dashboard') }}" class="menu-item {{ Request::routeIs('guru.dashboard') ? 'active' : '' }}">Dashboard</a>
+    <a href="{{ route('guru.jadwal') }}" class="menu-item {{ Request::routeIs('guru.jadwal') ? 'active' : '' }}">Jadwal</a>
+    
+    <div class="cs-btn">
+      <img src="/img/CS.svg" alt="Customer Service" />
+    </div>
+    
+    <button class="logout-btn" data-url="{{ route('logout') }}" onclick="showLogoutConfirmation(event)">
+      Keluar
+    </button>
+  </div>
+</nav>
     </aside>
 
     <!-- Main Content -->
