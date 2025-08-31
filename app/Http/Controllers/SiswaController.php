@@ -6,6 +6,7 @@ use App\Models\Jadwal;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use PDF;
 
 class SiswaController extends Controller
 {
@@ -35,6 +36,21 @@ class SiswaController extends Controller
         }
         // Anda perlu membuat view 'dashboard.siswa_jadwal' jika belum ada
         return view('dashboard.siswa', compact('siswa', 'jadwals'));
+    }
+
+    public function cetakJadwal()
+    {
+        $siswa = Auth::guard('siswa')->user();
+        $jadwals = [];
+
+        $kelas = $siswa->kelas->first();
+
+        if ($kelas) {
+            $jadwals = Jadwal::where('kelas_id', $kelas->id)->with('guru')->get();
+        }
+
+        $pdf = PDF::loadView('jadwal.pdf', compact('jadwals', 'siswa'));
+        return $pdf->download('jadwal-siswa.pdf');
     }
 
     public function updateProfile(Request $request)

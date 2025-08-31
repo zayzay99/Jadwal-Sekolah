@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Controller; // Tambahkan ini kalau belum
 use App\Models\Jadwal;
+use PDF;
 
 class GuruController extends Controller
 {
@@ -26,6 +27,15 @@ class GuruController extends Controller
         $guru = Auth::guard('guru')->user();
         $jadwals = Jadwal::where('guru_id', $guru->id)->with('kelas')->get();
         return view('dashboard.guru_jadwal', compact('jadwals'));
+    }
+
+    public function cetakJadwal()
+    {
+        $guru = Auth::guard('guru')->user();
+        $jadwals = Jadwal::where('guru_id', $guru->id)->with('kelas')->get();
+
+        $pdf = PDF::loadView('jadwal.pdf', compact('jadwals', 'guru'));
+        return $pdf->download('jadwal-guru.pdf');
     }
 
     public function tambah(){

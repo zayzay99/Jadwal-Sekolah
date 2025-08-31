@@ -53,6 +53,7 @@
 
             <section class="jadwal-section">
                 <h4>Jadwal Pelajaran Untuk Kelas {{ $user?->kelas?->first()?->nama_kelas ?? '-' }}</h4>
+                <a href="{{ route('siswa.jadwal.cetak') }}" class="print-btn" target="_blank">Cetak Jadwal</a>
                 @if(isset($jadwals) && count($jadwals) > 0)
                     <table>
                         <thead>
