@@ -5,9 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
-use App\Http\Controllers\Controller; // Tambahkan ini kalau belum
+use App\Http\Controllers\Controller;
 use App\Models\Jadwal;
-use PDF;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class GuruController extends Controller
 {
@@ -19,14 +19,16 @@ class GuruController extends Controller
     public function index()
     {
         $guru = Auth::guard('guru')->user();
-        return view('dashboard.guru', compact('guru'));
+        $jadwals = Jadwal::where('guru_id', $guru->id)->with('kelas')->get();
+        
+        return view('dashboard.guru', compact('guru', 'jadwals'));
     }
 
     public function jadwal()
     {
         $guru = Auth::guard('guru')->user();
         $jadwals = Jadwal::where('guru_id', $guru->id)->with('kelas')->get();
-        return view('dashboard.guru_jadwal', compact('jadwals'));
+        return view('dashboard.guru_jadwal', compact('guru', 'jadwals'));
     }
 
     public function cetakJadwal()
@@ -34,12 +36,8 @@ class GuruController extends Controller
         $guru = Auth::guard('guru')->user();
         $jadwals = Jadwal::where('guru_id', $guru->id)->with('kelas')->get();
 
-        $pdf = PDF::loadView('jadwal.pdf', compact('jadwals', 'guru'));
+        $pdf = Pdf::loadView('jadwal.pdf', compact('jadwals', 'guru'));
         return $pdf->download('jadwal-guru.pdf');
-    }
-
-    public function tambah(){
-        
     }
 
     public function updateProfilePicture(Request $request)
@@ -48,14 +46,16 @@ class GuruController extends Controller
             'profile_picture' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        $guru = Auth::guard('guru')->user();
+        $authGuru = Auth::guard('guru')->user();
+        $guru = \App\Models\Guru::find($authGuru->id);
 
         if ($guru->profile_picture && Storage::disk('public')->exists($guru->profile_picture)) {
             Storage::disk('public')->delete($guru->profile_picture);
         }
 
         $path = $request->file('profile_picture')->store('profile-pictures/gurus', 'public');
-        $guru->update(['profile_picture' => $path]);
+        $guru->profile_picture = $path;
+        $guru->save();
 
         return back()->with('success', 'Foto profil berhasil diperbarui.');
     }

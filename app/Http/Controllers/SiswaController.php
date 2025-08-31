@@ -6,7 +6,7 @@ use App\Models\Jadwal;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
-use PDF;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class SiswaController extends Controller
 {
@@ -49,7 +49,7 @@ class SiswaController extends Controller
             $jadwals = Jadwal::where('kelas_id', $kelas->id)->with('guru')->get();
         }
 
-        $pdf = PDF::loadView('jadwal.pdf', compact('jadwals', 'siswa'));
+        $pdf = Pdf::loadView('jadwal.pdf', compact('jadwals', 'siswa'));
         return $pdf->download('jadwal-siswa.pdf');
     }
 

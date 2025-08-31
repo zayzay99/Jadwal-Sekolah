@@ -35,7 +35,7 @@
 
             <section class="profile-section">
                 <div class="profile-pic" style="cursor: pointer; padding: 0; background-color: transparent; border: 3px solid #ddd;" onclick="document.getElementById('profile_picture_input').click();" title="Klik untuk ganti foto">
-                    <img src="{{ $user->profile_picture ? asset('storage/' . $user->profile_picture) : asset('img/default-profile.png') }}" alt="Foto Profil" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+<img src="{{ $siswa->profile_picture ? asset('storage/' . $siswa->profile_picture) : asset('storage/Default-Profile.png') }}" alt="Foto Profil" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
 
                 </div>
                 <div class="profile-info">
