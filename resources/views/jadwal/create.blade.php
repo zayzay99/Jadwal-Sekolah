@@ -592,6 +592,19 @@
         }
     </style>
 <script>
+
+         // Fungsi untuk mengisi mata pelajaran otomatis
+    document.getElementById('guru_id').addEventListener('change', function() {
+        const selectedOption = this.options[this.selectedIndex];
+        const pengampu = selectedOption.getAttribute('data-pengampu');
+        
+        if (pengampu) {
+            document.getElementById('mapel').value = pengampu;
+        } else {
+            document.getElementById('mapel').value = '';
+        }
+    });
+
         // Clock Picker functionality
         const clockPickerBtn = document.getElementById('clockPickerBtn');
         const changeClockBtn = document.getElementById('changeClockBtn');
@@ -892,5 +905,7 @@
             console.log('Editable clock picker initialized');
             initializeClocks();
         });
+
+
     </script>
 @endsection
