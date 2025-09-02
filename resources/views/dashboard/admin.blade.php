@@ -8,7 +8,8 @@
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <link rel="icon" type="image/png" sizes="60x60" href="{{ asset('img/Klipaa Original.png') }}">
+    <link rel="icon" type="image/png" sizes="60x60" href="{{ asset('img/Klipaa Original.png') }}">
+    @stack('styles')
 </head>
 
 <body>
@@ -73,7 +74,7 @@
         <!-- Main Content -->
         <main class="content">
             @yield('content')
-            <div class="content-header">
+             <div class="content-header">
                 <h1>Dashboard Overview</h1>
                 <p>Kelola data guru, siswa, kelas, dan jadwal dengan mudah</p>
             </div>
@@ -125,25 +126,6 @@
     <script src="{{ asset('js/script.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        function showDeleteConfirmation(event) {
-            event.preventDefault();
-            let form = event.target.closest("form");
-            Swal.fire({
-                title: 'Yakin akan menghapus data ini?',
-                text: "Data yang sudah dihapus tidak dapat dikembalikan!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#6c757d',
-                confirmButtonText: 'Ya, hapus!',
-                cancelButtonText: 'Batal'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    form.submit();
-                }
-            });
-        }
-
         function showLogoutConfirmation(event) {
             event.preventDefault();
             let link = event.currentTarget.href;
@@ -163,51 +145,6 @@
             });
         }
 
-        // Tampilkan notifikasi saat login berhasil
-        @if (session('login_success'))
-            Swal.fire({
-                title: '<strong>Selamat Datang!</strong>',
-                icon: 'success',
-                html: `
-                    <div style="text-align: center;">
-                        <p>{{ session('login_success') }}</p>
-                        <p style="font-size: 14px; color: #666;">Silakan mulai mengelola sistem</p>
-                    </div>
-                `,
-                showCloseButton: true,
-                showConfirmButton: true,
-                confirmButtonColor: '#3085d6',
-                confirmButtonText: 'Mulai Menggunakan',
-                timer: 4000,
-                timerProgressBar: true
-            });
-        @endif
-
-        // Tampilkan notifikasi logout
-        @if (session('logout_success'))
-            Swal.fire({
-                toast: true,
-                position: 'top-end',
-                icon: 'success',
-                title: 'Logout Berhasil!',
-                text: '{{ session('logout_success') }}',
-                showConfirmButton: false,
-                timer: 3000,
-                timerProgressBar: true
-            });
-        @endif
-
-        // Tampilkan error login
-        @if ($errors->has('login'))
-            Swal.fire({
-                icon: 'error',
-                title: 'Login Gagal',
-                text: '{{ $errors->first('login') }}',
-                timer: 3000,
-                timerProgressBar: true,
-                showConfirmButton: false
-            });
-        @endif
         document.addEventListener('DOMContentLoaded', function() {
             // Notifikasi untuk login sukses (Admin)
             @if(session('login_success'))
@@ -233,8 +170,22 @@
                 });
                 Toast.fire({ icon: 'success', title: '{{ session('success') }}' });
             @endif
+            
+
+            // Tampilkan error login
+            @if ($errors->has('login'))
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Login Gagal',
+                    text: '{{ $errors->first('login') }}',
+                    timer: 3000,
+                    timerProgressBar: true,
+                    showConfirmButton: false
+                });
+            @endif
         });
     </script>
+    @stack('scripts')
 </body>
 
 </html>

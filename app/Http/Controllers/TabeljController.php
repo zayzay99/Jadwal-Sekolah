@@ -2,59 +2,53 @@
 
 namespace App\Http\Controllers;
 
-// app/Http/Controllers/PelajaranController.php
-
 use App\Models\Tabelj;
-use App\Models\Guru;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class TabeljController extends Controller
 {
     public function index()
     {
-        $tabeljs = Tabelj::with('guru')->get();
+        // This method is not used in the new workflow, but kept for now.
+        $tabeljs = Tabelj::orderBy('jam_mulai')->get();
         return view('jadwal.tabel_jadwal', compact('tabeljs'));
-    }
-
-    public function create()
-    {
-        // $gurus = Guru::all();
-        // return view('jadwal.form_pelajaran', compact('gurus'));
     }
 
     public function store(Request $request)
     {
-        // $request->validate([
-        //     'kode_pelajaran' => 'required|unique:pelajarans',
-        //     'nama_pelajaran' => 'required',
-        //     'guru_id' => 'nullable|exists:gurus,id'
-        // ]);
+        $validator = Validator::make($request->all(), [
+            'jam_mulai' => 'required|date_format:H:i',
+            'jam_selesai' => 'required|date_format:H:i|after:jam_mulai',
+        ]);
 
-        // Tabelj::create($request->all());
-        // return redirect()->route('tabelj.index')->with('success', 'Pelajaran berhasil ditambahkan.');
-    }
+        if ($validator->fails()) {
+            return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
+        }
 
-    public function edit(Tabelj $tabelj)
-    {
-        // $gurus = Guru::all();
-        // return view('jadwal.form_Tabelj', compact('Tabelj', 'gurus'));
-    }
+        try {
+            $jam_mulai = $request->input('jam_mulai');
+            $jam_selesai = $request->input('jam_selesai');
 
-    public function update(Request $request, Tabelj $tabelj)
-    {
-        // $request->validate([
-        //     'kode_Tabelj' => 'required|unique:Tabeljs,kode_Tabelj,'.$tabelj->id,
-        //     'nama_Tabelj' => 'required',
-        //     'guru_id' => 'nullable|exists:gurus,id'
-        // ]);
+            $tabelj = Tabelj::create([
+                'jam_mulai' => $jam_mulai,
+                'jam_selesai' => $jam_selesai,
+                'jam' => $jam_mulai . '-' . $jam_selesai,
+            ]);
 
-        // $tabelj->update($request->all());
-        // return redirect()->route('Tabelj.index')->with('success', 'Tabelj berhasil diperbarui.');
+            return response()->json(['success' => true, 'message' => 'Jam berhasil ditambahkan!', 'tabelj' => $tabelj]);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Gagal menyimpan jam.'], 500);
+        }
     }
 
     public function destroy(Tabelj $tabelj)
     {
-        // $tabelj->delete();
-        // return redirect()->route('Tabelj.index')->with('success', 'Tabelj berhasil dihapus.');
+        try {
+            $tabelj->delete();
+            return response()->json(['success' => true, 'message' => 'Jam berhasil dihapus.']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Gagal menghapus jam.'], 500);
+        }
     }
 }

@@ -45,6 +45,8 @@ Route::middleware('auth:web')->group(function () {
     Route::resource('jadwal', JadwalController::class)->except(['show', 'edit', 'update', 'create']);  
     Route::post('/jadwal/store-ajax', [JadwalController::class, 'storeAjax'])->name('jadwal.store.ajax');
     Route::get('/tabelj', [TabeljController::class, 'index'])->name('tabelj.index');
+    Route::post('/tabelj', [TabeljController::class, 'store'])->name('tabelj.store');
+    Route::delete('/tabelj/{tabelj}', [TabeljController::class, 'destroy'])->name('tabelj.destroy');
     Route::resource('manage/guru', ManageGuruController::class, ['names' => [
         'index' => 'manage.guru.index',
         'create' => 'manage.guru.create',

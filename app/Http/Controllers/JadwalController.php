@@ -23,11 +23,7 @@ class JadwalController extends Controller
 
     // Definisikan hari dan slot waktu
     $days = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
-    $timeSlots = [
-        '07:00-07:45', '07:45-08:30', '08:30-09:15', '09:15-10:00',
-        '10:15-11:00', '11:00-11:45', '11:45-12:30',
-        '13:00-13:45', '13:45-14:30'
-    ];
+    $timeSlots = \App\Models\Tabelj::orderBy('jam_mulai')->get();
 
     // Ubah jadwal yang ada menjadi format grid untuk kemudahan akses di view
     $scheduleGrid = [];
@@ -125,18 +121,7 @@ public function storeAjax(Request $request)
     }
 }
 
-public function destroyAjax($id)
-{
-    try {
-        $jadwal = Jadwal::findOrFail($id);
-        $jadwal->delete();
-        return response()->json(['success' => true, 'message' => 'Jadwal berhasil dihapus.']);
-    } catch (\Exception $e) {
-        // Log the error if needed
-        \Log::error('Gagal menghapus jadwal: ' . $e->getMessage());
-        return response()->json(['success' => false, 'message' => 'Gagal menghapus jadwal.'], 500);
-    }
-}
+
 
 public function pilihKelas()
 {
@@ -157,10 +142,14 @@ public function jadwalPerKelas($kelas_id)
     return view('jadwal.jadwal_per_kelas', compact('kelas', 'jadwals'));
 }
 
-public function destroy($id)
+public function destroy(Request $request, $id)
 {
     $jadwal = Jadwal::findOrFail($id);
     $jadwal->delete();
+
+    if ($request->wantsJson()) {
+        return response()->json(['success' => true, 'message' => 'Jadwal berhasil dihapus.']);
+    }
 
     return back()->with('success', 'Jadwal berhasil dihapus.');
 }

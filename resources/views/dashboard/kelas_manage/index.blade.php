@@ -1,4 +1,3 @@
-{{-- filepath: resources/views/dashboard/kelas_manage/index.blade.php --}}
 @extends('dashboard.admin')
 @section('content')
 <div class="content-header">
@@ -34,10 +33,10 @@
                             <a href="{{ route('manage.kelas.edit', $k->id) }}" class="btn btn-warning" title="Edit">
                                 <i class="fas fa-edit"></i>Edit
                             </a>
-                            <form action="{{ route('manage.kelas.destroy', $k->id) }}" method="POST" style="display:inline;">
+                            <form action="{{ route('manage.kelas.destroy', $k->id) }}" method="POST" style="display:inline;" class="delete-form">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="btn btn-danger" title="Hapus" onclick="showDeleteConfirmation(event)">
+                                <button type="submit" class="btn btn-danger" title="Hapus">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </form>
@@ -50,3 +49,37 @@
     </div>
 </div>
 @endsection
+
+@push('styles')
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+@endpush
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const deleteForms = document.querySelectorAll('.delete-form');
+
+    deleteForms.forEach(form => {
+        form.addEventListener('submit', function (event) {
+            event.preventDefault(); // Prevent the form from submitting immediately
+            
+            Swal.fire({
+                title: 'Apakah Anda yakin?',
+                text: "Menghapus kelas akan menghapus semua data terkait!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Ya, hapus!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit(); // If confirmed, submit the form
+                }
+            });
+        });
+    });
+});
+</script>
+@endpush

@@ -2,14 +2,14 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Tabelj extends Model
 {
-    //
+    use HasFactory;
 
-    public function guru()
-    {
-        return $this->belongsTo(Guru::class);
-    }
+    protected $fillable = ['jam', 'jam_mulai', 'jam_selesai'];
+
+    public $timestamps = false;
 }
