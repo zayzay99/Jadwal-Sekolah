@@ -13,12 +13,12 @@ class SiswaController extends Controller
     public function index()
     {
         $siswa = Auth::guard('siswa')->user();
-        $jadwals = [];
+        $jadwals = collect();
 
         $kelas = $siswa->kelas->first();
 
         if ($kelas) {
-            $jadwals = Jadwal::where('kelas_id', $kelas->id)->with('guru')->get();
+            $jadwals = Jadwal::where('kelas_id', $kelas->id)->with('guru')->orderByRaw("FIELD(hari, 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu')")->orderBy('jam')->get()->groupBy('hari');
         }
 
         return view('dashboard.siswa', compact('siswa', 'jadwals'));
@@ -27,12 +27,12 @@ class SiswaController extends Controller
     public function jadwal()
     {
         $siswa = Auth::guard('siswa')->user();
-        $jadwals = [];
+        $jadwals = collect();
 
         $kelas = $siswa->kelas->first();
 
         if ($kelas) {
-            $jadwals = Jadwal::where('kelas_id', $kelas->id)->with('guru')->get();
+            $jadwals = Jadwal::where('kelas_id', $kelas->id)->with('guru')->orderByRaw("FIELD(hari, 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu')")->orderBy('jam')->get()->groupBy('hari');
         }
         // Anda perlu membuat view 'dashboard.siswa_jadwal' jika belum ada
         return view('dashboard.siswa', compact('siswa', 'jadwals'));
@@ -41,12 +41,12 @@ class SiswaController extends Controller
     public function cetakJadwal()
     {
         $siswa = Auth::guard('siswa')->user();
-        $jadwals = [];
+        $jadwals = collect();
 
         $kelas = $siswa->kelas->first();
 
         if ($kelas) {
-            $jadwals = Jadwal::where('kelas_id', $kelas->id)->with('guru')->get();
+            $jadwals = Jadwal::where('kelas_id', $kelas->id)->with('guru')->orderByRaw("FIELD(hari, 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu')")->orderBy('jam')->get()->groupBy('hari');
         }
 
         $pdf = Pdf::loadView('jadwal.pdf', compact('jadwals', 'siswa'));

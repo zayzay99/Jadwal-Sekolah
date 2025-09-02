@@ -42,8 +42,8 @@ Route::middleware('auth:web')->group(function () {
     Route::get('/jadwal/create/{kelas}', [JadwalController::class, 'create'])->name('jadwal.create');
     Route::get('/jadwal/kelas', [JadwalController::class, 'pilihKelasLihat'])->name('jadwal.pilihKelasLihat');
     Route::get('/jadwal/kelas/{kelas}', [JadwalController::class, 'jadwalPerKelas'])->name('jadwal.perKelas');
-    Route::resource('jadwal', JadwalController::class)->except(['show', 'edit', 'update', 'create']);  
-    Route::post('/jadwal/store-ajax', [JadwalController::class, 'storeAjax'])->name('jadwal.store.ajax');
+    Route::post('/jadwal/bulk-store', [JadwalController::class, 'bulkStore'])->name('jadwal.bulkStore');
+    Route::delete('/jadwal/{jadwal}', [JadwalController::class, 'destroy'])->name('jadwal.destroy');
     Route::get('/tabelj', [TabeljController::class, 'index'])->name('tabelj.index');
     Route::post('/tabelj', [TabeljController::class, 'store'])->name('tabelj.store');
     Route::delete('/tabelj/{tabelj}', [TabeljController::class, 'destroy'])->name('tabelj.destroy');

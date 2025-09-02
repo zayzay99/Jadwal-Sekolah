@@ -65,13 +65,17 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach($jadwals as $jadwal)
-                            <tr>
-                                <td>{{ $jadwal->hari }}</td>
-                                <td>{{ $jadwal->mapel }}</td>
-                                <td>{{ $jadwal->guru->nama }}</td>
-                                <td>{{ $jadwal->jam }}</td>
-                            </tr>
+                            @foreach($jadwals as $hari => $jadwalHarian)
+                                @foreach($jadwalHarian as $index => $jadwal)
+                                    <tr>
+                                        @if($index === 0)
+                                            <td rowspan="{{ count($jadwalHarian) }}">{{ $hari }}</td>
+                                        @endif
+                                        <td>{{ $jadwal->mapel }}</td>
+                                        <td>{{ $jadwal->guru->nama }}</td>
+                                        <td>{{ $jadwal->jam }}</td>
+                                    </tr>
+                                @endforeach
                             @endforeach
                         </tbody>
                     </table>

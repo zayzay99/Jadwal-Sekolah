@@ -33,17 +33,21 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach($jadwals as $jadwal)
-                <tr>
-                    <td>{{ $jadwal->hari }}</td>
-                    <td>{{ $jadwal->mapel }}</td>
-                    @if(isset($guru))
-                        <td>{{ $jadwal->kelas ? $jadwal->kelas->nama_kelas : '-' }}</td>
-                    @else
-                        <td>{{ $jadwal->guru->nama }}</td>
-                    @endif
-                    <td>{{ $jadwal->jam }}</td>
-                </tr>
+                @foreach($jadwals as $hari => $jadwalHarian)
+                    @foreach($jadwalHarian as $index => $jadwal)
+                        <tr>
+                            @if($index === 0)
+                                <td rowspan="{{ count($jadwalHarian) }}">{{ $hari }}</td>
+                            @endif
+                            <td>{{ $jadwal->mapel }}</td>
+                            @if(isset($guru))
+                                <td>{{ $jadwal->kelas ? $jadwal->kelas->nama_kelas : '-' }}</td>
+                            @else
+                                <td>{{ $jadwal->guru->nama }}</td>
+                            @endif
+                            <td>{{ $jadwal->jam }}</td>
+                        </tr>
+                    @endforeach
                 @endforeach
             </tbody>
         </table>
