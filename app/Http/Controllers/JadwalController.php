@@ -19,41 +19,23 @@ class JadwalController extends Controller
 {
     $kelas = \App\Models\Kelas::findOrFail($kelas_id);
     $gurus = \App\Models\Guru::orderBy('nama')->get();
+    $jadwals = Jadwal::where('kelas_id', $kelas_id)->with('guru')->get();
 
-    // Ambil jumlah jadwal per guru per hari
-    $hariKerja = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
-    $scheduleCounts = Jadwal::select('guru_id', 'hari', DB::raw('count(*) as total_jam'))
-        ->whereIn('hari', $hariKerja)
-        ->groupBy('guru_id', 'hari')
-        ->get()
-        ->groupBy('guru_id');
+    // Definisikan hari dan slot waktu
+    $days = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+    $timeSlots = [
+        '07:00-07:45', '07:45-08:30', '08:30-09:15', '09:15-10:00',
+        '10:15-11:00', '11:00-11:45', '11:45-12:30',
+        '13:00-13:45', '13:45-14:30'
+    ];
 
-    $guruSchedules = [];
-    foreach ($gurus as $guru) {
-        $guru_id = $guru->id;
-        $dailyCounts = [];
-        $weeklyTotal = 0;
-
-        // Inisialisasi semua hari kerja dengan 0 jam
-        foreach ($hariKerja as $hari) {
-            $dailyCounts[$hari] = 0;
-        }
-
-        // Jika guru memiliki jadwal, hitung totalnya
-        if (isset($scheduleCounts[$guru_id])) {
-            foreach ($scheduleCounts[$guru_id] as $schedule) {
-                $dailyCounts[$schedule->hari] = $schedule->total_jam;
-                $weeklyTotal += $schedule->total_jam;
-            }
-        }
-
-        $guruSchedules[$guru_id] = [
-            'weekly_total' => $weeklyTotal,
-            'daily_counts' => $dailyCounts,
-        ];
+    // Ubah jadwal yang ada menjadi format grid untuk kemudahan akses di view
+    $scheduleGrid = [];
+    foreach ($jadwals as $jadwal) {
+        $scheduleGrid[$jadwal->hari][$jadwal->jam] = $jadwal;
     }
 
-    return view('jadwal.create', compact('kelas', 'gurus', 'guruSchedules'));
+    return view('jadwal.create', compact('kelas', 'gurus', 'days', 'timeSlots', 'scheduleGrid'));
 }
 
 public function store(Request $request)
@@ -92,6 +74,68 @@ public function store(Request $request)
     ]);
     Jadwal::create($request->all());
     return redirect()->route('jadwal.perKelas', ['kelas' => $request->kelas_id])->with('success_create', 'Jadwal berhasil ditambahkan');
+}
+
+public function storeAjax(Request $request)
+{
+    $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
+        'mapel' => 'required',
+        'kelas_id' => 'required|exists:kelas,id',
+        'guru_id' => [
+            'required',
+            'exists:gurus,id',
+            function ($attribute, $value, $fail) use ($request) {
+                $guru_id = $value;
+                $hari = $request->input('hari');
+
+                // 1. Validasi batas jam harian (maks 8 jam)
+                $jumlahJamHarian = Jadwal::where('guru_id', $guru_id)
+                                       ->where('hari', $hari)
+                                       ->count();
+                if ($jumlahJamHarian >= 8) {
+                    $fail("Guru ini sudah mencapai batas maksimal 8 jam mengajar pada hari {$hari}.");
+                }
+
+                // 2. Validasi batas jam mingguan (maks 48 jam untuk Senin-Sabtu)
+                $hariKerja = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+                $jumlahJamMingguan = Jadwal::where('guru_id', $guru_id)
+                                             ->whereIn('hari', $hariKerja)
+                                             ->count();
+                if ($jumlahJamMingguan >= 48) {
+                    $fail('Guru ini sudah mencapai batas maksimal 48 jam mengajar dalam satu minggu (Senin-Sabtu).');
+                }
+            },
+        ],
+        'hari' => 'required',
+        'jam' => 'required',
+    ]);
+
+    if ($validator->fails()) {
+        return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
+    }
+
+    try {
+        $jadwal = Jadwal::create($request->all());
+        // Load relasi guru agar bisa dikirim kembali ke frontend
+        $jadwal->load('guru'); 
+        return response()->json(['success' => true, 'message' => 'Jadwal berhasil disimpan!', 'jadwal' => $jadwal]);
+    } catch (\Exception $e) {
+        // Log the error if needed
+        return response()->json(['success' => false, 'message' => 'Gagal menyimpan jadwal. Terjadi kesalahan server.'], 500);
+    }
+}
+
+public function destroyAjax($id)
+{
+    try {
+        $jadwal = Jadwal::findOrFail($id);
+        $jadwal->delete();
+        return response()->json(['success' => true, 'message' => 'Jadwal berhasil dihapus.']);
+    } catch (\Exception $e) {
+        // Log the error if needed
+        \Log::error('Gagal menghapus jadwal: ' . $e->getMessage());
+        return response()->json(['success' => false, 'message' => 'Gagal menghapus jadwal.'], 500);
+    }
 }
 
 public function pilihKelas()

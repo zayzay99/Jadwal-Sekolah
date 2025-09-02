@@ -9,6 +9,7 @@ use App\Http\Controllers\ManageGuruController;
 use App\Http\Controllers\ManageSiswaController;
 use App\Http\Controllers\ManageKelasController;
 use App\Http\Controllers\KelasKategoriController;
+use App\Http\Controllers\TabeljController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -42,6 +43,8 @@ Route::middleware('auth:web')->group(function () {
     Route::get('/jadwal/kelas', [JadwalController::class, 'pilihKelasLihat'])->name('jadwal.pilihKelasLihat');
     Route::get('/jadwal/kelas/{kelas}', [JadwalController::class, 'jadwalPerKelas'])->name('jadwal.perKelas');
     Route::resource('jadwal', JadwalController::class)->except(['show', 'edit', 'update', 'create']);  
+    Route::post('/jadwal/store-ajax', [JadwalController::class, 'storeAjax'])->name('jadwal.store.ajax');
+    Route::get('/tabelj', [TabeljController::class, 'index'])->name('tabelj.index');
     Route::resource('manage/guru', ManageGuruController::class, ['names' => [
         'index' => 'manage.guru.index',
         'create' => 'manage.guru.create',
@@ -74,4 +77,6 @@ Route::middleware('auth:web')->group(function () {
     Route::get('/kelas/{kategori}', [KelasKategoriController::class, 'show'])->name('kelas.show');
     Route::get('/kelas/{kategori}/{kelas}', [KelasKategoriController::class, 'detail'])->name('kelas.detail');
 });
+
+
 Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
