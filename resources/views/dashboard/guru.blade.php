@@ -38,7 +38,6 @@
 <nav class="menu">
   <div class="menu-box">
     <a href="{{ route('guru.dashboard') }}" class="menu-item {{ Request::routeIs('guru.dashboard') ? 'active' : '' }}">Dashboard</a>
-    <a href="{{ route('guru.jadwal') }}" class="menu-item {{ Request::routeIs('guru.jadwal') ? 'active' : '' }}">Jadwal</a>
     
     <div class="cs-btn">
       <img src="/img/CS.svg" alt="Customer Service" />
@@ -89,29 +88,40 @@
           <!-- Jadwal Mengajar -->
           @isset($jadwals)
           <div class="jadwal-section">
-            <h2 class="jadwal-title">Jadwal Mengajar</h2>
+            <div class="flex justify-between items-center mb-4">
+              <h2 class="jadwal-title text-xl font-bold">Jadwal Mengajar</h2>
+              <a href="{{ route('guru.jadwal.cetak') }}" target="_blank" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-300">
+                Cetak Jadwal
+              </a>
+            </div>
             <div class="table-container">
               @if($jadwals && $jadwals->count() > 0)
-                <table class="jadwal-table">
-                  <thead>
-                    <tr>
-                      <th>Mata Pelajaran</th>
-                      <th>Kelas</th>
-                      <th>Hari</th>
-                      <th>Jam</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    @foreach($jadwals as $jadwal)
-                    <tr>
-                      <td>{{ $jadwal->mapel }}</td>
-                      <td>{{ $jadwal->kelas ? $jadwal->kelas->nama_kelas : '-' }}</td>
-                      <td>{{ $jadwal->hari }}</td>
-                      <td>{{ $jadwal->jam }}</td>
-                    </tr>
-                    @endforeach
-                  </tbody>
-                </table>
+                <table class="jadwal-table w-full rounded-lg overflow-hidden shadow-md bg-white border border-[#a1b9db]">
+  <thead>
+    <tr class="bg-blue-200 text-gray-700">
+      <th class="py-3 px-4 text-left border border-[#a1b9db]">Hari</th>
+      <th class="py-3 px-4 text-left border border-[#a1b9db]">Mata Pelajaran</th>
+      <th class="py-3 px-4 text-left border border-[#a1b9db]">Kelas</th>
+      <th class="py-3 px-4 text-left border border-[#a1b9db]">Jam</th>
+    </tr>
+  </thead>
+  <tbody>
+    @foreach($jadwals->groupBy('hari') as $hari => $jadwalHarian)
+      @foreach($jadwalHarian as $index => $jadwal)
+      <tr class="hover:bg-blue-50 transition">
+        @if($index === 0)
+          <td rowspan="{{ count($jadwalHarian) }}" class="py-2 px-4 font-semibold align-top border border-[#a1b9db] text-center">
+            {{ $hari }}
+          </td>
+        @endif
+        <td class="py-2 px-4 border border-[#a1b9db]">{{ $jadwal->mapel }}</td>
+        <td class="py-2 px-4 border border-[#a1b9db]">{{ $jadwal->kelas ? $jadwal->kelas->nama_kelas : '-' }}</td>
+        <td class="py-2 px-4 border border-[#a1b9db]">{{ $jadwal->jam }}</td>
+      </tr>
+      @endforeach
+    @endforeach
+  </tbody>
+</table>
               @else
                 <div class="empty-jadwal">
                   <i class="fas fa-calendar-times fa-3x"></i>

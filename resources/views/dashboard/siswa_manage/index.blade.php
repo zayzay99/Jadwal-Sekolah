@@ -28,7 +28,7 @@
                 @foreach($siswas as $siswa)
                 <tr>
                     <td style="text-align: center; vertical-align: middle;">
-                        <img src="{{ $siswa->profile_picture ? asset('storage/' . $siswa->profile_picture) : asset('img/default-profile.png') }}" alt="Foto Profil" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid #ddd; display: inline-block;">
+                        <img src="{{ $siswa->profile_picture ? asset('storage/' . $siswa->profile_picture) : asset('storage/Default-Profile.png') }}" alt="Foto Profil" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid #ddd; display: inline-block;">
                     </td>
                     <td style="text-align: center">{{ $siswa->nama }}</td>
                     <td style="text-align: center">{{ $siswa->nis }}</td>

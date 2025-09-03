@@ -176,6 +176,30 @@ body {
     box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
 }
 
+.jadwal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.print-btn {
+    background-color: #3b82f6; /* Mirip bg-blue-500 */
+    color: white;
+    padding: 8px 16px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 0.9rem;
+    transition: background-color 0.3s ease;
+    border: none;
+    cursor: pointer;
+}
+
+.print-btn:hover {
+    background-color: #1d4ed8; /* Mirip bg-blue-700 */
+}
+
 table {
     width: 100%;
     border-collapse: collapse;

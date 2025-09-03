@@ -36,7 +36,7 @@
       
 <div class="profile-pic">
     <img 
-        src="{{ Auth::guard('guru')->user()->profile_picture ?? '/img/default-profile.png' }}" 
+        src="{{ Auth::guard('guru')->user()->profile_picture ? asset('storage/' . Auth::guard('guru')->user()->profile_picture) : asset('storage/Default-Profile.png') }}" 
         alt="Profile Picture">
     
     <form method="POST" enctype="multipart/form-data" style="display:none;">

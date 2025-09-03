@@ -29,7 +29,7 @@
                 <tr>
                     <td>{{ $loop->iteration }}</td>
                     <td style="text-align: center;">
-                        <img src="{{ $siswa->profile_picture ? asset('storage/' . $siswa->profile_picture) : asset('img/default-profile.png') }}" alt="Foto Profil" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;">
+                        <img src="{{ $siswa->profile_picture ? asset('storage/' . $siswa->profile_picture) : asset('storage/Default-Profile.png') }}" alt="Foto Profil" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;">
                     </td>
                     <td>{{ $siswa->nama }}</td>
                     <td>{{ $siswa->nis }}</td>

@@ -34,10 +34,17 @@ class GuruController extends Controller
     public function cetakJadwal()
     {
         $guru = Auth::guard('guru')->user();
-        $jadwals = Jadwal::where('guru_id', $guru->id)->with('kelas')->get();
-
+        // Ambil jadwal, urutkan, dan kelompokkan berdasarkan hari
+        $jadwals = Jadwal::where('guru_id', $guru->id)
+                         ->with('kelas')
+                         ->orderByRaw("FIELD(hari, 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu')")
+                         ->orderBy('jam')
+                         ->get()
+                         ->groupBy('hari');
+ 
         $pdf = Pdf::loadView('jadwal.pdf', compact('jadwals', 'guru'));
-        return $pdf->download('jadwal-guru.pdf');
+        // Gunakan stream() agar PDF terbuka di tab baru, bukan langsung download
+        return $pdf->stream('jadwal-mengajar-'.$guru->nama.'.pdf');
     }
 
     public function updateProfilePicture(Request $request)

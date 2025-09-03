@@ -295,31 +295,19 @@ body {
 }
 
 .jadwal-table {
-  width: 100%;
-  background-color: white;
-  border-collapse: collapse;
-  min-width: 600px;
+  
+  border: border: 1px solid #a1b9d !important;
+  box-shadow: none !important;
 }
 
 .jadwal-table thead {
   background-color: #a1b9db;
 }
 
-.jadwal-table th {
-  padding: 0.75rem 1rem;
-  text-align: left;
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: white;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  white-space: nowrap;
-}
+.jadwal-table th,
 
 .jadwal-table td {
-  padding: 1rem;
-  font-size: 0.875rem;
-  border-bottom: 1px solid #e5e7eb;
+  border: 1px solid #a1b9db !important;
 }
 
 .jadwal-table tbody tr:last-child td {
