@@ -153,88 +153,157 @@
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js"></script>
   <script>
-    function toggleMobileMenu() {
-      const sidebar = document.getElementById('sidebar');
-      const overlay = document.querySelector('.sidebar-overlay');
-      
-      sidebar.classList.toggle('open');
-      overlay.classList.toggle('active');
-    }
-
-    function closeMobileMenu() {
-      const sidebar = document.getElementById('sidebar');
-      const overlay = document.querySelector('.sidebar-overlay');
-      
+    // Fungsi untuk toggle mobile menu - DIPERBAIKI
+function toggleMobileMenu() {
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.querySelector('.sidebar-overlay');
+  const body = document.body;
+  
+  if (sidebar && overlay) {
+    const isOpen = sidebar.classList.contains('open');
+    
+    if (isOpen) {
+      // Tutup sidebar
       sidebar.classList.remove('open');
       overlay.classList.remove('active');
+      body.classList.remove('sidebar-open');
+    } else {
+      // Buka sidebar
+      sidebar.classList.add('open');
+      overlay.classList.add('active');
+      body.classList.add('sidebar-open');
     }
+  }
+}
 
-    // Close mobile menu when clicking on menu items
-    document.querySelectorAll('.menu-item, .logout-btn').forEach(item => {
-      item.addEventListener('click', closeMobileMenu);
-    });
+// Fungsi untuk menutup mobile menu
+function closeMobileMenu() {
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.querySelector('.sidebar-overlay');
+  const body = document.body;
+  
+  if (sidebar && overlay) {
+    sidebar.classList.remove('open');
+    overlay.classList.remove('active');
+    body.classList.remove('sidebar-open');
+  }
+}
 
-    // Close mobile menu on window resize if desktop
-    window.addEventListener('resize', function() {
-      if (window.innerWidth > 768) {
+// Event listener untuk menutup sidebar saat klik di luar
+document.addEventListener('DOMContentLoaded', function() {
+  // Close mobile menu when clicking on menu items
+  const menuItems = document.querySelectorAll('.menu-item, .logout-btn');
+  menuItems.forEach(item => {
+    item.addEventListener('click', closeMobileMenu);
+  });
+
+  // Close mobile menu on window resize if desktop
+  window.addEventListener('resize', function() {
+    if (window.innerWidth > 768) {
+      closeMobileMenu();
+    }
+  });
+
+  // Tutup sidebar saat menekan tombol ESC
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      closeMobileMenu();
+    }
+  });
+
+  // Touch gesture untuk swipe close (opsional)
+  let startX = null;
+  const sidebar = document.getElementById('sidebar');
+  
+  if (sidebar) {
+    sidebar.addEventListener('touchstart', function(e) {
+      startX = e.touches[0].clientX;
+    }, { passive: true });
+
+    sidebar.addEventListener('touchmove', function(e) {
+      if (startX === null) return;
+      
+      const currentX = e.touches[0].clientX;
+      const diffX = startX - currentX;
+      
+      // Jika swipe ke kiri lebih dari 50px, tutup sidebar
+      if (diffX > 50) {
         closeMobileMenu();
+        startX = null;
       }
-    });
+    }, { passive: true });
 
-    function showLogoutConfirmation(event) {
-        event.preventDefault();
-        let url = event.currentTarget.getAttribute('data-url');
+    sidebar.addEventListener('touchend', function() {
+      startX = null;
+    });
+  }
+});
+
+// Fungsi logout dengan konfirmasi
+function showLogoutConfirmation(event) {
+    event.preventDefault();
+    let url = event.currentTarget.getAttribute('data-url');
+    Swal.fire({
+        title: 'Yakin akan keluar?',
+        text: "Anda akan keluar dari sesi ini.",
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Ya, keluar!',
+        cancelButtonText: 'Batal'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.href = url;
+        }
+    });
+}
+
+// SweetAlert notifications
+document.addEventListener('DOMContentLoaded', function() {
+    // Login success notification
+    if (typeof loginSuccess !== 'undefined' && loginSuccess) {
         Swal.fire({
-            title: 'Yakin akan keluar?',
-            text: "Anda akan keluar dari sesi ini.",
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Ya, keluar!',
-            cancelButtonText: 'Batal'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                window.location.href = url;
-            }
+            toast: true,
+            position: 'top-end',
+            icon: 'success',
+            title: loginSuccess,
+            showConfirmButton: false,
+            timer: 3500,
+            timerProgressBar: true
         });
     }
 
-    document.addEventListener('DOMContentLoaded', function() {
-        @if(session('login_success'))
-            Swal.fire({
-                toast: true,
-                position: 'top-end',
-                icon: 'success',
-                title: '{{ session('login_success') }}',
-                showConfirmButton: false,
-                timer: 3500,
-                timerProgressBar: true
-            });
-        @endif
+    // General success notification
+    if (typeof successMessage !== 'undefined' && successMessage) {
+        Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon: 'success',
+            title: successMessage,
+            showConfirmButton: false,
+            timer: 3500,
+            timerProgressBar: true
+        });
+    }
 
-        @if(session('success'))
-            Swal.fire({
-                toast: true,
-                position: 'top-end',
-                icon: 'success',
-                title: '{{ session('success') }}',
-                showConfirmButton: false,
-                timer: 3500,
-                timerProgressBar: true
-            });
-        @endif
-
-        @if($errors->any())
-            Swal.fire({
-                icon: 'error',
-                title: 'Gagal Mengunggah',
-                html: '<ul>@foreach ($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul>',
-                confirmButtonColor: '#d33',
-                confirmButtonText: 'Tutup'
-            });
-        @endif
-    });
+    // Error notifications
+    if (typeof errorMessages !== 'undefined' && errorMessages.length > 0) {
+        let errorHtml = '<ul>';
+        errorMessages.forEach(error => {
+            errorHtml += `<li>${error}</li>`;
+        });
+        errorHtml += '</ul>';
+        
+        Swal.fire({
+            icon: 'error',
+            title: 'Gagal Mengunggah',
+            html: errorHtml,
+            confirmButtonColor: '#d33',
+            confirmButtonText: 'Tutup'
+        });
+    }
+});
   </script>
 </body>
 </html>
