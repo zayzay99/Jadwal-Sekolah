@@ -36,9 +36,9 @@ class TabeljController extends Controller
                 'jam' => $jam_mulai . '-' . $jam_selesai,
             ]);
 
-            return response()->json(['success' => true, 'message' => 'Jam berhasil ditambahkan!', 'tabelj' => $tabelj]);
+            return response()->json(['success' => true, 'message' => 'Jam berhasil ditambahkan!', 'timeSlot' => $tabelj]);
         } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => 'Gagal menyimpan jam.'], 500);
+            return response()->json(['success' => false, 'message' => 'Gagal menyimpan jam: ' . $e->getMessage()], 500);
         }
     }
 

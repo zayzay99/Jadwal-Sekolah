@@ -7,6 +7,7 @@
         <p>Klik tombol `+` untuk menambah jadwal, lalu klik "Simpan Semua Jadwal" jika sudah selesai.</p>
     </div>
     <div>
+        <button id="addTimeBtn" class="btn btn-success">Tambah Jam</button>
         <button id="bulkSaveBtn" class="btn btn-info">Simpan Semua Jadwal</button>
         <a href="{{ route('jadwal.perKelas', $kelas->id) }}" class="btn btn-primary">Lihat Jadwal Selesai</a>
     </div>
@@ -74,6 +75,31 @@
         <div class="modal-footer">
             <button type="button" class="btn btn-secondary close-btn" data-modal-id="addScheduleModal">Batal</button>
             <button type="button" class="btn btn-primary" id="setScheduleBtn">Set Jadwal</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal untuk Tambah Jam -->
+<div id="addTimeModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5>Tambah Slot Waktu (Jam)</h5>
+            <button type="button" class="close-btn" data-modal-id="addTimeModal">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p>Masukkan waktu mulai dan selesai untuk jadwal. Format harus HH:MM (contoh: 07:00).</p>
+            <div class="form-group">
+                <label for="new-time-start-input">Waktu Mulai:</label>
+                <input type="time" id="new-time-start-input" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="new-time-end-input">Waktu Selesai:</label>
+                <input type="time" id="new-time-end-input" class="form-control">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary close-btn" data-modal-id="addTimeModal">Batal</button>
+            <button type="button" class="btn btn-primary" id="saveTimeBtn">Simpan Jam</button>
         </div>
     </div>
 </div>
@@ -290,6 +316,165 @@ document.addEventListener('DOMContentLoaded', function() {
         } finally {
             this.disabled = false;
             this.textContent = 'Simpan Semua Jadwal';
+        }
+    });
+
+    // --- ADD TIME SLOT LOGIC ---
+    const addTimeBtn = document.getElementById('addTimeBtn');
+    const addTimeModal = document.getElementById('addTimeModal');
+    const newTimeStartInput = document.getElementById('new-time-start-input');
+    const newTimeEndInput = document.getElementById('new-time-end-input');
+    const saveTimeBtn = document.getElementById('saveTimeBtn');
+
+    function openTimeModal() {
+        addTimeModal.style.display = 'flex';
+        addTimeModal.classList.add('show');
+    }
+
+    function closeTimeModal() {
+        addTimeModal.style.display = 'none';
+        addTimeModal.classList.remove('show');
+        newTimeStartInput.value = ''; // Clear input on close
+        newTimeEndInput.value = ''; // Clear input on close
+    }
+
+    addTimeBtn.addEventListener('click', openTimeModal);
+
+    addTimeModal.querySelectorAll('.close-btn').forEach(btn => {
+        btn.addEventListener('click', closeTimeModal);
+    });
+
+    window.addEventListener('click', (e) => {
+        if (e.target === addTimeModal) closeTimeModal();
+    });
+
+    saveTimeBtn.addEventListener('click', async function() {
+        const jamMulai = newTimeStartInput.value;
+        const jamSelesai = newTimeEndInput.value;
+
+        if (!jamMulai || !jamSelesai) {
+            Swal.fire('Error', 'Waktu mulai dan selesai tidak boleh kosong.', 'error');
+            return;
+        }
+
+        // Basic time format validation (HH:MM)
+        if (!/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(jamMulai) || !/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(jamSelesai)) {
+            Swal.fire('Error', 'Format waktu tidak valid. Gunakan HH:MM (contoh: 07:00).', 'error');
+            return;
+        }
+
+        // Validate jamSelesai is after jamMulai
+        if (jamMulai >= jamSelesai) {
+            Swal.fire('Error', 'Waktu selesai harus setelah waktu mulai.', 'error');
+            return;
+        }
+
+        this.disabled = true;
+        this.textContent = 'Menyimpan...';
+
+        try {
+            const response = await fetch('{{ route("tabelj.store") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({ jam_mulai: jamMulai, jam_selesai: jamSelesai })
+            });
+
+            const result = await response.json();
+
+            if (response.ok && result.success) {
+                Swal.fire('Berhasil!', result.message, 'success');
+                closeTimeModal();
+
+                // Add the new time slot to the table
+                const newTimeSlot = result.timeSlot; // Assuming backend returns the new time slot object
+                const newRow = document.createElement('tr');
+                newRow.dataset.timeId = newTimeSlot.id;
+                newRow.innerHTML = `
+                    <td class="time-col">
+                        <span>${newTimeSlot.jam_mulai}-${newTimeSlot.jam_selesai}</span>
+                        <button class="delete-time-btn" data-time-id="${newTimeSlot.id}" title="Hapus Jam">&times;</button>
+                    </td>
+                    ${daysOrder.map(day => `
+                        <td data-hari="${day}" data-jam="${newTimeSlot.jam}">
+                            <button class="add-schedule-btn">+</button>
+                        </td>
+                    `).join('')}
+                `;
+                scheduleBody.appendChild(newRow);
+
+                // Update timeSlotsOrder for bulk save to include the new time
+                timeSlotsOrder.push(newTimeSlot.jam);
+                timeSlotsOrder.sort(); // Keep it sorted if needed for display or logic
+
+            } else {
+                Swal.fire('Gagal!', result.message || 'Terjadi kesalahan saat menyimpan jam.', 'error');
+            }
+        } catch (error) {
+            Swal.fire('Error!', 'Tidak dapat terhubung ke server.', 'error');
+        } finally {
+            this.disabled = false;
+            this.textContent = 'Simpan Jam';
+        }
+    });
+
+    // --- DELETE TIME SLOT LOGIC ---
+    scheduleBody.addEventListener('click', async function(e) {
+        const target = e.target;
+        if (target.classList.contains('delete-time-btn')) {
+            const timeId = target.dataset.timeId;
+            const rowToDelete = target.closest('tr');
+
+            const result = await Swal.fire({
+                title: 'Apakah Anda yakin?',
+                text: "Anda tidak akan dapat mengembalikan ini!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Ya, hapus!'
+            });
+
+            if (result.isConfirmed) {
+                try {
+                    const response = await fetch(`/tabelj/${timeId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRF-TOKEN': csrfToken,
+                            'Accept': 'application/json'
+                        }
+                    });
+
+                    const deleteResult = await response.json();
+
+                    if (response.ok && deleteResult.success) {
+                        Swal.fire(
+                            'Dihapus!',
+                            'Jam telah dihapus.',
+                            'success'
+                        );
+                        rowToDelete.remove();
+                        // Remove from timeSlotsOrder as well
+                        const jamToRemove = rowToDelete.querySelector('.time-col span').textContent.split('-')[0]; // Get jam_mulai
+                        const index = timeSlotsOrder.indexOf(jamToRemove);
+                        if (index > -1) {
+                            timeSlotsOrder.splice(index, 1);
+                        }
+
+                    } else {
+                        Swal.fire(
+                            'Gagal!',
+                            deleteResult.message || 'Terjadi kesalahan saat menghapus jam.',
+                            'error'
+                        );
+                    }
+                } catch (error) {
+                    Swal.fire('Error!', 'Tidak dapat terhubung ke server.', 'error');
+                }
+            }
         }
     });
 });
