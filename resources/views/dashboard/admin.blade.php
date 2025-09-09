@@ -33,37 +33,37 @@
                 <h3>Menu</h3>
             </div>
             <ul class="sidebar-menu">
-                <li><a href="{{ route('admin.dashboard') }}" class="menu-item active">
+                <li><a href="{{ route('admin.dashboard') }}" class="menu-item {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
                         <i class="fas fa-home"></i>
                         <span>Home Admin</span>
                     </a></li>
-                <li><a href="{{ route('jadwal.pilihKelasLihat') }}" class="menu-item">
+                <li><a href="{{ route('jadwal.pilihKelasLihat') }}" class="menu-item {{ (request()->routeIs('jadwal.pilihKelasLihat')) || (request()->routeIs('jadwal.perKelas') && basename(parse_url(url()->previous(), PHP_URL_PATH)) == 'kelas') ? 'active' : '' }}">
                         <i class="fas fa-calendar-alt"></i>
                         <span>Lihat Jadwal</span>
                     </a></li>
                 
-                <li><a href="{{ route('kelas.kategori') }}" class="menu-item">
+                <li><a href="{{ route('kelas.kategori') }}" class="menu-item {{ request()->routeIs('kelas.*') ? 'active' : '' }}">
                         <i class="fa-solid fa-people-roof"></i>
                         <span>Lihat Kelas</span>
                     </a></li>
 
-                <li><a href="{{ route('jadwal.pilihKelas') }}" class="menu-item">
+                <li><a href="{{ route('jadwal.pilihKelas') }}" class="menu-item {{ (request()->routeIs(['jadwal.pilihKelas', 'jadwal.create'])) || (request()->routeIs('jadwal.perKelas') && basename(parse_url(url()->previous(), PHP_URL_PATH)) != 'kelas') ? 'active' : '' }}">
                         <i class="fas fa-calendar-check"></i>
                         <span>Manajemen Jadwal</span>
                     </a></li>
-                <li><a href="{{ route('manage.guru.index') }}" class="menu-item">
+                <li><a href="{{ route('manage.guru.index') }}" class="menu-item {{ request()->routeIs('manage.guru.*') ? 'active' : '' }}">
                         <i class="fas fa-chalkboard-teacher"></i>
                         <span>Manajemen Guru</span>
                     </a></li>
-                <li><a href="{{ route('jadwal-kategori.index') }}" class="menu-item">
+                <li><a href="{{ route('jadwal-kategori.index') }}" class="menu-item {{ request()->routeIs('jadwal-kategori.*') ? 'active' : '' }}">
                         <i class="fas fa-tags"></i>
                         <span>Manajemen Kategori Jadwal</span>
                     </a></li>
-                <li><a href="{{ route('manage.siswa.index') }}" class="menu-item">
+                <li><a href="{{ route('manage.siswa.index') }}" class="menu-item {{ request()->routeIs('manage.siswa.*') ? 'active' : '' }}">
                         <i class="fas fa-users"></i>
                         <span>Manajemen Siswa</span>
                     </a></li>
-                <li><a href="{{ route('manage.kelas.index') }}" class="menu-item">
+                <li><a href="{{ route('manage.kelas.index') }}" class="menu-item {{ request()->routeIs('manage.kelas.*') ? 'active' : '' }}">
                         <i class="fas fa-building"></i>
                         <span>Manajemen Kelas</span>
                     </a></li>
