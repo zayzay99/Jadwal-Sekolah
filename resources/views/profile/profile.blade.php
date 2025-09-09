@@ -23,9 +23,13 @@
     <a href="{{ route('profile.show') }}" class="menu-item">Profile</a>
     @csrf
     <button class="logout-btn" onclick="window.location.href='{{ route('logout') }}'">Keluar</button>
-    <div class="cs-btn">
-      <img src="/img/CS.svg" alt="CS" width="20"> 
-    </div>
+    @php
+        $guru = Auth::guard('guru')->user();
+        $mailToBody = "Nama Pengguna: {$guru->nama}\nNIP Pengguna: {$guru->nip}\nEmail Pengguna: {$guru->email}\n\nSebutkan masalah dan lampirkan foto (jika ada):";
+    @endphp
+    <a href="mailto:cs@example.com?subject=Laporan Masalah Pengguna&body={{ rawurlencode($mailToBody) }}" class="cs-btn" title="Hubungi Customer Service">
+      <img src="/img/CS.svg" alt="CS" width="20">
+    </a>
     </div>
   </div>
 

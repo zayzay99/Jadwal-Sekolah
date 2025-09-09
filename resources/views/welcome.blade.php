@@ -141,8 +141,14 @@
 
   <div class="footer">
     <strong>Klipaa Students</strong> <br>
-    Jika ada kendala silahkan hubungi <a href="#"><strong>Customer Service</strong></a><br>
-   <strong> &copy; 2025. Semua hak dilindungi.</strong>
+    @php
+        $mailToBody = "Nama Lengkap Pengguna: [Silakan isi]
+        Nama/NIS/NIP Pengguna: [Silakan isi]
+        Password Pengguna: [Silakan isi]\n
+        Sebutkan masalah dan lampirkan foto (jika ada):";
+    @endphp
+    Jika ada kendala silahkan hubungi <a href="mailto:kesyapujiatmoko@gmail.com?subject=Laporan Masalah dari Halaman Login&body={{ rawurlencode($mailToBody) }}" title="Hubungi Customer Service"><strong>Customer Service</strong></a><br>
+    <strong> &copy; 2025. Semua hak dilindungi.</strong>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

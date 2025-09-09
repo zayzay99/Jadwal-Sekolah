@@ -38,10 +38,17 @@
 <nav class="menu">
   <div class="menu-box">
     <a href="{{ route('guru.dashboard') }}" class="menu-item {{ Request::routeIs('guru.dashboard') ? 'active' : '' }}">Dashboard</a>
-    
-    <div class="cs-btn">
-      <img src="/img/CS.svg" alt="Customer Service" />
-    </div>
+    @php
+        $guru = Auth::guard('guru')->user();
+        $mailToBody = 
+        "Nama Pengguna: {$guru->nama}
+        NIP Pengguna: {$guru->nip}
+        Email Pengguna: {$guru->email}\n
+        Sebutkan masalah dan lampirkan foto (jika ada):";
+    @endphp
+    <a href="mailto:kesyapujiatmoko@gmail.com?subject=Laporan Masalah Pengguna Bagian Guru&body={{ rawurlencode($mailToBody) }}" class="cs-btn" title="Hubungi Customer Service">
+        <img src="/img/CS.svg" alt="Customer Service" />
+    </a>
     
     <button class="logout-btn" data-url="{{ route('logout') }}" onclick="showLogoutConfirmation(event)">
       Keluar

@@ -20,11 +20,18 @@
             <h2>Menu</h2>
             <hr>
             <a href="{{ route('siswa.jadwal') }}" class="menu-btn">Jadwal</a>
-            <button class="logout-btn" data-url="{{ route('logout') }}" onclick="showLogoutConfirmation(event)">Keluar</button>
-            <div class="cs-section">
+            @php
+                $mailToBody = "Nama Pengguna: {$user?->nama}\n" .
+                              "NIS Pengguna: {$user?->nis}\n" .
+                              "Email Pengguna: {$user?->email}\n\n" .
+                              "Sebutkan masalah dan lampirkan foto (jika ada):";
+            @endphp
+            <a href="mailto:kesyapujiatmoko@gmail.com?subject=Laporan Masalah Pengguna (Siswa)&body={{ rawurlencode($mailToBody) }}" class="menu-btn cs-section" title="Hubungi Customer Service">
                 <img src="/img/CS.svg" alt="CS" width="30">
                 <span>CS</span>
-            </div>
+            </a>
+
+            <button class="logout-btn" data-url="{{ route('logout') }}" onclick="showLogoutConfirmation(event)">Keluar</button>
         </aside>
 
         <main class="main-content">
@@ -35,7 +42,7 @@
 
             <section class="profile-section">
                 <div class="profile-pic" style="cursor: pointer; padding: 0; background-color: transparent; border: 3px solid #ddd;" onclick="document.getElementById('profile_picture_input').click();" title="Klik untuk ganti foto">
-<img src="{{ $siswa->profile_picture ? asset('storage/' . $siswa->profile_picture) : asset('storage/Default-Profile.png') }}" alt="Foto Profil" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+<img src="{{ $user->profile_picture ? asset('storage/' . $user->profile_picture) : asset('storage/Default-Profile.png') }}" alt="Foto Profil" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
 
                 </div>
                 <div class="profile-info">
