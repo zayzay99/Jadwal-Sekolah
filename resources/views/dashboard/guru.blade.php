@@ -38,18 +38,16 @@
 <nav class="menu">
   <div class="menu-box">
     <a href="{{ route('guru.dashboard') }}" class="menu-item {{ Request::routeIs('guru.dashboard') ? 'active' : '' }}">Dashboard</a>
-    @php
+    @php 
         $guru = Auth::guard('guru')->user();
-        $mailToBody = 
-        "Nama Pengguna: {$guru->nama}
-        NIP Pengguna: {$guru->nip}
-        Email Pengguna: {$guru->email}\n
-        Sebutkan masalah dan lampirkan foto (jika ada):";
+        $mailToBody = "Nama Pengguna: {$guru->nama}\n" .
+                      "NIP Pengguna: {$guru->nip}\n" .
+                      "Email Pengguna: {$guru->email}\n\n" .
+                      "Sebutkan masalah dan lampirkan foto (jika ada):";
     @endphp
-    <a href="mailto:kesyapujiatmoko@gmail.com?subject=Laporan Masalah Pengguna Bagian Guru&body={{ rawurlencode($mailToBody) }}" class="cs-btn" title="Hubungi Customer Service">
-        <img src="/img/CS.svg" alt="Customer Service" />
-    </a>
-    
+    <a href="mailto:kesyapujiatmoko@gmail.com?subject=Laporan Masalah Pengguna (Guru)&body={{ rawurlencode($mailToBody) }}" class="menu-item cs-btn" title="Hubungi Customer Service">
+        <img src="/img/CS.svg" alt="Customer Service" style="width: 1.5rem; height: 1.5rem; margin: auto;">
+    </a>    
     <button class="logout-btn" data-url="{{ route('logout') }}" onclick="showLogoutConfirmation(event)">
       Keluar
     </button>
@@ -75,10 +73,8 @@
 
           <!-- Profile Card -->
           <div class="profile-card">
-            <div class="profile-pic-container" style="cursor: pointer;" onclick="document.getElementById('profile_picture_input').click();" title="Klik untuk ganti foto">
-                <div class="profile-pic" style="padding: 0; border: none; background: transparent;">
-<img src="{{ $guru->profile_picture ? asset('storage/' . $guru->profile_picture) : asset('storage/Default-Profile.png') }}" alt="Foto Profil" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
-                </div>
+            <div class="profile-pic-container" onclick="document.getElementById('profile_picture_input').click();" title="Klik untuk ganti foto">
+                <img src="{{ $guru->profile_picture ? asset('storage/' . $guru->profile_picture) : asset('storage/Default-Profile.png') }}" alt="Foto Profil" class="profile-pic-image">
             </div>
             <form id="profile-pic-form" action="{{ route('guru.profile.update') }}" method="POST" enctype="multipart/form-data" style="display: none;">
                 @csrf

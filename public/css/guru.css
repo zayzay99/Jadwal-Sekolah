@@ -167,11 +167,15 @@ body.sidebar-open {
 }
 
 .cs-btn {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: rgba(161, 185, 219, 0.8);
-  padding: 0.875rem;
+  /* Menggunakan style dari menu-item */
+  margin-top: auto; /* Mendorong ke bawah */
+}
+
+.cs-btn:hover {
+  /* Override hover dari menu-item jika perlu */
+}
+
+.cs-btn-old {
   margin-top: 0.75rem;
   border-radius: 0.5rem;
   transition: all 0.2s ease;
@@ -254,6 +258,7 @@ body.sidebar-open {
 
 .profile-pic-container {
   flex-shrink: 0;
+  cursor: pointer;
 }
 
 .profile-pic {
@@ -269,6 +274,13 @@ body.sidebar-open {
   text-align: center;
   font-size: 0.875rem;
   background-color: #f9fafb;
+}
+
+.profile-pic-image {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
 }
 
 .profile-info {
