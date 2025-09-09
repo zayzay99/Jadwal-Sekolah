@@ -34,6 +34,7 @@
                 </div>
             </div>
 
+<<<<<<< HEAD
             <!-- Menu -->
             <!-- Menu -->
             <nav class="menu">
@@ -58,6 +59,62 @@
                 </div>
             </nav>
         </aside>
+=======
+      <!-- Menu -->
+      <!-- Menu -->
+<nav class="menu">
+  <div class="menu-box">
+    <a href="{{ route('guru.dashboard') }}" class="menu-item {{ Request::routeIs('guru.dashboard') ? 'active' : '' }}">Dashboard</a>
+    @php 
+        $guru = Auth::guard('guru')->user();
+        $mailToBody = "Nama Pengguna: {$guru->nama}\n" .
+                      "NIP Pengguna: {$guru->nip}\n" .
+                      "Email Pengguna: {$guru->email}\n\n" .
+                      "Sebutkan masalah dan lampirkan foto (jika ada):";
+    @endphp
+    <a href="mailto:kesyapujiatmoko@gmail.com?subject=Laporan Masalah Pengguna (Guru)&body={{ rawurlencode($mailToBody) }}" class="menu-item cs-btn" title="Hubungi Customer Service">
+        <img src="/img/CS.svg" alt="Customer Service" style="width: 1.5rem; height: 1.5rem; margin: auto;">
+    </a>    
+    <button class="logout-btn" data-url="{{ route('logout') }}" onclick="showLogoutConfirmation(event)">
+      Keluar
+    </button>
+  </div>
+</nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Header -->
+      <header class="header">
+        Selamat datang di Meja guru <span class="user-name">{{ Auth::guard('guru')->user()->nama }}</span> 🎉🎉
+      </header>
+
+      <!-- Content -->
+      <section class="content-section">
+        <div class="content-box">
+          <!-- Greeting Card -->
+          <div class="greeting-card">
+            <p><strong>Bagaimana kabarnya hari ini?</strong></p>
+            <p>Tetap semangat mengajar anak-anak ya...</p>
+          </div>
+
+          <!-- Profile Card -->
+          <div class="profile-card">
+            <div class="profile-pic-container" onclick="document.getElementById('profile_picture_input').click();" title="Klik untuk ganti foto">
+                <img src="{{ $guru->profile_picture ? asset('storage/' . $guru->profile_picture) : asset('storage/Default-Profile.png') }}" alt="Foto Profil" class="profile-pic-image">
+            </div>
+            <form id="profile-pic-form" action="{{ route('guru.profile.update') }}" method="POST" enctype="multipart/form-data" style="display: none;">
+                @csrf
+                <input type="file" id="profile_picture_input" name="profile_picture" accept="image/*" onchange="document.getElementById('profile-pic-form').submit();">
+            </form>
+            <div class="profile-info">
+              <p><strong>Nama guru</strong>: {{ Auth::guard('guru')->user()->nama }}</p>
+              <p><strong>NIP guru</strong>: {{ Auth::guard('guru')->user()->nip }}</p>
+              <p><strong>Pengampu Pelajaran</strong>: {{ Auth::guard('guru')->user()->pengampu }}</p>
+              <p><strong>E-Mail</strong>: {{ Auth::guard('guru')->user()->email }}</p>
+            </div>
+          </div>
+>>>>>>> 140f49255fe8e2f93d3b1844e387bec39921c63f
 
         <!-- Main Content -->
         <main class="main-content">

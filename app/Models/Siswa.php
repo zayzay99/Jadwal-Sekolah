@@ -22,6 +22,7 @@ class Siswa extends Authenticatable
         // return $this->belongsTo(Kelas::class);
         return $this->belongsToMany(\App\Models\Kelas::class, 'kelas_siswa', 'siswa_id', 'kelas_id');
     }
+    
 
     protected $hidden = [
         'password',
