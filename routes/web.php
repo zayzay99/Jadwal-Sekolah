@@ -10,6 +10,7 @@ use App\Http\Controllers\ManageSiswaController;
 use App\Http\Controllers\ManageKelasController;
 use App\Http\Controllers\KelasKategoriController;
 use App\Http\Controllers\TabeljController;
+use App\Http\Controllers\JadwalKategoriController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -74,6 +75,8 @@ Route::middleware('auth:web')->group(function () {
         'destroy' => 'manage.kelas.destroy',
         'show' => 'manage.kelas.show',
     ]]);
+
+    Route::resource('jadwal-kategori', JadwalKategoriController::class);
 
     Route::get('/kelas', [KelasKategoriController::class, 'index'])->name('kelas.kategori');
     Route::get('/kelas/{kategori}', [KelasKategoriController::class, 'show'])->name('kelas.show');

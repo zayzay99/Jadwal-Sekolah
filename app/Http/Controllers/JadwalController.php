@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Jadwal;
 use App\Models\Guru;
+use App\Models\JadwalKategori;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -29,7 +30,9 @@ class JadwalController extends Controller
             $scheduleGrid[$jadwal->hari][$jadwal->jam] = $jadwal;
         }
 
-        return view('jadwal.create', compact('kelas', 'gurus', 'days', 'timeSlots', 'scheduleGrid'));
+        $kategoris = JadwalKategori::all();
+
+        return view('jadwal.create', compact('kelas', 'gurus', 'days', 'timeSlots', 'scheduleGrid', 'kategoris'));
     }
 
     public function bulkStore(Request $request)
@@ -37,18 +40,15 @@ class JadwalController extends Controller
         $validated = $request->validate([
             'kelas_id' => 'required|exists:kelas,id',
             'schedules' => 'present|array',
-            'schedules.*.guru_id' => 'required|exists:gurus,id',
-            'schedules.*.mapel' => 'required|string',
+            'schedules.*.guru_id' => 'nullable|exists:gurus,id',
+            'schedules.*.mapel' => 'nullable|string',
+            'schedules.*.jadwal_kategori_id' => 'nullable|exists:jadwal_kategoris,id',
             'schedules.*.hari' => 'required|string',
             'schedules.*.jam' => 'required|string',
         ]);
 
         $kelasId = $validated['kelas_id'];
         $schedules = $validated['schedules'];
-
-        if (empty($schedules)) {
-            return response()->json(['success' => false, 'message' => 'Tidak ada jadwal untuk disimpan.'], 400);
-        }
 
         DB::beginTransaction();
         try {
@@ -59,6 +59,7 @@ class JadwalController extends Controller
                     'kelas_id' => $kelasId,
                     'guru_id' => $scheduleData['guru_id'],
                     'mapel' => $scheduleData['mapel'],
+                    'jadwal_kategori_id' => $scheduleData['jadwal_kategori_id'],
                     'hari' => $scheduleData['hari'],
                     'jam' => $scheduleData['jam'],
                 ]);
@@ -90,7 +91,7 @@ class JadwalController extends Controller
     public function jadwalPerKelas($kelas_id)
     {
         $kelas = \App\Models\Kelas::findOrFail($kelas_id);
-        $jadwals = \App\Models\Jadwal::where('kelas_id', $kelas_id)->with('guru')->orderByRaw("FIELD(hari, 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu')")->orderBy('jam')->get();
+        $jadwals = \App\Models\Jadwal::where('kelas_id', $kelas_id)->with('guru', 'kategori')->orderByRaw("FIELD(hari, 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu')")->orderBy('jam')->get();
         return view('jadwal.jadwal_per_kelas', compact('kelas', 'jadwals'));
     }
 
