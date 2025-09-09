@@ -56,21 +56,47 @@
     <div id="addScheduleModal" class="modal" style="display: none;">
         <div class="modal-content">
             <div class="modal-header">
-                <h5>Set Mata Pelajaran</h5>
+                <h5>Set Jadwal</h5>
                 <button type="button" class="close-btn" data-modal-id="addScheduleModal">&times;</button>
             </div>
             <div class="modal-body">
                 <p>Anda akan menambahkan jadwal untuk: <strong id="modal-info"></strong></p>
+                
                 <div class="form-group">
-                    <label for="guru-select">Pilih Guru (Mata Pelajaran):</label>
-                    <select id="guru-select" class="form-control">
-                        {{-- Options will be populated by JavaScript --}}
-                    </select>
+                    <label>Tipe Jadwal:</label>
+                    <div>
+                        <input type="radio" id="type_pelajaran" name="schedule_type" value="pelajaran" checked>
+                        <label for="type_pelajaran">Pelajaran</label>
+                        <input type="radio" id="type_kategori" name="schedule_type" value="kategori">
+                        <label for="type_kategori">Kategori Khusus</label>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="mapel-input">Mata Pelajaran:</label>
-                    <input type="text" id="mapel-input" class="form-control" readonly>
+
+                <div id="pelajaran-fields">
+                    <div class="form-group">
+                        <label for="guru-select">Pilih Guru (Mata Pelajaran):</label>
+                        <select id="guru-select" class="form-control">
+                            {{-- Options will be populated by JavaScript --}}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="mapel-input">Mata Pelajaran:</label>
+                        <input type="text" id="mapel-input" class="form-control" readonly>
+                    </div>
                 </div>
+
+                <div id="kategori-fields" style="display: none;">
+                    <div class="form-group">
+                        <label for="kategori-select">Pilih Kategori:</label>
+                        <select id="kategori-select" class="form-control">
+                            <option value="">-- Pilih Kategori --</option>
+                            @foreach($kategoris as $kategori)
+                                <option value="{{ $kategori->id }}">{{ $kategori->nama_kategori }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary close-btn" data-modal-id="addScheduleModal">Batal</button>
@@ -283,20 +309,25 @@
 
             // --- STATE MANAGEMENT ---
             let tempSchedule = {};
-            const initialGurus = @json($gurus->values()); // Ensure it's an array
+            const initialGurus = @json($gurus->values());
+            const kategoris = @json($kategoris->keyBy('id'));
             const daysOrder = @json($days);
             const timeSlotsOrder = @json($timeSlots->pluck('jam'));
 
-            // Initialize tempSchedule with existing data from the server
+            // Initialize tempSchedule with existing data
             @foreach ($timeSlots as $time)
                 @foreach ($days as $hari)
                     @if (isset($scheduleGrid[$hari][$time->jam]))
+                        @php $jadwal = $scheduleGrid[$hari][$time->jam]; @endphp
                         if (!tempSchedule['{{ $hari }}']) {
                             tempSchedule['{{ $hari }}'] = {};
                         }
                         tempSchedule['{{ $hari }}']['{{ $time->jam }}'] = {
-                            guru_id: '{{ $scheduleGrid[$hari][$time->jam]->guru_id }}',
-                            mapel: '{{ $scheduleGrid[$hari][$time->jam]->mapel }}',
+                            type: '{{ $jadwal->jadwal_kategori_id ? 'kategori' : 'pelajaran' }}',
+                            guru_id: '{{ $jadwal->guru_id }}',
+                            mapel: '{{ $jadwal->mapel }}',
+                            jadwal_kategori_id: '{{ $jadwal->jadwal_kategori_id }}',
+                            nama_kategori: '{{ $jadwal->jadwal_kategori_id ? ($kategoris[$jadwal->jadwal_kategori_id]["nama_kategori"] ?? 'Kategori Dihapus') : '' }}'
                         };
                     @endif
                 @endforeach
@@ -304,6 +335,10 @@
 
             // --- Modal Management ---
             const addScheduleModal = document.getElementById('addScheduleModal');
+            const typePelajaranRadio = document.getElementById('type_pelajaran');
+            const typeKategoriRadio = document.getElementById('type_kategori');
+            const pelajaranFields = document.getElementById('pelajaran-fields');
+            const kategoriFields = document.getElementById('kategori-fields');
 
             function openModal() {
                 addScheduleModal.style.display = 'flex';
@@ -316,22 +351,40 @@
             }
 
             document.querySelectorAll('.close-btn').forEach(btn => {
-                btn.addEventListener('click', () => closeModal());
+                btn.addEventListener('click', (e) => {
+                    const modalId = e.target.dataset.modalId;
+                    document.getElementById(modalId).style.display = 'none';
+                });
             });
 
             window.addEventListener('click', (e) => {
-                if (e.target === addScheduleModal) closeModal();
+                if (e.target === addScheduleModal || e.target === addTimeModal) {
+                    e.target.style.display = 'none';
+                }
+            });
+
+            typePelajaranRadio.addEventListener('change', () => {
+                pelajaranFields.style.display = 'block';
+                kategoriFields.style.display = 'none';
+            });
+
+            typeKategoriRadio.addEventListener('change', () => {
+                pelajaranFields.style.display = 'none';
+                kategoriFields.style.display = 'block';
             });
 
             // --- GURU & MAPEL MANAGEMENT ---
             const guruSelect = document.getElementById('guru-select');
             const mapelInput = document.getElementById('mapel-input');
+            const kategoriSelect = document.getElementById('kategori-select');
 
             function updateAvailableGurus() {
                 const guruCounts = {};
                 Object.values(tempSchedule).forEach(daySchedule => {
                     Object.values(daySchedule).forEach(entry => {
-                        guruCounts[entry.guru_id] = (guruCounts[entry.guru_id] || 0) + 1;
+                        if (entry.type === 'pelajaran' && entry.guru_id) {
+                            guruCounts[entry.guru_id] = (guruCounts[entry.guru_id] || 0) + 1;
+                        }
                     });
                 });
 
@@ -358,12 +411,23 @@
             let activeCell = null;
 
             function updateCellWithSchedule(cell, jadwal) {
-                cell.innerHTML = `
-            <div class="schedule-item" data-guru-id="${jadwal.guru_id}">
-                <strong class="mapel">${jadwal.mapel}</strong>
-                <button class="delete-schedule-btn" title="Hapus Jadwal">&times;</button>
-            </div>
-        `;
+                let content = '';
+                if (jadwal.type === 'pelajaran') {
+                    content = `
+                <div class="schedule-item" data-guru-id="${jadwal.guru_id}" style="border-left-color: #28a745;">
+                    <strong class="mapel">${jadwal.mapel}</strong>
+                    <button class="delete-schedule-btn" title="Hapus Jadwal">&times;</button>
+                </div>
+            `;
+                } else {
+                    content = `
+                <div class="schedule-item" data-kategori-id="${jadwal.jadwal_kategori_id}" style="border-left-color: #17a2b8; background-color: #d1ecf1;">
+                    <strong class="mapel">${jadwal.nama_kategori}</strong>
+                    <button class="delete-schedule-btn" title="Hapus Jadwal">&times;</button>
+                </div>
+            `;
+                }
+                cell.innerHTML = content;
             }
 
             function updateCellWithAddButton(cell) {
@@ -372,23 +436,42 @@
 
             // --- EVENT LISTENERS ---
             document.getElementById('setScheduleBtn').addEventListener('click', function() {
-                const guruId = guruSelect.value;
-                const selectedOption = guruSelect.options[guruSelect.selectedIndex];
-
-                if (!guruId || !selectedOption) {
-                    Swal.fire('Error', 'Silakan pilih guru terlebih dahulu.', 'error');
-                    return;
-                }
-
-                const mapel = selectedOption.dataset.mapel;
+                const scheduleType = document.querySelector('input[name="schedule_type"]:checked').value;
                 const hari = activeCell.dataset.hari;
                 const jam = activeCell.dataset.jam;
 
                 if (!tempSchedule[hari]) tempSchedule[hari] = {};
-                tempSchedule[hari][jam] = {
-                    guru_id: guruId,
-                    mapel: mapel
-                };
+
+                if (scheduleType === 'pelajaran') {
+                    const guruId = guruSelect.value;
+                    const selectedOption = guruSelect.options[guruSelect.selectedIndex];
+                    if (!guruId || !selectedOption) {
+                        Swal.fire('Error', 'Silakan pilih guru terlebih dahulu.', 'error');
+                        return;
+                    }
+                    const mapel = selectedOption.dataset.mapel;
+                    tempSchedule[hari][jam] = {
+                        type: 'pelajaran',
+                        guru_id: guruId,
+                        mapel: mapel,
+                        jadwal_kategori_id: null
+                    };
+                } else { // kategori
+                    const kategoriId = kategoriSelect.value;
+                    const selectedOption = kategoriSelect.options[kategoriSelect.selectedIndex];
+                    if (!kategoriId) {
+                        Swal.fire('Error', 'Silakan pilih kategori terlebih dahulu.', 'error');
+                        return;
+                    }
+                    const namaKategori = selectedOption.textContent;
+                    tempSchedule[hari][jam] = {
+                        type: 'kategori',
+                        jadwal_kategori_id: kategoriId,
+                        nama_kategori: namaKategori,
+                        guru_id: null,
+                        mapel: null
+                    };
+                }
 
                 updateCellWithSchedule(activeCell, tempSchedule[hari][jam]);
                 closeModal();
@@ -401,6 +484,12 @@
                     activeCell = target.parentElement;
                     modalInfo.textContent = `${activeCell.dataset.hari}, Jam ${activeCell.dataset.jam}`;
                     updateAvailableGurus();
+                    typePelajaranRadio.checked = true;
+                    pelajaranFields.style.display = 'block';
+                    kategoriFields.style.display = 'none';
+                    guruSelect.selectedIndex = 0;
+                    mapelInput.value = '';
+                    kategoriSelect.selectedIndex = 0;
                     openModal();
                 }
 
@@ -424,10 +513,12 @@
                     if (tempSchedule[hari]) {
                         timeSlotsOrder.forEach(jam => {
                             if (tempSchedule[hari][jam]) {
+                                const entry = tempSchedule[hari][jam];
                                 orderedSchedule.push({
                                     kelas_id: kelasId,
-                                    guru_id: tempSchedule[hari][jam].guru_id,
-                                    mapel: tempSchedule[hari][jam].mapel,
+                                    guru_id: entry.guru_id,
+                                    mapel: entry.mapel,
+                                    jadwal_kategori_id: entry.jadwal_kategori_id,
                                     hari: hari,
                                     jam: jam
                                 });
@@ -485,19 +576,11 @@
             function closeTimeModal() {
                 addTimeModal.style.display = 'none';
                 addTimeModal.classList.remove('show');
-                newTimeStartInput.value = ''; // Clear input on close
-                newTimeEndInput.value = ''; // Clear input on close
+                newTimeStartInput.value = '';
+                newTimeEndInput.value = '';
             }
 
             addTimeBtn.addEventListener('click', openTimeModal);
-
-            addTimeModal.querySelectorAll('.close-btn').forEach(btn => {
-                btn.addEventListener('click', closeTimeModal);
-            });
-
-            window.addEventListener('click', (e) => {
-                if (e.target === addTimeModal) closeTimeModal();
-            });
 
             saveTimeBtn.addEventListener('click', async function() {
                 const jamMulai = newTimeStartInput.value;
@@ -508,15 +591,6 @@
                     return;
                 }
 
-                // Basic time format validation (HH:MM)
-                if (!/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(jamMulai) || !
-                    /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(jamSelesai)) {
-                    Swal.fire('Error', 'Format waktu tidak valid. Gunakan HH:MM (contoh: 07:00).',
-                        'error');
-                    return;
-                }
-
-                // Validate jamSelesai is after jamMulai
                 if (jamMulai >= jamSelesai) {
                     Swal.fire('Error', 'Waktu selesai harus setelah waktu mulai.', 'error');
                     return;
@@ -542,17 +616,14 @@
                     const result = await response.json();
 
                     if (response.ok && result.success) {
-                        Swal.fire('Berhasil!', result.message, 'success');
+                        await Swal.fire('Berhasil!', result.message, 'success');
                         closeTimeModal();
-
-                        // Add the new time slot to the table
-                        const newTimeSlot = result
-                        .timeSlot; // Assuming backend returns the new time slot object
+                        const newTimeSlot = result.timeSlot;
                         const newRow = document.createElement('tr');
                         newRow.dataset.timeId = newTimeSlot.id;
                         newRow.innerHTML = `
                     <td class="time-col">
-                        <span>${newTimeSlot.jam_mulai}-${newTimeSlot.jam_selesai}</span>
+                        <span>${newTimeSlot.jam}</span>
                         <button class="delete-time-btn" data-time-id="${newTimeSlot.id}" title="Hapus Jam">&times;</button>
                     </td>
                     ${daysOrder.map(day => `
@@ -562,11 +633,7 @@
                         `).join('')}
                 `;
                         scheduleBody.appendChild(newRow);
-
-                        // Update timeSlotsOrder for bulk save to include the new time
                         timeSlotsOrder.push(newTimeSlot.jam);
-                        timeSlotsOrder.sort(); // Keep it sorted if needed for display or logic
-
                     } else {
                         Swal.fire('Gagal!', result.message || 'Terjadi kesalahan saat menyimpan jam.',
                             'error');
@@ -588,12 +655,13 @@
 
                     const result = await Swal.fire({
                         title: 'Apakah Anda yakin?',
-                        text: "Anda tidak akan dapat mengembalikan ini!",
+                        text: "Menghapus jam akan menghapus semua jadwal di jam tersebut!",
                         icon: 'warning',
                         showCancelButton: true,
-                        confirmButtonColor: '#3085d6',
-                        cancelButtonColor: '#d33',
-                        confirmButtonText: 'Ya, hapus!'
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#6c757d',
+                        confirmButtonText: 'Ya, hapus!',
+                        cancelButtonText: 'Batal'
                     });
 
                     if (result.isConfirmed) {
@@ -609,26 +677,15 @@
                             const deleteResult = await response.json();
 
                             if (response.ok && deleteResult.success) {
-                                Swal.fire(
-                                    'Dihapus!',
-                                    'Jam telah dihapus.',
-                                    'success'
-                                );
+                                Swal.fire('Dihapus!','Jam telah dihapus.','success');
                                 rowToDelete.remove();
-                                // Remove from timeSlotsOrder as well
-                                const jamToRemove = rowToDelete.querySelector('.time-col span')
-                                    .textContent.split('-')[0]; // Get jam_mulai
+                                const jamToRemove = rowToDelete.querySelector('.time-col span').textContent;
                                 const index = timeSlotsOrder.indexOf(jamToRemove);
                                 if (index > -1) {
                                     timeSlotsOrder.splice(index, 1);
                                 }
-
                             } else {
-                                Swal.fire(
-                                    'Gagal!',
-                                    deleteResult.message || 'Terjadi kesalahan saat menghapus jam.',
-                                    'error'
-                                );
+                                Swal.fire('Gagal!', deleteResult.message || 'Terjadi kesalahan.', 'error');
                             }
                         } catch (error) {
                             Swal.fire('Error!', 'Tidak dapat terhubung ke server.', 'error');

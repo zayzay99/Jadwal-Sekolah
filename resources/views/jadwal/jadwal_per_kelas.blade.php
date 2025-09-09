@@ -28,8 +28,12 @@
                 @forelse($jadwals as $jadwal)
                 <tr>
                     <td>{{ $jadwal->hari }}</td>
-                    <td>{{ $jadwal->mapel }}</td>
-                    <td>{{ $jadwal->guru->nama }}</td>
+                    @if($jadwal->kategori)
+                        <td colspan="2" style="text-align: center; font-weight: bold;">{{ $jadwal->kategori->nama_kategori }}</td>
+                    @else
+                        <td>{{ $jadwal->mapel }}</td>
+                        <td>{{ $jadwal->guru ? $jadwal->guru->nama : '-' }}</td>
+                    @endif
                     <td>{{ $jadwal->jam }}</td>
                     <td>
                         <form action="{{ route('jadwal.destroy', $jadwal->id) }}" method="POST" style="display:inline;">

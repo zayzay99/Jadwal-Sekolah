@@ -55,6 +55,10 @@
                         <i class="fas fa-chalkboard-teacher"></i>
                         <span>Manajemen Guru</span>
                     </a></li>
+                <li><a href="{{ route('jadwal-kategori.index') }}" class="menu-item">
+                        <i class="fas fa-tags"></i>
+                        <span>Manajemen Kategori Jadwal</span>
+                    </a></li>
                 <li><a href="{{ route('manage.siswa.index') }}" class="menu-item">
                         <i class="fas fa-users"></i>
                         <span>Manajemen Siswa</span>
