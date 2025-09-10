@@ -211,7 +211,7 @@
 
   <!-- Popup Opsi/Biodata -->
   <div class="info-popup" id="info-popup">
-      <h4>Dibuat oleh Tim PKL SMK N 2 Karanganyar:</h4>
+      <h4>Dibuat oleh Tim Prakerin SMK Wikrama 1 Garut & SMKN 1 Garut:</h4>
       <ul style="list-style: none; text-align: left; line-height: 1.8; padding: 0;">
           <li><strong style="color: #1c3d2e;">Kesya Apri Pujiatmoko</strong><br><small>Programmer - UI/UX & System Analyst</small></li>
           <li><strong style="color: #1c3d2e;">Muhammad Zayyidan Al Kautsar</strong><br><small>Programmer - UI/UX & System Analyst</small></li>
