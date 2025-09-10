@@ -53,23 +53,11 @@
                 </li>
 
                 <li>
-                    <a href="{{ route('kelas.kategori') }}" class="menu-item {{ request()->routeIs('kelas.*') ? 'active' : '' }}">
-                        <i class="fa-solid fa-people-roof"></i><span>Lihat Kelas</span>
-                    </a>
-                </li>
-
-                <li>
                     <a href="{{ route('manage.kelas.index') }}" class="menu-item {{ request()->routeIs('manage.kelas.*') ? 'active' : '' }}">
                         <i class="fas fa-building"></i><span>Manajemen Kelas</span>
                     </a>
                 </li>
-
-                <li>
-                    <a href="{{ route('jadwal.pilihKelasLihat') }}" class="menu-item {{ (request()->routeIs('jadwal.pilihKelasLihat')) || (request()->routeIs('jadwal.perKelas') && basename(parse_url(url()->previous(), PHP_URL_PATH)) == 'kelas') ? 'active' : '' }}">
-                        <i class="fas fa-calendar-alt"></i><span>Lihat Jadwal</span>
-                    </a>
-                </li>
-
+                
                 <li>
                     <a href="{{ route('jadwal.pilihKelas') }}" class="menu-item {{ (request()->routeIs(['jadwal.pilihKelas', 'jadwal.create'])) || (request()->routeIs('jadwal.perKelas') && basename(parse_url(url()->previous(), PHP_URL_PATH)) != 'kelas') ? 'active' : '' }}">
                         <i class="fas fa-calendar-check"></i><span>Manajemen Jadwal</span>
@@ -81,6 +69,19 @@
                         <i class="fas fa-tags"></i><span>Manajemen Kategori Jadwal</span>
                     </a>
                 </li>
+                <li>
+                    <a href="{{ route('kelas.kategori') }}" class="menu-item {{ request()->routeIs('kelas.*') ? 'active' : '' }}">
+                        <i class="fa-solid fa-people-roof"></i><span>Lihat Kelas</span>
+                    </a>
+                </li>
+
+
+                <li>
+                    <a href="{{ route('jadwal.pilihKelasLihat') }}" class="menu-item {{ (request()->routeIs('jadwal.pilihKelasLihat')) || (request()->routeIs('jadwal.perKelas') && basename(parse_url(url()->previous(), PHP_URL_PATH)) == 'kelas') ? 'active' : '' }}">
+                        <i class="fas fa-calendar-alt"></i><span>Lihat Jadwal</span>
+                    </a>
+                </li>
+
 
                 <li>
                     <a href="{{ route('logout') }}" class="menu-item" onclick="showLogoutConfirmation(event)">
