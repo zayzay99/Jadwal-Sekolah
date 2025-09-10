@@ -34,7 +34,7 @@
                 </div>
             </div>
 
-<<<<<<< HEAD
+{{-- <<<<<<< HEAD
             <!-- Menu -->
             <!-- Menu -->
             <nav class="menu">
@@ -60,7 +60,7 @@
             </nav>
         </aside>
 =======
-      <!-- Menu -->
+      <!-- Menu --> --}}
       <!-- Menu -->
 <nav class="menu">
   <div class="menu-box">
@@ -83,7 +83,7 @@
     </aside>
 
     <!-- Main Content -->
-    <main class="main-content">
+    {{-- <main class="main-content">
       <!-- Header -->
       <header class="header">
         Selamat datang di Meja guru <span class="user-name">{{ Auth::guard('guru')->user()->nama }}</span> 🎉🎉
@@ -96,9 +96,9 @@
           <div class="greeting-card">
             <p><strong>Bagaimana kabarnya hari ini?</strong></p>
             <p>Tetap semangat mengajar anak-anak ya...</p>
-          </div>
+          </div> --}}
 
-          <!-- Profile Card -->
+          {{-- <!-- Profile Card -->
           <div class="profile-card">
             <div class="profile-pic-container" onclick="document.getElementById('profile_picture_input').click();" title="Klik untuk ganti foto">
                 <img src="{{ $guru->profile_picture ? asset('storage/' . $guru->profile_picture) : asset('storage/Default-Profile.png') }}" alt="Foto Profil" class="profile-pic-image">
@@ -114,7 +114,7 @@
               <p><strong>E-Mail</strong>: {{ Auth::guard('guru')->user()->email }}</p>
             </div>
           </div>
->>>>>>> 140f49255fe8e2f93d3b1844e387bec39921c63f
+>>>>>>> 140f49255fe8e2f93d3b1844e387bec39921c63f --}}
 
         <!-- Main Content -->
         <main class="main-content">

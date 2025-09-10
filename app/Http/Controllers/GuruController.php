@@ -64,6 +64,6 @@ class GuruController extends Controller
         $guru->profile_picture = $path;
         $guru->save();
 
-        return back()->with('success', 'Foto profil berhasil diperbarui.');
+       return redirect()->route('guru.dashboard')->with('success', 'Foto profil berhasil diperbarui.');
     }
 }
