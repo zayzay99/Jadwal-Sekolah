@@ -213,9 +213,9 @@
   <div class="info-popup" id="info-popup">
       <h4>Dibuat oleh Tim PKL SMK N 2 Karanganyar:</h4>
       <ul style="list-style: none; text-align: left; line-height: 1.8; padding: 0;">
-          <li><strong style="color: #1c3d2e;">Kessya Puji Atmoko</strong><br><small>Programmer & System Analyst</small></li>
-          <li><strong style="color: #1c3d2e;">Maulana Al Maliki</strong><br><small>UI/UX Designer & Frontend</small></li>
-          <li><strong style="color: #1c3d2e;">Naufal Labib</strong><br><small>Dokumentasi & Laporan</small></li>
+          <li><strong style="color: #1c3d2e;">Kesya Apri Pujiatmoko</strong><br><small>Programmer - UI/UX & System Analyst</small></li>
+          <li><strong style="color: #1c3d2e;">Muhammad Zayyidan Al Kautsar</strong><br><small>Programmer - UI/UX & System Analyst</small></li>
+          <li><strong style="color: #1c3d2e;">Alkayisa Nurhasya Lillah</strong><br><small>Programmer - UI/UX & System Analyst</small></li>
       </ul>
   </div>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
