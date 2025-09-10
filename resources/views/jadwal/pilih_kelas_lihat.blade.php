@@ -18,7 +18,7 @@
             @endforeach
         </select>
         </div>
-        <button type="button" class="btn btn-primary" onclick="if(document.getElementById('kelas_id').value) window.location.href='{{ url('/jadwal/kelas') }}/' + document.getElementById('kelas_id').value">Lihat Jadwal</button>
+        <button type="button" class="btn btn-primary" onclick="if(document.getElementById('kelas_id').value) window.location.href='{{ url('/jadwal/kelas') }}/' + document.getElementById('kelas_id').value + '?management=false'">Lihat Jadwal</button>
     </form>
 </div>
 

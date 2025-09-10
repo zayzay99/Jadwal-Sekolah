@@ -10,7 +10,10 @@
     <div class="table-header">          
         <button class="btn btn-secondary" onclick="window.history.back()">             
             <i class="fas fa-arrow-left"></i> Kembali         
-        </button>     
+        </button>
+        <a href="{{ route('admin.jadwal.cetak', ['kelas' => $kelas->id]) }}" class="btn btn-primary">             
+            <i class="fas fa-print"></i> Cetak PDF         
+        </a>
     </div>      
 
     <div class="table-responsive">         
@@ -20,8 +23,10 @@
                     <th>Hari</th>                     
                     <th>Jam</th>                     
                     <th>Mata Pelajaran</th>                     
-                    <th>Guru</th>                     
-                    <th>Aksi</th>                 
+                    <th>Guru</th>
+                    @if($is_management)
+                    <th>Aksi</th>
+                    @endif                 
                 </tr>             
             </thead>             
             <tbody>                 
@@ -39,6 +44,7 @@
                                     <td>{{ $jadwal->mapel }}</td>                                     
                                     <td>{{ $jadwal->guru ? $jadwal->guru->nama : '-' }}</td>                                 
                                 @endif                                 
+                                @if($is_management)                                 
                                 <td>                                     
                                     <form action="{{ route('jadwal.destroy', $jadwal->id) }}" method="POST" style="display:inline;">                                         
                                         @csrf                                         
@@ -47,13 +53,14 @@
                                             <i class="fas fa-trash"></i>                                         
                                         </button>                                     
                                     </form>                                 
-                                </td>                             
+                                </td>
+                                @endif                             
                             </tr>                         
                         @endforeach                     
                     @endforeach                 
                 @else                     
                     <tr>                         
-                        <td colspan="5" class="no-data">                             
+                        <td colspan="{{ $is_management ? 5 : 4 }}" class="no-data">                             
                             <i class="fas fa-info-circle"></i> Tidak ada jadwal untuk kelas ini                         
                         </td>                     
                     </tr>                 

@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Jadwal;
 use App\Models\Guru;
+use App\Models\Kelas;
 use App\Models\JadwalKategori;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class JadwalController extends Controller
 {
@@ -88,11 +90,23 @@ class JadwalController extends Controller
         return view('jadwal.pilih_kelas_lihat', compact('kelas'));
     }
 
-    public function jadwalPerKelas($kelas_id)
+    public function jadwalPerKelas(Request $request, $kelas_id)
     {
         $kelas = \App\Models\Kelas::findOrFail($kelas_id);
         $jadwals = \App\Models\Jadwal::where('kelas_id', $kelas_id)->with('guru', 'kategori')->orderByRaw("FIELD(hari, 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu')")->orderBy('jam')->get()->groupBy('hari');
-        return view('jadwal.jadwal_per_kelas', compact('kelas', 'jadwals'));
+        
+        $is_management = $request->query('management', 'true') !== 'false';
+
+        return view('jadwal.jadwal_per_kelas', compact('kelas', 'jadwals', 'is_management'));
+    }
+
+    public function cetakJadwal($kelas_id)
+    {
+        $kelas = Kelas::findOrFail($kelas_id);
+        $jadwals = Jadwal::where('kelas_id', $kelas_id)->with('guru', 'kategori')->orderByRaw("FIELD(hari, 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu')")->orderBy('jam')->get()->groupBy('hari');
+
+        $pdf = Pdf::loadView('jadwal.pdf', compact('jadwals', 'kelas'));
+        return $pdf->download('jadwal-' . $kelas->nama_kelas . '.pdf');
     }
 
     public function destroy($id)
