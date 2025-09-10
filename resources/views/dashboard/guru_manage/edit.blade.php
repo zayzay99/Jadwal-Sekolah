@@ -1,7 +1,7 @@
 @extends('dashboard.admin')
 @section('content')
 <div class="content-header">
-    <h2>Edit Guru</h2>
+    <h2>Manajemen Guru Bagian Edit Guru</h2>
 </div>
 <div class="form-container">
     @if (session('success'))

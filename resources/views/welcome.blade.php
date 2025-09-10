@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('img/Klipaa Original.png') }}">
   <title>Login Page - Klipaa Solusi Indonesia</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <style>
     * {
       margin: 0;
@@ -117,6 +118,60 @@
       color: #0066cc;
       text-decoration: none;
     }
+
+    /* Credits/Info Button */
+    .info-toggle {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 50px;
+      height: 50px;
+      background-color: #2d6a4f; /* Menggunakan warna tema dari dashboard */
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      transition: transform 0.3s ease, background-color 0.3s ease;
+      z-index: 1000;
+    }
+
+    .info-toggle:hover {
+      transform: scale(1.1);
+      background-color: #3a7d5d; /* Warna lebih terang saat hover */
+    }
+
+    /* Popup Box */
+    .info-popup {
+      position: fixed;
+      bottom: 80px; /* Posisi di atas tombol toggle */
+      right: 20px;
+      width: 320px;
+      background-color: white;
+      border-radius: 15px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+      padding: 20px;
+      z-index: 999;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(10px);
+      transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
+      border: 1px solid #eee;
+    }
+
+    .info-popup.show {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
+    .info-popup h4 {
+        margin-bottom: 15px;
+        color: #2d6a4f;
+    }
   </style>
 </head>
 <body>
@@ -149,6 +204,20 @@
     <strong> &copy; 2025. Semua hak dilindungi.</strong>
   </div>
 
+  <!-- Tombol Toggle Opsi -->
+  <div class="info-toggle" id="info-toggle" title="Tentang Kami">
+      <i class="fas fa-info-circle"></i>
+  </div>
+
+  <!-- Popup Opsi/Biodata -->
+  <div class="info-popup" id="info-popup">
+      <h4>Dibuat oleh Tim PKL SMK N 2 Karanganyar:</h4>
+      <ul style="list-style: none; text-align: left; line-height: 1.8; padding: 0;">
+          <li><strong style="color: #1c3d2e;">Kessya Puji Atmoko</strong><br><small>Programmer & System Analyst</small></li>
+          <li><strong style="color: #1c3d2e;">Maulana Al Maliki</strong><br><small>UI/UX Designer & Frontend</small></li>
+          <li><strong style="color: #1c3d2e;">Naufal Labib</strong><br><small>Dokumentasi & Laporan</small></li>
+      </ul>
+  </div>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script>
     const hour = new Date().getHours();
@@ -187,6 +256,23 @@
         });
         Toast.fire({ icon: 'success', title: '{{ session("logout_success") }}' });
     @endif
+
+    // Logika untuk Popup Info
+    const infoToggle = document.getElementById('info-toggle');
+    const infoPopup = document.getElementById('info-popup');
+
+    infoToggle.addEventListener('click', (event) => {
+        // Mencegah event klik menyebar ke window
+        event.stopPropagation();
+        infoPopup.classList.toggle('show');
+    });
+
+    // Menutup popup jika pengguna mengklik di luar area popup
+    window.addEventListener('click', (event) => {
+        if (infoPopup.classList.contains('show') && !infoPopup.contains(event.target)) {
+            infoPopup.classList.remove('show');
+        }
+    });
   </script>
 
 </body>

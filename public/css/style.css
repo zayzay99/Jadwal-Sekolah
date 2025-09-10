@@ -101,7 +101,12 @@
     .menu-item.active {
       background: #3a7d5d;
       color: white;
+      padding-left: 25px; /* Menyamakan dengan hover */
       border-left: 4px solid #2d6a4f;
+      animation: pulse-active 2s infinite;
+      box-shadow: 0 0 0 rgba(58, 125, 93, 0.4);
+      position: relative; /* Diperlukan untuk z-index */
+      z-index: 1; /* Memastikan animasi tampil di atas elemen lain */
     }
 
     .menu-item i {
@@ -540,6 +545,18 @@
         }
     }
 
+    /* Animasi untuk item sidebar aktif */
+    @keyframes pulse-active {
+        0% {
+            box-shadow: 0 0 0 0 rgba(91, 192, 131, 0.5);
+        }
+        70% {
+            box-shadow: 0 0 0 10px rgba(91, 192, 131, 0);
+        }
+        100% {
+            box-shadow: 0 0 0 0 rgba(91, 192, 131, 0);
+        }
+    }
     /* Animation for dropdown */
     @keyframes fadeIn {
         from { opacity: 0; transform: translateY(-10px); }

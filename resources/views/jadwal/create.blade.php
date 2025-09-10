@@ -3,7 +3,7 @@
 @section('content')
     <div class="content-header">
         <div>
-            <h1>Pembangun Jadwal: <strong>{{ $kelas->nama_kelas }}</strong></h1>
+            <h1>Manajemen Jadwal Untuk Kelas: <strong>{{ $kelas->nama_kelas }}</strong></h1>
             <p>Atur jadwal di bawah ini. Klik "Tambah Baris Jadwal" untuk menambah slot waktu baru.</p>
         </div>
         <div>
@@ -81,233 +81,223 @@
 @endpush
 
 @push('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const csrfToken = '{{ csrf_token() }}';
-            const kelasId = document.getElementById('kelas_id').value;
-            const scheduleBody = document.getElementById('schedule-body');
-            const addRowBtn = document.getElementById('add-row-btn');
-            const bulkSaveBtn = document.getElementById('bulkSaveBtn');
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const csrfToken = '{{ csrf_token() }}';
+    const kelasId = document.getElementById('kelas_id').value;
+    const scheduleBody = document.getElementById('schedule-body');
+    const addRowBtn = document.getElementById('add-row-btn');
+    const bulkSaveBtn = document.getElementById('bulkSaveBtn');
 
-            const days = @json($days);
-            const gurus = @json($gurus->values());
-            const kategoris = @json($kategoris->values());
-            const scheduleData = @json($scheduleGrid);
+    const days = @json($days);
+    const gurus = @json($gurus->values());
+    const kategoris = @json($kategoris->values());
+    const scheduleData = @json($scheduleGrid);
 
-            // --- OPTIONS TEMPLATE ---
-            function getSelectOptions() {
-                let options = '<option value="">-- Kosong --</option>';
-                options += '<optgroup label="Pelajaran">';
-                gurus.forEach(guru => {
-                    options += `<option value="guru-${guru.id}" data-mapel="${guru.pengampu}">${guru.nama} (${guru.pengampu})</option>`;
-                });
-                options += '</optgroup>';
-                options += '<optgroup label="Kategori Khusus">';
-                kategoris.forEach(kategori => {
-                    options += `<option value="kategori-${kategori.id}">${kategori.nama_kategori}</option>`;
-                });
-                options += '</optgroup>';
-                return options;
-            }
-            const selectOptionsHtml = getSelectOptions();
-
-            // --- ROW TEMPLATE ---
-            function createRow(jam = '', data = {}) {
-                const tr = document.createElement('tr');
-                tr.className = 'schedule-row';
-
-                let timeParts = jam ? jam.split(' - ') : ['', ''];
-
-                let cells = `
-                    <td>
-                        <div class="time-input-container">
-                            <input type="time" class="form-control time-input time-start" value="${timeParts[0]}">
-                            <span>-</span>
-                            <input type="time" class="form-control time-input time-end" value="${timeParts[1]}">
-                        </div>
-                    </td>
-                `;
-
-                days.forEach(day => {
-                    const scheduleItem = data[day];
-                    let selectedValue = '';
-                    if (scheduleItem) {
-                        if (scheduleItem.guru_id) {
-                            selectedValue = `guru-${scheduleItem.guru_id}`;
-                        } else if (scheduleItem.jadwal_kategori_id) {
-                            selectedValue = `kategori-${scheduleItem.jadwal_kategori_id}`;
-                        }
-                    }
-
-                    cells += `
-                        <td>
-                            <select class="form-control schedule-select" data-day="${day}">
-                                ${selectOptionsHtml}
-                            </select>
-                        </td>
-                    `;
-                });
-
-                cells += `
-                    <td>
-                        <button class="delete-row-btn" title="Hapus Baris">&times;</button>
-                    </td>
-                `;
-
-                tr.innerHTML = cells;
-
-                // Set selected values after innerHTML is processed
-                days.forEach((day, index) => {
-                    const scheduleItem = data[day];
-                    if (scheduleItem) {
-                        let selectedValue = '';
-                        if (scheduleItem.guru_id) {
-                            selectedValue = `guru-${scheduleItem.guru_id}`;
-                        } else if (scheduleItem.jadwal_kategori_id) {
-                            selectedValue = `kategori-${scheduleItem.jadwal_kategori_id}`;
-                        }
-                        if (selectedValue) {
-                            tr.querySelector(`[data-day="${day}"]`).value = selectedValue;
-                        }
-                    }
-                });
-
-                return tr;
-            }
-
-            // --- INITIALIZE VIEW ---
-            function initialize() {
-                // Group schedule data by jam
-                const groupedByJam = {};
-                for (const day in scheduleData) {
-                    for (const jam in scheduleData[day]) {
-                        if (!groupedByJam[jam]) {
-                            groupedByJam[jam] = {};
-                        }
-                        groupedByJam[jam][day] = scheduleData[day][jam];
-                    }
-                }
-
-                // Get sorted time slots
-                const sortedTimeSlots = Object.keys(groupedByJam).sort((a, b) => {
-                    return a.split(' - ')[0].localeCompare(b.split(' - ')[0]);
-                });
-
-                // Create and append rows for existing data
-                sortedTimeSlots.forEach(jam => {
-                    const rowData = groupedByJam[jam];
-                    const newRow = createRow(jam, rowData);
-                    scheduleBody.appendChild(newRow);
-                });
-
-                // Add one empty row if no data exists
-                if (sortedTimeSlots.length === 0) {
-                    scheduleBody.appendChild(createRow());
-                }
-            }
-
-            // --- EVENT LISTENERS ---
-            addRowBtn.addEventListener('click', () => {
-                scheduleBody.appendChild(createRow());
-            });
-
-            scheduleBody.addEventListener('click', (e) => {
-                if (e.target.classList.contains('delete-row-btn')) {
-                    e.target.closest('.schedule-row').remove();
-                }
-            });
-
-            bulkSaveBtn.addEventListener('click', async function() {
-                this.disabled = true;
-                this.textContent = 'Menyimpan...';
-
-                const schedules = [];
-                const rows = scheduleBody.querySelectorAll('.schedule-row');
-                let validationError = false;
-
-                rows.forEach(row => {
-                    const startTime = row.querySelector('.time-start').value;
-                    const endTime = row.querySelector('.time-end').value;
-
-                    if (!startTime || !endTime) {
-                        Swal.fire('Error', 'Setiap baris harus memiliki Waktu Mulai dan Selesai.', 'error');
-                        validationError = true;
-                        return;
-                    }
-                    if (startTime >= endTime) {
-                        Swal.fire('Error', `Waktu Selesai harus setelah Waktu Mulai untuk baris (${startTime} - ${endTime}).`, 'error');
-                        validationError = true;
-                        return;
-                    }
-
-                    const jam = `${startTime} - ${endTime}`;
-
-                    row.querySelectorAll('.schedule-select').forEach(select => {
-                        const selectedValue = select.value;
-                        if (!selectedValue) return; // Skip if empty
-
-                        const day = select.dataset.day;
-                        const selectedOption = select.options[select.selectedIndex];
-                        const [type, id] = selectedValue.split('-');
-
-                        let scheduleData = {
-                            kelas_id: kelasId,
-                            hari: day,
-                            jam: jam,
-                            guru_id: null,
-                            mapel: null,
-                            jadwal_kategori_id: null
-                        };
-
-                        if (type === 'guru') {
-                            scheduleData.guru_id = id;
-                            scheduleData.mapel = selectedOption.dataset.mapel;
-                        } else if (type === 'kategori') {
-                            scheduleData.jadwal_kategori_id = id;
-                        }
-                        schedules.push(scheduleData);
-                    });
-                });
-
-                if (validationError) {
-                    this.disabled = false;
-                    this.textContent = 'Simpan Semua Jadwal';
-                    return;
-                }
-
-                try {
-                    const response = await fetch('{{ route('jadwal.bulkStore') }}', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': csrfToken,
-                            'Accept': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            schedules: schedules,
-                            kelas_id: kelasId
-                        })
-                    });
-
-                    const result = await response.json();
-
-                    if (response.ok && result.success) {
-                        await Swal.fire('Berhasil!', result.message, 'success');
-                        window.location.href = '{{ route('jadwal.perKelas', $kelas->id) }}';
-                    } else {
-                        Swal.fire('Gagal!', result.message || 'Terjadi kesalahan saat menyimpan.', 'error');
-                    }
-                } catch (error) {
-                    Swal.fire('Error!', 'Tidak dapat terhubung ke server.', 'error');
-                } finally {
-                    this.disabled = false;
-                    this.textContent = 'Simpan Semua Jadwal';
-                }
-            });
-
-            // --- INITIALIZE ---
-            initialize();
+    // --- OPTIONS TEMPLATE ---
+    function getSelectOptions() {
+        let options = '<option value="">-- Kosong --</option>';
+        options += '<optgroup label="Pelajaran">';
+        gurus.forEach(guru => {
+            options += `<option value="guru-${guru.id}" data-mapel="${guru.pengampu}">${guru.nama} (${guru.pengampu})</option>`;
         });
-    </script>
+        options += '</optgroup>';
+        options += '<optgroup label="Kategori Khusus">';
+        kategoris.forEach(kategori => {
+            options += `<option value="kategori-${kategori.id}">${kategori.nama_kategori}</option>`;
+        });
+        options += '</optgroup>';
+        return options;
+    }
+    const selectOptionsHtml = getSelectOptions();
+
+    // --- ROW TEMPLATE ---
+    function createRow(jam = '', data = {}) {
+        const tr = document.createElement('tr');
+        tr.className = 'schedule-row';
+
+        let timeParts = jam ? jam.split(' - ') : ['', ''];
+
+        let cells = `
+            <td>
+                <div class="time-input-container">
+                    <input type="time" class="form-control time-input time-start" value="${timeParts[0]}">
+                    <span>-</span>
+                    <input type="time" class="form-control time-input time-end" value="${timeParts[1]}">
+                </div>
+            </td>
+        `;
+
+        days.forEach(day => {
+            cells += `
+                <td>
+                    <select class="form-control schedule-select" data-day="${day}">
+                        ${selectOptionsHtml}
+                    </select>
+                </td>
+            `;
+        });
+
+        cells += `
+            <td>
+                <button class="delete-row-btn" title="Hapus Baris">&times;</button>
+            </td>
+        `;
+
+        tr.innerHTML = cells;
+
+        // Set selected values after innerHTML is processed
+        days.forEach(day => {
+            const scheduleItem = data[day];
+            if (scheduleItem) {
+                let selectedValue = '';
+                if (scheduleItem.guru_id) {
+                    selectedValue = `guru-${scheduleItem.guru_id}`;
+                } else if (scheduleItem.jadwal_kategori_id) {
+                    selectedValue = `kategori-${scheduleItem.jadwal_kategori_id}`;
+                }
+                if (selectedValue) {
+                    tr.querySelector(`select[data-day="${day}"]`).value = selectedValue;
+                }
+            }
+        });
+
+        return tr;
+    }
+
+    // --- INITIALIZE VIEW ---
+    function initialize() {
+        // Group schedule data by jam
+        const groupedByJam = {};
+        for (const day in scheduleData) {
+            for (const jam in scheduleData[day]) {
+                if (!groupedByJam[jam]) {
+                    groupedByJam[jam] = {};
+                }
+                groupedByJam[jam][day] = scheduleData[day][jam];
+            }
+        }
+
+        // Get sorted time slots
+        const sortedTimeSlots = Object.keys(groupedByJam).sort((a, b) => {
+            return a.split(' - ')[0].localeCompare(b.split(' - ')[0]);
+        });
+
+        // Create and append rows for existing data
+        sortedTimeSlots.forEach(jam => {
+            const rowData = groupedByJam[jam];
+            const newRow = createRow(jam, rowData);
+            scheduleBody.appendChild(newRow);
+        });
+
+        // Add one empty row if no data exists
+        if (sortedTimeSlots.length === 0) {
+            scheduleBody.appendChild(createRow());
+        }
+    }
+
+    // --- EVENT LISTENERS ---
+    addRowBtn.addEventListener('click', () => {
+        scheduleBody.appendChild(createRow());
+    });
+
+    scheduleBody.addEventListener('click', (e) => {
+        if (e.target.classList.contains('delete-row-btn')) {
+            e.target.closest('.schedule-row').remove();
+        }
+    });
+
+    bulkSaveBtn.addEventListener('click', async function() {
+        this.disabled = true;
+        this.textContent = 'Menyimpan...';
+
+        const schedules = [];
+        const rows = scheduleBody.querySelectorAll('.schedule-row');
+        let validationError = false;
+
+        rows.forEach(row => {
+            const startTime = row.querySelector('.time-start').value;
+            const endTime = row.querySelector('.time-end').value;
+
+            if (!startTime || !endTime) {
+                Swal.fire('Error', 'Setiap baris harus memiliki Waktu Mulai dan Selesai.', 'error');
+                validationError = true;
+                return;
+            }
+            if (startTime >= endTime) {
+                Swal.fire('Error', `Waktu Selesai harus setelah Waktu Mulai untuk baris (${startTime} - ${endTime}).`, 'error');
+                validationError = true;
+                return;
+            }
+
+            const jam = `${startTime} - ${endTime}`;
+
+            row.querySelectorAll('.schedule-select').forEach(select => {
+                const selectedValue = select.value;
+                if (!selectedValue) return; // Skip if empty
+
+                const day = select.dataset.day;
+                const selectedOption = select.options[select.selectedIndex];
+                const [type, id] = selectedValue.split('-');
+
+                let scheduleData = {
+                    kelas_id: kelasId,
+                    hari: day,
+                    jam: jam,
+                    guru_id: null,
+                    mapel: null,
+                    jadwal_kategori_id: null
+                };
+
+                if (type === 'guru') {
+                    scheduleData.guru_id = id;
+                    scheduleData.mapel = selectedOption.dataset.mapel;
+                } else if (type === 'kategori') {
+                    scheduleData.jadwal_kategori_id = id;
+                }
+                schedules.push(scheduleData);
+            });
+        });
+
+        if (validationError) {
+            this.disabled = false;
+            this.textContent = 'Simpan Semua Jadwal';
+            return;
+        }
+
+        try {
+            const response = await fetch('{{ route('jadwal.bulkStore') }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    schedules: schedules,
+                    kelas_id: kelasId
+                })
+            });
+
+            const result = await response.json();
+
+            if (response.ok && result.success) {
+                await Swal.fire('Berhasil!', result.message, 'success');
+                window.location.href = '{{ route('jadwal.perKelas', $kelas->id) }}';
+            } else {
+                Swal.fire('Gagal!', result.message || 'Terjadi kesalahan saat menyimpan.', 'error');
+            }
+        } catch (error) {
+            Swal.fire('Error!', 'Tidak dapat terhubung ke server.', 'error');
+        } finally {
+            this.disabled = false;
+            this.textContent = 'Simpan Semua Jadwal';
+        }
+    });
+
+    // --- INITIALIZE ---
+    initialize();
+});
+</script>
 @endpush

@@ -1,7 +1,7 @@
 @extends('dashboard.admin') 
 @section('content')  
-<div class="content-header">     
-    <h1>Jadwal Kelas {{ $kelas->nama_kelas }}</h1>     
+<div class="content-header"> 
+    <h1>Lihat Jadwal Kelas {{ $kelas->nama_kelas }}</h1>          
     <p>Daftar jadwal untuk kelas {{ $kelas->nama_kelas }}</p> 
 </div>  
 
