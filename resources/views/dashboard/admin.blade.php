@@ -35,49 +35,49 @@
             </div>
             <ul class="sidebar-menu">
                 <li>
-                    <a href="{{ route('admin.dashboard') }}" class="menu-item {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+                    <a href="{{ route('admin.dashboard') }}" class="menu-item">
                         <i class="fas fa-home"></i><span>Home Admin</span>
                     </a>
                 </li>
 
                 <li>
-                    <a href="{{ route('manage.siswa.index') }}" class="menu-item {{ request()->routeIs('manage.siswa.*') ? 'active' : '' }}">
+                    <a href="{{ route('manage.siswa.index') }}" class="menu-item">
                         <i class="fas fa-users"></i><span>Manajemen Siswa</span>
                     </a>
                 </li>
 
                 <li>
-                    <a href="{{ route('manage.guru.index') }}" class="menu-item {{ request()->routeIs('manage.guru.*') ? 'active' : '' }}">
+                    <a href="{{ route('manage.guru.index') }}" class="menu-item">
                         <i class="fas fa-chalkboard-teacher"></i><span>Manajemen Guru</span>
                     </a>
                 </li>
 
                 <li>
-                    <a href="{{ route('manage.kelas.index') }}" class="menu-item {{ request()->routeIs('manage.kelas.*') ? 'active' : '' }}">
+                    <a href="{{ route('manage.kelas.index') }}" class="menu-item">
                         <i class="fas fa-building"></i><span>Manajemen Kelas</span>
                     </a>
                 </li>
                 
                 <li>
-                    <a href="{{ route('jadwal.pilihKelas') }}" class="menu-item {{ (request()->routeIs(['jadwal.pilihKelas', 'jadwal.create'])) || (request()->routeIs('jadwal.perKelas') && basename(parse_url(url()->previous(), PHP_URL_PATH)) != 'kelas') ? 'active' : '' }}">
+                    <a href="{{ route('jadwal.pilihKelas') }}" class="menu-item">
                         <i class="fas fa-calendar-check"></i><span>Manajemen Jadwal</span>
                     </a>
                 </li>
 
                 <li>
-                    <a href="{{ route('jadwal-kategori.index') }}" class="menu-item {{ request()->routeIs('jadwal-kategori.*') ? 'active' : '' }}">
+                    <a href="{{ route('jadwal-kategori.index') }}" class="menu-item">
                         <i class="fas fa-tags"></i><span>Manajemen Kategori Jadwal</span>
                     </a>
                 </li>
                 <li>
-                    <a href="{{ route('kelas.kategori') }}" class="menu-item {{ request()->routeIs('kelas.*') ? 'active' : '' }}">
+                    <a href="{{ route('kelas.kategori') }}" class="menu-item">
                         <i class="fa-solid fa-people-roof"></i><span>Lihat Kelas</span>
                     </a>
                 </li>
 
 
                 <li>
-                    <a href="{{ route('jadwal.pilihKelasLihat') }}" class="menu-item {{ (request()->routeIs('jadwal.pilihKelasLihat')) || (request()->routeIs('jadwal.perKelas') && basename(parse_url(url()->previous(), PHP_URL_PATH)) == 'kelas') ? 'active' : '' }}">
+                    <a href="{{ route('jadwal.pilihKelasLihat') }}" class="menu-item">
                         <i class="fas fa-calendar-alt"></i><span>Lihat Jadwal</span>
                     </a>
                 </li>
@@ -203,5 +203,34 @@
     </script>
 
     @stack('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var currentUrl = window.location.href;
+            var sidebarLinks = document.querySelectorAll('.sidebar-menu a.menu-item');
+            var bestMatch = null;
+
+            sidebarLinks.forEach(function (link) {
+                // Skip the logout link
+                if (link.href.includes('logout')) {
+                    return;
+                }
+
+                if (currentUrl.startsWith(link.href)) {
+                    if (!bestMatch || link.href.length > bestMatch.href.length) {
+                        bestMatch = link;
+                    }
+                }
+            });
+
+            if (bestMatch) {
+                // First, remove active class from all links to be safe
+                sidebarLinks.forEach(function(link) {
+                    link.classList.remove('active');
+                });
+                
+                bestMatch.classList.add('active');
+            }
+        });
+    </script>
 </body>
 </html>
