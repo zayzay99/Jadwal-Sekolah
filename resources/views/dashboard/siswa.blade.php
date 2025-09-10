@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Beranda Siswa - Klipaa Solusi Indonesia</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="{{ asset('css/siswa.css') }}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
   <link rel="icon" type="image/png" href="{{ asset('img/Klipaa Original.png') }}">
@@ -65,11 +66,11 @@
                 @if(isset($jadwals) && count($jadwals) > 0)
                     <table>
                         <thead>
-                            <tr>
-                                <th>Hari</th>
-                                <th>Mata Pelajaran</th>
-                                <th>Guru</th>
-                                <th>Jam</th>
+                            <tr class="bg-[#8cb4d4] text-gray-700">
+                                <th class="py-3 px-4 text-center border">Hari</th>
+                                <th class="py-3 px-4 text-center border">Jam</th>
+                                <th class="py-3 px-4 text-center border">Mata Pelajaran</th>
+                                <th class="py-3 px-4 text-center border">Guru</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -79,13 +80,13 @@
                                         @if($index === 0)
                                             <td rowspan="{{ count($jadwalHarian) }}">{{ $hari }}</td>
                                         @endif
+                                        <td>{{ $jadwal->jam }}</td>
                                         @if($jadwal->kategori)
                                             <td colspan="2" style="text-align: center; font-weight: bold;">{{ $jadwal->kategori->nama_kategori }}</td>
-                                        @else
+                                            @else
                                             <td>{{ $jadwal->mapel }}</td>
                                             <td>{{ $jadwal->guru ? $jadwal->guru->nama : '-' }}</td>
                                         @endif
-                                        <td>{{ $jadwal->jam }}</td>
                                     </tr>
                                 @endforeach
                             @endforeach

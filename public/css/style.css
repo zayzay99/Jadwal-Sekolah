@@ -1107,3 +1107,92 @@
 .custom-table td:nth-child(5) {
     text-align: center; /* Menyelaraskan tombol di tengah kolom Aksi */
 }
+
+
+/* JADWAL TABLE - Khusus untuk tabel jadwal dengan vertical lines */
+.jadwal-table-container .table-responsive {
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.jadwal-table-container .custom-table {
+    margin: 0;
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 2px solid #2d6a4f;
+}
+
+.jadwal-table-container .custom-table th {
+    border-right: 1px solid rgba(255, 255, 255, 0.2);
+    border-bottom: 2px solid #1c3d2e;
+}
+
+.jadwal-table-container .custom-table th:last-child {
+    border-right: none;
+}
+
+.jadwal-table-container .custom-table tbody tr {
+    border-bottom: 1px solid #173027;
+}
+
+.jadwal-table-container .custom-table tbody tr:hover {
+    background: linear-gradient(135deg, #f8fff9, #f0f8f4);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(45, 106, 79, 0.1);
+}
+
+.jadwal-table-container .custom-table td {
+    border-right: 1px solid #173027;
+    vertical-align: middle;
+}
+
+.jadwal-table-container .custom-table td:last-child {
+    border-right: none;
+}
+
+/* Styling khusus untuk kolom hari dengan rowspan di jadwal */
+.jadwal-table-container .custom-table td[rowspan] {
+    background: linear-gradient(135deg, #f0f8f4, #e8f4f0);
+    font-weight: 600;
+    color: #2d6a4f;
+    text-align: center;
+    vertical-align: middle;
+    border-right: 2px solid #2d6a4f;
+}
+
+/* Styling untuk kolom aksi di jadwal */
+.jadwal-table-container .custom-table td:nth-child(5),
+.jadwal-table-container .custom-table th:nth-child(5) {
+    text-align: center;
+    width: 120px;
+}
+
+/* Hover effect khusus untuk jadwal table */
+.jadwal-table-container .custom-table tbody tr:hover td {
+    color: #2d6a4f;
+}
+
+.jadwal-table-container .custom-table tbody tr:hover td[rowspan] {
+    background: linear-gradient(135deg, #e8f4f0, #d4edda);
+}
+
+/* Responsive khusus untuk jadwal table */
+@media (max-width: 768px) {
+    .jadwal-table-container .custom-table th,
+    .jadwal-table-container .custom-table td {
+        padding: 12px 15px;
+    }
+    
+    .jadwal-table-container .custom-table th:first-child,
+    .jadwal-table-container .custom-table td:first-child {
+        padding-left: 10px;
+    }
+    
+    .jadwal-table-container .custom-table th:last-child,
+    .jadwal-table-container .custom-table td:last-child {
+        padding-right: 10px;
+    }
+}
+
+/* ===== AKHIR CSS TAMBAHAN UNTUK TABEL JADWAL ===== */

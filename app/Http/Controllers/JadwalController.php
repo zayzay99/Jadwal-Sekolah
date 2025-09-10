@@ -91,7 +91,7 @@ class JadwalController extends Controller
     public function jadwalPerKelas($kelas_id)
     {
         $kelas = \App\Models\Kelas::findOrFail($kelas_id);
-        $jadwals = \App\Models\Jadwal::where('kelas_id', $kelas_id)->with('guru', 'kategori')->orderByRaw("FIELD(hari, 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu')")->orderBy('jam')->get();
+        $jadwals = \App\Models\Jadwal::where('kelas_id', $kelas_id)->with('guru', 'kategori')->orderByRaw("FIELD(hari, 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu')")->orderBy('jam')->get()->groupBy('hari');
         return view('jadwal.jadwal_per_kelas', compact('kelas', 'jadwals'));
     }
 
