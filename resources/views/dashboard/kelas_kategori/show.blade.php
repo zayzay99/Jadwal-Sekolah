@@ -21,6 +21,7 @@
             <thead>
                 <tr>
                     <th>Kelas</th>
+                    <th style="text-align: center;">Jumlah Siswa</th>
                     <th style="text-align: center;">Aksi</th>
                 </tr>
             </thead>
@@ -28,6 +29,7 @@
                 @foreach($subkelas as $k)
                 <tr>
                     <td>{{ $k->nama_kelas }}</td>
+                    <td style="text-align: center;">{{ $k->siswas_count }}</td>
                     <td style="text-align: center;">
                         <div class="action-buttons">
                             <a href="{{ route('kelas.detail', [$kategori, $k->nama_kelas]) }}" class="btn btn-success btn-tiny">

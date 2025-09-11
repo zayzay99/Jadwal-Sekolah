@@ -2,20 +2,34 @@
 namespace App\Http\Controllers;
 
 use App\Models\Kelas;
+use Illuminate\Support\Facades\DB;
 
 class KelasKategoriController extends Controller
 {
     // Halaman kategori utama ( VII, VIII, IX, X, XI, XII)
     public function index()
     {
-        $kategori = [ 'VII', 'VIII', 'IX', 'X', 'XI', 'XII'];
-        return view('dashboard.kelas_kategori.index', compact('kategori'));
+        $kategoriList = ['VII', 'VIII', 'IX', 'X', 'XI', 'XII'];
+        $kategoriData = [];
+
+        foreach ($kategoriList as $kategori) {
+            $kelasCount = Kelas::where('nama_kelas', 'like', $kategori . ' - %')->count();
+
+            $kategoriData[] = (object)[
+                'nama' => $kategori,
+                'kelas_count' => $kelasCount,
+            ];
+        }
+
+        return view('dashboard.kelas_kategori.index', ['kategori' => $kategoriData]);
     }
 
     // Daftar subkelas (X-1, X-2, dst)
     public function show($kategori)
     {
-        $subkelas = Kelas::where('nama_kelas', 'like', $kategori.' - %')->get();
+        $subkelas = Kelas::where('nama_kelas', 'like', $kategori . ' - %')
+                         ->withCount('siswas')
+                         ->get();
         return view('dashboard.kelas_kategori.show', compact('kategori', 'subkelas'));
     }
 
