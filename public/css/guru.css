@@ -120,76 +120,90 @@ body.sidebar-open {
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
 }
 
-.menu-item {
-  display: block;
-  background-color: rgba(161, 185, 219, 0.8);
-  color: white;
+/* GAYA BARU UNTUK TOMBOL SIDEBAR */
+
+/* Base style untuk semua item menu */
+.menu-item,
+.logout-btn,
+.cs-btn {
+  display: flex; /* Menggunakan flexbox untuk ikon dan teks */
+  align-items: center;
+  justify-content: flex-start; /* Rata kiri */
+  gap: 0.875rem; /* Jarak antara ikon dan teks */
+  background-color: #f8fafc; /* Latar belakang netral yang sangat terang */
+  color: #475569; /* Warna teks gelap untuk kontras */
   font-weight: 600;
   padding: 0.875rem 1rem;
   border-radius: 0.5rem;
-  text-align: center;
-  transition: all 0.2s ease;
+  text-align: left;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   text-decoration: none;
-  border: none;
+  border: 1px solid #e2e8f0; /* Border tipis */
   cursor: pointer;
   font-size: 0.9rem;
 }
 
-.menu-item:hover {
-  background-color: #8facd3;
-  transform: translateY(-1px);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+/* Efek hover untuk semua item */
+.menu-item:hover,
+.logout-btn:hover,
+.cs-btn:hover {
+  background-color: #f1f5f9; /* Sedikit lebih gelap saat hover */
+  color: #1e293b;
+  transform: translateY(-2px) scale(1.02); /* Efek angkat yang lebih jelas */
+  box-shadow: 0 4px 10px -2px rgba(0, 0, 0, 0.06);
+  border-color: #cbd5e1;
 }
 
+/* Style untuk item yang aktif */
 .menu-item.active {
-  background-color: #5d85c4;
+  background-color: #6f99cc; /* Warna utama tema */
+  color: white;
+  border-color: #6f99cc;
+  box-shadow: 0 6px 12px -3px rgba(111, 153, 204, 0.5);
+  transform: translateY(-1px);
 }
 
-.logout-btn {
-  display: block;
-  background-color: #ef6363;
-  color: white;
-  font-weight: 600;
-  padding: 0.875rem 1rem;
-  border-radius: 0.5rem;
+/* Ikon di dalam tombol */
+.menu-item i,
+.logout-btn i,
+.cs-btn i {
+  width: 20px;
   text-align: center;
-  transition: all 0.2s ease;
-  border: none;
-  cursor: pointer;
-  font-size: 0.9rem;
-  margin-top: auto;
+  color: #94a3b8;
+  transition: color 0.2s ease;
+}
+
+/* Warna ikon saat hover atau aktif */
+.menu-item:hover i,
+.logout-btn:hover i,
+.cs-btn:hover i {
+  color: #475569;
+}
+
+.menu-item.active i {
+  color: white;
+}
+
+/* Style khusus untuk tombol Logout */
+.logout-btn {
+  margin-top: auto; /* Mendorong ke bawah */
+  background-color: #fef2f2; /* Latar belakang merah muda */
+  color: #dc2626; /* Teks merah */
+  border-color: #fecaca;
 }
 
 .logout-btn:hover {
-  background-color: #d65353;
-  transform: translateY(-1px);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background-color: #fee2e2;
+  color: #b91c1c;
+  border-color: #fca5a5;
 }
 
-.cs-btn {
-  /* Menggunakan style dari menu-item */
-  margin-top: auto; /* Mendorong ke bawah */
+.logout-btn i {
+  color: #f87171;
 }
 
-.cs-btn:hover {
-  /* Override hover dari menu-item jika perlu */
-}
-
-.cs-btn-old {
-  margin-top: 0.75rem;
-  border-radius: 0.5rem;
-  transition: all 0.2s ease;
-}
-
-.cs-btn:hover {
-  background-color: #8facd3;
-  transform: translateY(-1px);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.cs-btn img {
-  width: 1.5rem;
-  height: 1.5rem;
+.logout-btn:hover i {
+  color: #dc2626;
 }
 
 /* Main Content */

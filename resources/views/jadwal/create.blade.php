@@ -6,10 +6,13 @@
             <h1>Manajemen Jadwal Untuk Kelas: <strong>{{ $kelas->nama_kelas }}</strong></h1>
             <p>Atur jadwal di bawah ini. Klik "Tambah Baris Jadwal" untuk menambah slot waktu baru.</p>
         </div>
-        <div>
-            <button id="add-row-btn" class="btn btn-success">Tambah Baris Jadwal</button>
-            <button id="bulkSaveBtn" class="btn btn-info">Simpan Semua Jadwal</button>
-            <a href="{{ route('jadwal.perKelas', $kelas->id) }}" class="btn btn-primary">Lihat Jadwal Selesai</a>
+        <div class="flex gap-4">
+            <button id="add-row-btn" class="btn btn-success btn-tiny">Tambah Baris Jadwal</button>
+            <button id="bulkSaveBtn" class="btn btn-info btn-tiny">Simpan Semua Jadwal</button>
+            <a href="{{ route('jadwal.perKelas', $kelas->id) }}" class="btn btn-primary btn-tiny">Lihat Jadwal Selesai</a>
+            <a href="{{ route('jadwal.pilihKelas') }}" class="btn btn-secondary btn-tiny">
+                <i class="fas fa-arrow-left"></i> Kembali
+            </a>
         </div>
     </div>
 
@@ -36,43 +39,158 @@
 @endsection
 
 @push('styles')
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
-    <style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<style>
+    .main-layout {
+        display: flex;
+    }
+    .content {
+        flex: 1;
+        max-width: calc(100vw - 250px);
+    }
+    @media (max-width: 768px) {
+        .content {
+            max-width: 100vw;
+        }
+    }
+
+    /* Content styles */
+    .content-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+    
+    .custom-table th, .custom-table td {
+        vertical-align: middle;
+        text-align: center;
+        padding: 0.5rem;
+    }
+    
+    .time-input-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+    
+    .time-input {
+        width: 80px;
+        padding: 0.375rem 0.5rem;
+    }
+    
+    .schedule-select {
+        min-width: 150px;
+    }
+    
+    .delete-row-btn {
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        border: 1px solid #dc3545;
+        background-color: #f8d7da;
+        color: #721c24;
+        font-size: 20px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .delete-row-btn:hover {
+        background-color: #dc3545;
+        color: white;
+    }
+
+    /* Hover effects untuk tabel */
+    .custom-table tbody tr {
+        transition: all 0.3s ease;
+    }
+
+    .custom-table tbody tr:hover {
+        background-color: #f8fff9;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+    }
+
+    /* Button hover effects */
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+
+    .btn-success:hover {
+        background: linear-gradient(135deg, #218838, #1e7e34);
+    }
+
+    
+
+    
+
+    .btn-secondary:hover {
+        background: linear-gradient(135deg, #5a6268, #495057);
+    }
+
+    /* Mobile responsive */
+    @media (max-width: 768px) {
         .content-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 20px; /* Increased gap for better separation */
         }
+        
+        .content-header > div:last-child {
+            display: grid; /* Use grid for button alignment */
+            grid-template-columns: 1fr 1fr; /* Two neat columns */
+            gap: 10px;
+            width: 100%;
+        }
+        
+        .btn-tiny {
+            /* Remove flex: 1 as grid handles sizing */
+            padding: 10px 12px !important; /* Slightly more padding */
+            font-size: 12px !important;
+            white-space: normal; /* Allow text to wrap if needed */
+            text-align: center; /* Center text */
+        }
+        
+        .table-container {
+            padding: 0; /* Remove padding to allow table to use full width */
+            margin: 0;
+            overflow-x: auto;
+        }
+        
+        .custom-table {
+            font-size: 13px; /* Slightly smaller font for more density */
+            min-width: 600px;
+        }
+
         .custom-table th, .custom-table td {
-            vertical-align: middle;
-            text-align: center;
-            padding: 0.5rem;
+            padding: 8px 10px; /* Adjust padding */
         }
+        
         .time-input-container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
+            flex-direction: column;
+            gap: 5px;
         }
+        
         .time-input {
-            width: 80px;
-            padding: 0.375rem 0.5rem;
+            width: 90px; /* A bit more width for time inputs */
+            padding: 0.375rem;
+            font-size: 13px;
         }
+        
         .schedule-select {
-            min-width: 150px;
+            min-width: 130px;
+            font-size: 13px;
+            padding: 0.375rem;
         }
+        
         .delete-row-btn {
-            width: 35px;
-            height: 35px;
-            border-radius: 50%;
-            border: 1px solid #dc3545;
-            background-color: #f8d7da;
-            color: #721c24;
-            font-size: 20px;
-            cursor: pointer;
-            transition: all 0.2s ease;
+            width: 32px;
+            height: 32px;
+            font-size: 18px;
         }
+<<<<<<< HEAD
         .delete-row-btn:hover {
             background-color: #dc3545;
             color: white;
@@ -92,6 +210,10 @@
             display: none;
         }
     </style>
+=======
+    }
+</style>
+>>>>>>> ef56041a41fc934a8c6a05417ae1868619c2e84e
 @endpush
 
 @push('scripts')
@@ -146,14 +268,17 @@ document.addEventListener('DOMContentLoaded', function () {
         const tr = document.createElement('tr');
         tr.className = 'schedule-row';
 
-        let timeParts = jam ? jam.split(' - ') : ['', ''];
+        let timeParts = ['', ''];
+        if (jam && jam.includes('-')) {
+            timeParts = jam.split('-').map(t => t.trim());
+        }
 
         let cells = `
             <td>
                 <div class="time-input-container">
-                    <input type="time" class="form-control time-input time-start" value="${timeParts[0]}">
+                    <input type="time" class="form-control time-input time-start" value="${timeParts[0] || ''}">
                     <span>-</span>
-                    <input type="time" class="form-control time-input time-end" value="${timeParts[1]}">
+                    <input type="time" class="form-control time-input time-end" value="${timeParts[1] || ''}">
                 </div>
             </td>
         `;

@@ -1260,3 +1260,7 @@
         transform: translateX(0);
     }
 }
+
+.backdrop.show {
+    display: block;
+}
