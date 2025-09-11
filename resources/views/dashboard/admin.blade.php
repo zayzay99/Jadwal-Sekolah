@@ -231,25 +231,34 @@
             var sidebarLinks = document.querySelectorAll('.sidebar-menu a.menu-item');
             var bestMatch = null;
 
-            sidebarLinks.forEach(function (link) {
-                // Skip the logout link
-                if (link.href.includes('logout')) {
-                    return;
-                }
-
-                if (currentUrl.startsWith(link.href)) {
-                    if (!bestMatch || link.href.length > bestMatch.href.length) {
-                        bestMatch = link;
-                    }
-                }
+            // Hapus kelas aktif dari semua link terlebih dahulu
+            sidebarLinks.forEach(function(link) {
+                link.classList.remove('active');
             });
 
-            if (bestMatch) {
-                // First, remove active class from all links to be safe
-                sidebarLinks.forEach(function(link) {
-                    link.classList.remove('active');
+            // Logika baru yang lebih spesifik
+            if (currentUrl.includes('/jadwal/kelas')) {
+                // Case 1: URL untuk "Lihat Jadwal"
+                bestMatch = document.querySelector('a.menu-item[href*="/jadwal/kelas"]');
+            } else if (currentUrl.includes('/jadwal/')) {
+                // Case 2: URL untuk "Manajemen Jadwal" (create, edit, etc.)
+                bestMatch = document.querySelector('a.menu-item[href*="pilih-kelas"]');
+            } else {
+                // Case 3: Fallback untuk halaman lainnya
+                sidebarLinks.forEach(function (link) {
+                    if (link.href.includes('logout')) {
+                        return;
+                    }
+                    if (currentUrl.startsWith(link.href)) {
+                        if (!bestMatch || link.href.length > bestMatch.href.length) {
+                            bestMatch = link;
+                        }
+                    }
                 });
-                
+            }
+
+            // Tambahkan kelas aktif ke link yang cocok
+            if (bestMatch) {
                 bestMatch.classList.add('active');
             }
         });
