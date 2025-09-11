@@ -15,16 +15,18 @@
             <thead>
                 <tr>
                     <th style="text-align: center;">Kelas</th>
+                    <th style="text-align: center;">Jumlah Ruang Kelas</th>
                     <th style="text-align: center;">Aksi</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach($kategori as $kat)
+                @foreach($kategori as $data)
                 <tr>
-                    <td style="text-align: center;">{{ $kat }}</td>
+                    <td style="text-align: center;">{{ $data->nama }}</td>
+                    <td style="text-align: center;">{{ $data->kelas_count }}</td>
                     <td>
                         <div class="action-buttons">
-                            <a href="{{ route('kelas.show', $kat) }}" class="btn btn-success btn-tiny">
+                            <a href="{{ route('kelas.show', $data->nama) }}" class="btn btn-success btn-tiny">
                                 <i class="fas fa-search"></i> Lihat
                             </a>
                         </div>

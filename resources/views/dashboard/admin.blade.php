@@ -6,7 +6,7 @@
     <title>Beranda Admin - Klipaa Solusi Indonesia</title>
 
     <!-- Styles -->
-    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+    <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="icon" type="image/png" sizes="60x60" href="{{ asset('img/Klipaa Original.png') }}">
@@ -14,9 +14,13 @@
     @stack('styles')
 </head>
 <body>
+    <div id="admin-backdrop" class="backdrop"></div>
     <!-- Navbar -->
     <nav class="navbar">
         <div class="nav-brand">
+            <button id="admin-menu-toggle" class="menu-toggle-btn">
+                <i class="fas fa-bars"></i>
+            </button>
             <h2>Admin Dashboard</h2>
         </div>
         <div class="nav-user">
@@ -29,7 +33,7 @@
 
     <div class="main-layout">
         <!-- Sidebar -->
-        <aside class="sidebar">
+        <aside id="admin-sidebar" class="sidebar">
             <div class="sidebar-header">
                 <h3>Menu</h3>
             </div>
@@ -202,7 +206,25 @@
         });
     </script>
 
-    @stack('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const menuToggle = document.getElementById('admin-menu-toggle');
+            const sidebar = document.getElementById('admin-sidebar');
+            const backdrop = document.getElementById('admin-backdrop');
+
+            if (menuToggle && sidebar && backdrop) {
+                menuToggle.addEventListener('click', function() {
+                    sidebar.classList.toggle('show');
+                    backdrop.classList.toggle('show');
+                });
+
+                backdrop.addEventListener('click', function() {
+                    sidebar.classList.remove('show');
+                    backdrop.classList.remove('show');
+                });
+            }
+        });
+    </script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             var currentUrl = window.location.href;
@@ -232,5 +254,6 @@
             }
         });
     </script>
+    @stack('scripts')
 </body>
 </html>

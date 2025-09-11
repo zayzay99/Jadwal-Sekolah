@@ -63,7 +63,7 @@
       }
     }
 
-    input[type="text"], 
+    input[type="text"],
     input[type="password"] {
       width: 100%;
       padding: 15px;
@@ -93,15 +93,11 @@
     .circle {
       width: 250px;
       height: 100px;
-      background-image: url('/img/klipaa Student.png');
-      background-size: cover;
+      background-image: url('/img/klipaa_Student.png');
+      background-size: contain;
+      background-repeat: no-repeat;
       background-position: center;
-      border-radius: 5%;
-      position: absolute;
-      top: 30px;
-      right: 30px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-      z-index: 2;
+      margin: 0 auto 20px;
     }
 
     .footer {
@@ -172,13 +168,49 @@
         margin-bottom: 15px;
         color: #2d6a4f;
     }
+
+    @media (max-width: 768px) { /* For tablets */
+      .container {
+        width: 90%;
+        max-width: 400px;
+        padding: 30px;
+        background-color: rgba(255, 255, 255, 0.85); /* More opaque background */
+      }
+    }
+
+    @media (max-width: 480px) { /* For phones */
+      .container {
+        padding: 20px;
+      }
+      .circle {
+        width: 180px;
+        height: 72px;
+      }
+
+      input[type="text"],
+      input[type="password"] {
+        padding: 12px;
+        font-size: 0.9em;
+      }
+
+      button {
+        padding: 10px 15px;
+        font-size: 0.9em;
+      }
+
+      .info-popup {
+          width: 90%;
+          left: 5%;
+          right: 5%;
+          bottom: 80px;
+      }
+    }
   </style>
 </head>
 <body>
 
-  <div class="circle"></div>
-
   <div class="container">
+    <div class="circle"></div>
     <div class="marquee">
       <span>Selamat Datang!! Silakan login untuk melanjutkan.</span>
     </div>
@@ -211,11 +243,15 @@
 
   <!-- Popup Opsi/Biodata -->
   <div class="info-popup" id="info-popup">
+<<<<<<< HEAD
       <h4>Dibuat oleh Tim Prakerin SMK Wikrama 1 Garut & SMKN 1 Garut:</h4>
+=======
+      <h4>Dibuat oleh Tim PKL SMK Wikrama 1 Garut dan SMKN 1 Garut:</h4>
+>>>>>>> 8771180a45d04b6014f9f1f27895a52d54170cdf
       <ul style="list-style: none; text-align: left; line-height: 1.8; padding: 0;">
-          <li><strong style="color: #1c3d2e;">Kesya Apri Pujiatmoko</strong><br><small>Programmer - UI/UX & System Analyst</small></li>
-          <li><strong style="color: #1c3d2e;">Muhammad Zayyidan Al Kautsar</strong><br><small>Programmer - UI/UX & System Analyst</small></li>
-          <li><strong style="color: #1c3d2e;">Alkayisa Nurhasya Lillah</strong><br><small>Programmer - UI/UX & System Analyst</small></li>
+          <li><strong style="color: #1c3d2e;">Kesya Apri Pujiatmoko</strong><br><small>UI/UX & Backend Developer</small></li>
+          <li><strong style="color: #1c3d2e;">Muhammad Zayyidan Al Kautsar</strong><br><small>Backend Developer & System Analyst</small></li>
+          <li><strong style="color: #1c3d2e;">Alkayisa Nurhasya Lillah</strong><br><small>UI/UX & Frontend Developer</small></li>
       </ul>
   </div>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
