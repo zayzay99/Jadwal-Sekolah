@@ -21,7 +21,10 @@ class JadwalController extends Controller
     public function create($kelas_id)
     {
         $kelas = \App\Models\Kelas::findOrFail($kelas_id);
-        $gurus = \App\Models\Guru::orderBy('nama')->get();
+        // Ambil guru beserta batas mengajarnya
+        $gurus = \App\Models\Guru::orderBy('nama')->get(['id', 'nama', 'pengampu', 'max_jp_per_hari']);
+
+        $allSchedules = Jadwal::with('kelas:id,nama_kelas')->get(['guru_id', 'kelas_id', 'hari', 'jam']);
         $jadwals = Jadwal::where('kelas_id', $kelas_id)->with('guru')->get();
 
         $days = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
@@ -34,7 +37,7 @@ class JadwalController extends Controller
 
         $kategoris = JadwalKategori::all();
 
-        return view('jadwal.create', compact('kelas', 'gurus', 'days', 'timeSlots', 'scheduleGrid', 'kategoris'));
+        return view('jadwal.create', compact('kelas', 'gurus', 'days', 'timeSlots', 'scheduleGrid', 'kategoris', 'allSchedules'));
     }
 
     public function bulkStore(Request $request)
@@ -51,6 +54,51 @@ class JadwalController extends Controller
 
         $kelasId = $validated['kelas_id'];
         $schedules = $validated['schedules'];
+
+        // --- VALIDASI BACKEND ---
+        $teacherSchedules = []; // [guru_id][hari] = total_jp
+        $teacherClashes = []; // [guru_id][hari][jam] = kelas_id
+
+        // 1. Ambil semua jadwal yang ada KECUALI untuk kelas yang sedang diedit
+        $existingSchedules = Jadwal::where('kelas_id', '!=', $kelasId)->whereNotNull('guru_id')->get();
+        foreach ($existingSchedules as $jadwal) {
+            $teacherClashes[$jadwal->guru_id][$jadwal->hari][$jadwal->jam] = $jadwal->kelas_id;
+        }
+
+        // 2. Validasi jadwal baru yang di-submit
+        foreach ($schedules as $scheduleData) {
+            if (empty($scheduleData['guru_id'])) continue;
+
+            $guruId = $scheduleData['guru_id'];
+            $hari = $scheduleData['hari'];
+            $jam = $scheduleData['jam'];
+
+            // Cek bentrok
+            if (isset($teacherClashes[$guruId][$hari][$jam])) {
+                $guru = Guru::find($guruId);
+                $kelas = Kelas::find($teacherClashes[$guruId][$hari][$jam]);
+                return response()->json(['success' => false, 'message' => "Jadwal bentrok! Guru {$guru->nama} sudah mengajar di kelas {$kelas->nama_kelas} pada hari {$hari}, jam {$jam}."], 422);
+            }
+            // Tandai jadwal ini untuk pengecekan selanjutnya
+            $teacherClashes[$guruId][$hari][$jam] = $kelasId;
+
+            // Hitung JP harian
+            try {
+                $jamParts = explode(' - ', $jam);
+                $jamMulai = new \DateTime($jamParts[0]);
+                $jamSelesai = new \DateTime($jamParts[1]);
+                $durasiMenit = ($jamSelesai->getTimestamp() - $jamMulai->getTimestamp()) / 60;
+                $jp = floor($durasiMenit / 35); // 1 JP = 35 menit
+
+                if (!isset($teacherSchedules[$guruId][$hari])) {
+                    $teacherSchedules[$guruId][$hari] = 0;
+                }
+                $teacherSchedules[$guruId][$hari] += $jp;
+            } catch (\Exception $e) {
+                // Abaikan jika format jam salah, akan divalidasi di frontend
+            }
+        }
+        // --- AKHIR VALIDASI BACKEND ---
 
         DB::beginTransaction();
         try {

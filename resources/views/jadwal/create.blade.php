@@ -77,6 +77,20 @@
             background-color: #dc3545;
             color: white;
         }
+        .schedule-select.is-invalid {
+            border-color: #dc3545;
+            background-color: #f8d7da;
+        }
+        .cell-error-tooltip {
+            position: absolute;
+            background-color: #721c24;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            z-index: 10;
+            display: none;
+        }
     </style>
 @endpush
 
@@ -94,6 +108,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const gurus = @json($gurus->values());
     const kategoris = @json($kategoris->values());
     const scheduleData = @json($scheduleGrid);
+    const allSchedules = @json($allSchedules);
 
     // --- OPTIONS TEMPLATE ---
     function getSelectOptions() {
@@ -111,6 +126,20 @@ document.addEventListener('DOMContentLoaded', function () {
         return options;
     }
     const selectOptionsHtml = getSelectOptions();
+
+    // --- DATA HELPERS ---
+    const teacherClashMap = {}; // { guru_id: { hari: { jam: 'Nama Kelas' } } }
+    allSchedules.forEach(s => {
+        if (!s.guru_id) return;
+        if (!teacherClashMap[s.guru_id]) teacherClashMap[s.guru_id] = {};
+        if (!teacherClashMap[s.guru_id][s.hari]) teacherClashMap[s.guru_id][s.hari] = {};
+        teacherClashMap[s.guru_id][s.hari][s.jam] = s.kelas.nama_kelas;
+    });
+
+    const teacherLimits = {}; // { guru_id: max_jp_per_hari }
+    gurus.forEach(g => {
+        if (g.max_jp_per_hari) teacherLimits[g.id] = g.max_jp_per_hari;
+    });
 
     // --- ROW TEMPLATE ---
     function createRow(jam = '', data = {}) {
@@ -132,7 +161,7 @@ document.addEventListener('DOMContentLoaded', function () {
         days.forEach(day => {
             cells += `
                 <td>
-                    <select class="form-control schedule-select" data-day="${day}">
+                    <select class="form-control schedule-select" data-day="${day}" data-jam="${jam}">
                         ${selectOptionsHtml}
                     </select>
                 </td>
@@ -166,6 +195,70 @@ document.addEventListener('DOMContentLoaded', function () {
         return tr;
     }
 
+    // --- VALIDATION LOGIC ---
+    function validateAllCells() {
+        const teacherDailyJP = {}; // { guru_id: { hari: total_jp } }
+        const rows = scheduleBody.querySelectorAll('.schedule-row');
+
+        // Reset all previous errors
+        document.querySelectorAll('.schedule-select.is-invalid').forEach(el => {
+            el.classList.remove('is-invalid');
+            el.title = '';
+        });
+
+        rows.forEach(row => {
+            const startTime = row.querySelector('.time-start').value;
+            const endTime = row.querySelector('.time-end').value;
+            if (!startTime || !endTime || startTime >= endTime) return;
+
+            const jam = `${startTime} - ${endTime}`;
+            const durasiMenit = (new Date(`1970-01-01T${endTime}:00`) - new Date(`1970-01-01T${startTime}:00`)) / 60000;
+            const jp = Math.floor(durasiMenit / 35); // 1 JP = 35 menit
+
+            row.querySelectorAll('.schedule-select').forEach(select => {
+                const selectedValue = select.value;
+                if (!selectedValue || !selectedValue.startsWith('guru-')) return;
+
+                const day = select.dataset.day;
+                const guruId = selectedValue.split('-')[1];
+
+                // 1. Check for clashes with other schedules
+                if (teacherClashMap[guruId] && teacherClashMap[guruId][day] && teacherClashMap[guruId][day][jam]) {
+                    const clashKelas = teacherClashMap[guruId][day][jam];
+                    select.classList.add('is-invalid');
+                    select.title = `Bentrok! Sudah mengajar di kelas ${clashKelas}.`;
+                }
+
+                // 2. Accumulate daily JP
+                if (!teacherDailyJP[guruId]) teacherDailyJP[guruId] = {};
+                if (!teacherDailyJP[guruId][day]) teacherDailyJP[guruId][day] = 0;
+                teacherDailyJP[guruId][day] += jp;
+            });
+        });
+
+        // 3. Check daily JP limits
+        for (const guruId in teacherDailyJP) {
+            const guruLimit = teacherLimits[guruId];
+            if (!guruLimit) continue;
+
+            for (const day in teacherDailyJP[guruId]) {
+                const totalJP = teacherDailyJP[guruId][day];
+                if (totalJP > guruLimit) {
+                    // Find all selects for this guru on this day and mark them as invalid
+                    rows.forEach(row => {
+                        const select = row.querySelector(`select[data-day="${day}"]`);
+                        if (select.value === `guru-${guruId}`) {
+                            select.classList.add('is-invalid');
+                            const currentTitle = select.title;
+                            const newTitle = `Batas harian terlampaui! (${totalJP} dari maks ${guruLimit} JP).`;
+                            select.title = currentTitle ? `${currentTitle}\n${newTitle}` : newTitle;
+                        }
+                    });
+                }
+            }
+        }
+    }
+
     // --- INITIALIZE VIEW ---
     function initialize() {
         // Group schedule data by jam
@@ -195,6 +288,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (sortedTimeSlots.length === 0) {
             scheduleBody.appendChild(createRow());
         }
+        validateAllCells();
     }
 
     // --- EVENT LISTENERS ---
@@ -208,6 +302,12 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
+    scheduleBody.addEventListener('change', (e) => {
+        if (e.target.classList.contains('schedule-select') || e.target.classList.contains('time-input')) {
+            validateAllCells();
+        }
+    });
+
     bulkSaveBtn.addEventListener('click', async function() {
         this.disabled = true;
         this.textContent = 'Menyimpan...';
@@ -215,6 +315,11 @@ document.addEventListener('DOMContentLoaded', function () {
         const schedules = [];
         const rows = scheduleBody.querySelectorAll('.schedule-row');
         let validationError = false;
+
+        if (document.querySelector('.schedule-select.is-invalid')) {
+            Swal.fire('Validasi Gagal', 'Terdapat jadwal yang bentrok atau melebihi batas mengajar guru. Perbaiki isian yang ditandai merah.', 'error');
+            validationError = true;
+        }
 
         rows.forEach(row => {
             const startTime = row.querySelector('.time-start').value;

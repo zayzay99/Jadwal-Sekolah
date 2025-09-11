@@ -174,12 +174,16 @@
                                         <thead>
                                             <tr class="bg-blue-200 text-gray-700">
                                                 <th class="py-3 px-4 text-center border border-[#a1b9db]">Hari</th>
-                                                <th class="py-3 px-4 text-center border border-[#a1b9db]">Jam</th>
                                                 <th class="py-3 px-4 text-center border border-[#a1b9db]">Mata Pelajaran</th>
                                                 <th class="py-3 px-4 text-center border border-[#a1b9db]">Kelas</th>
+                                                <th class="py-3 px-4 text-center border border-[#a1b9db]">Jam</th>
+                                                <th class="py-3 px-4 text-center border border-[#a1b9db]">Durasi (JP)</th>
                                             </tr>
                                         </thead>
                                         <tbody>
+                                            @php
+                                                $totalJP = 0;
+                                            @endphp
                                             @foreach ($jadwals->groupBy('hari') as $hari => $jadwalHarian)
                                                 @foreach ($jadwalHarian as $index => $jadwal)
                                                     <tr class="hover:bg-blue-50 transition">
@@ -189,20 +193,40 @@
                                                                 {{ $hari }}
                                                             </td>
                                                         @endif
-                                                        <td class="py-2 px-4 border border-[#a1b9db]">
-                                                            {{ $jadwal->jam }}</td>
                                                         @if($jadwal->kategori)
-                                            <td colspan="2" style="text-align: center; font-weight: bold;">{{ $jadwal->kategori->nama_kategori }}</td>
-                                        @else
+                                                            <td colspan="2" style="text-align: center; font-weight: bold;">{{ $jadwal->kategori->nama_kategori }}</td>
+                                                        @else
                                                             <td class="py-2 px-4 border border-[#a1b9db]">
                                                                 {{ $jadwal->mapel }}</td>
                                                                 <td class="py-2 px-4 border border-[#a1b9db]">
                                                                   {{ $jadwal->kelas ? $jadwal->kelas->nama_kelas : '-' }}
                                                                 </td>
-                                                                @endif
+                                                        @endif
+                                                        <td class="py-2 px-4 border border-[#a1b9db]">
+                                                            {{ $jadwal->jam }}
+                                                        </td>
+                                                        <td class="py-2 px-4 border border-[#a1b9db] text-center">
+                                                            @php
+                                                                $jamParts = explode(' - ', $jadwal->jam);
+                                                                if (count($jamParts) == 2) {
+                                                                    $jamMulai = \Carbon\Carbon::parse($jamParts[0]);
+                                                                    $jamSelesai = \Carbon\Carbon::parse($jamParts[1]);
+                                                                    $durasiMenit = $jamSelesai->diffInMinutes($jamMulai);
+                                                                    $jp = floor($durasiMenit / 35); // Asumsi 1 JP = 35 menit
+                                                                    $totalJP += $jp;
+                                                                    echo $jp;
+                                                                } else {
+                                                                    echo '-';
+                                                                }
+                                                            @endphp
+                                                        </td>
                                                     </tr>
                                                 @endforeach
                                             @endforeach
+                                            <tr class="bg-gray-100 font-bold">
+                                                <td colspan="4" class="py-2 px-4 text-right border border-[#a1b9db]">Total Jam Pelajaran (JP) per Minggu:</td>
+                                                <td class="py-2 px-4 text-center border border-[#a1b9db]">{{ $totalJP }}</td>
+                                            </tr>
                                         </tbody>
                                     </table>
                                 @else

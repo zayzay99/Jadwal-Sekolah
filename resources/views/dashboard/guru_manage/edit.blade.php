@@ -39,7 +39,14 @@
             <input type="text" id="pengampu" name="pengampu" value="{{ $guru->pengampu }}" required class="form-control">
         </div>
         
-        
+        <div class="form-group">
+            <label for="max_jp_per_minggu">Batas Mengajar per Minggu (JP)</label>
+            <input type="number" id="max_jp_per_minggu" name="max_jp_per_minggu" value="{{ $guru->max_jp_per_minggu }}" class="form-control" placeholder="Contoh: 24">
+        </div>
+        <div class="form-group">
+            <label for="max_jp_per_hari">Batas Mengajar per Hari (JP)</label>
+            <input type="number" id="max_jp_per_hari" name="max_jp_per_hari" value="{{ $guru->max_jp_per_hari }}" class="form-control" placeholder="Contoh: 5">
+        </div>
         <div class="form-group">
             <label for="email">Email</label>
             <input type="email" id="email" name="email" value="{{ $guru->email }}" required class="form-control">
