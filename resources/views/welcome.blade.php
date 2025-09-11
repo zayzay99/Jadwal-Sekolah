@@ -243,7 +243,11 @@
 
   <!-- Popup Opsi/Biodata -->
   <div class="info-popup" id="info-popup">
+<<<<<<< HEAD
+      <h4>Dibuat oleh Tim Prakerin SMK Wikrama 1 Garut & SMKN 1 Garut:</h4>
+=======
       <h4>Dibuat oleh Tim PKL SMK Wikrama 1 Garut dan SMKN 1 Garut:</h4>
+>>>>>>> 8771180a45d04b6014f9f1f27895a52d54170cdf
       <ul style="list-style: none; text-align: left; line-height: 1.8; padding: 0;">
           <li><strong style="color: #1c3d2e;">Kesya Apri Pujiatmoko</strong><br><small>UI/UX & Backend Developer</small></li>
           <li><strong style="color: #1c3d2e;">Muhammad Zayyidan Al Kautsar</strong><br><small>Backend Developer & System Analyst</small></li>
