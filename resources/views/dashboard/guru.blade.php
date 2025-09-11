@@ -63,22 +63,27 @@
       <!-- Menu --> --}}
       <!-- Menu -->
 <nav class="menu">
-  <div class="menu-box">
-    <a href="{{ route('guru.dashboard') }}" class="menu-item {{ Request::routeIs('guru.dashboard') ? 'active' : '' }}">Dashboard</a>
-    @php 
-        $guru = Auth::guard('guru')->user();
-        $mailToBody = "Nama Pengguna: {$guru->nama}\n" .
-                      "NIP Pengguna: {$guru->nip}\n" .
-                      "Email Pengguna: {$guru->email}\n\n" .
-                      "Sebutkan masalah dan lampirkan foto (jika ada):";
-    @endphp
-    <a href="mailto:kesyapujiatmoko@gmail.com?subject=Laporan Masalah Pengguna (Guru)&body={{ rawurlencode($mailToBody) }}" class="menu-item cs-btn" title="Hubungi Customer Service">
-        <img src="/img/CS.svg" alt="Customer Service" style="width: 1.5rem; height: 1.5rem; margin: auto;">
-    </a>    
-    <button class="logout-btn" data-url="{{ route('logout') }}" onclick="showLogoutConfirmation(event)">
-      Keluar
-    </button>
-  </div>
+    <div class="menu-box">
+        <a href="{{ route('guru.dashboard') }}" class="menu-item {{ Request::routeIs('guru.dashboard') ? 'active' : '' }}">
+            <i class="fas fa-tachometer-alt"></i>
+            <span>Dashboard</span>
+        </a>
+        @php
+            $guru = Auth::guard('guru')->user();
+            $mailToBody = "Nama Pengguna: {$guru->nama}\n" .
+                          "NIP Pengguna: {$guru->nip}\n" .
+                          "Email Pengguna: {$guru->email}\n\n" .
+                          "Sebutkan masalah dan lampirkan foto (jika ada):";
+        @endphp
+        <a href="mailto:kesyapujiatmoko@gmail.com?subject=Laporan Masalah Pengguna (Guru)&body={{ rawurlencode($mailToBody) }}" class="cs-btn" title="Hubungi Customer Service">
+            <i class="fas fa-headset"></i>
+            <span>Bantuan</span>
+        </a>
+        <button class="logout-btn" data-url="{{ route('logout') }}" onclick="showLogoutConfirmation(event)">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Keluar</span>
+        </button>
+    </div>
 </nav>
     </aside>
 
