@@ -3,8 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\Guru;
+<<<<<<< HEAD
 use App\Models\Jadwal;
 use Illuminate\Http\Request;
+=======
+use App\Models\GuruAvailability;
+use App\Models\Tabelj;
+>>>>>>> 61d5a9cc98bb7274cf73cce17bd4cc2346adfb4d
 use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
 
@@ -63,6 +68,7 @@ class ManageGuruController extends Controller
             'max_jp_per_minggu' => 'nullable|integer|min:0',
             'max_jp_per_hari' => 'nullable|integer|min:0',
             'profile_picture' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'total_jam_mengajar' => 'required|integer|min:0',
         ]);
 
         $data = $request->all();
@@ -76,6 +82,7 @@ class ManageGuruController extends Controller
         }
 
         $data['password'] = Hash::make($request->password);
+        $data['sisa_jam_mengajar'] = $request->total_jam_mengajar;
 
         Guru::create($data);
 
@@ -98,6 +105,7 @@ class ManageGuruController extends Controller
             'max_jp_per_minggu' => 'nullable|integer|min:0',
             'max_jp_per_hari' => 'nullable|integer|min:0',
             'profile_picture' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'total_jam_mengajar' => 'required|integer|min:0',
         ]);
 
         $guru = Guru::findOrFail($id);
@@ -117,6 +125,9 @@ class ManageGuruController extends Controller
             unset($data['password']);
         }
 
+        $used_hours = $guru->total_jam_mengajar - $guru->sisa_jam_mengajar;
+        $data['sisa_jam_mengajar'] = $data['total_jam_mengajar'] - $used_hours;
+
         $guru->update($data);
 
         return redirect()->route('manage.guru.index')->with('success', 'Guru berhasil diupdate!');
@@ -126,5 +137,40 @@ class ManageGuruController extends Controller
     {
         Guru::destroy($id);
         return redirect()->route('manage.guru.index')->with('success', 'Guru berhasil dihapus!');
+    }
+
+    public function editAvailability($id)
+    {
+        $guru = Guru::findOrFail($id);
+        $availabilities = GuruAvailability::where('guru_id', $id)->get()->groupBy('hari')->map(function ($item) {
+            return $item->pluck('jam')->toArray();
+        });
+        $days = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+        $timeSlots = Tabelj::orderBy('jam_mulai')->get();
+
+        return view('dashboard.guru_manage.availability', compact('guru', 'availabilities', 'days', 'timeSlots'));
+    }
+
+    public function updateAvailability(Request $request, $id)
+    {
+        $request->validate([
+            'availability' => 'nullable|array',
+        ]);
+
+        GuruAvailability::where('guru_id', $id)->delete();
+
+        if ($request->has('availability')) {
+            foreach ($request->availability as $hari => $jams) {
+                foreach ($jams as $jam) {
+                    GuruAvailability::create([
+                        'guru_id' => $id,
+                        'hari' => $hari,
+                        'jam' => $jam,
+                    ]);
+                }
+            }
+        }
+
+        return redirect()->route('manage.guru.index')->with('success', 'Ketersediaan guru berhasil diperbarui!');
     }
 }

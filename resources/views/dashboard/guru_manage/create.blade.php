@@ -21,6 +21,11 @@
             <label for="pengampu">Pengampu</label>
             <input type="text" id="pengampu" name="pengampu" required class="form-control">
         </div>
+
+        <div class="form-group">
+            <label for="total_jam_mengajar">Total Jam Mengajar (menit)</label>
+            <input type="number" id="total_jam_mengajar" name="total_jam_mengajar" required class="form-control" value="280">
+        </div>
         
         <div class="form-group">
             <label for="email">Email</label>

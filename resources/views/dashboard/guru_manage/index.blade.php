@@ -20,6 +20,8 @@
                     <th style="text-align: center">Nama</th>
                     <th style="text-align: center">NIP</th>
                     <th style="text-align: center">Pengampu</th>
+                    <th style="text-align: center">Total Jam Mengajar</th>
+                    <th style="text-align: center">Sisa Jam Mengajar</th>
                     <th style="text-align: center">Email</th>
                     <th style="text-align: center">Aksi</th>
                 </tr>
@@ -33,11 +35,16 @@
                     <td style="text-align: center">{{ $guru->nama }}</td>
                     <td style="text-align: center">{{ $guru->nip }}</td>
                     <td style="text-align: center">{{ $guru->pengampu }}</td>
+                    <td style="text-align: center">{{ $guru->total_jam_mengajar }} Menit</td>
+                    <td style="text-align: center">{{ $guru->sisa_jam_mengajar }} Menit</td>
                     <td style="text-align: center">{{ $guru->email }}</td>
                     <td style="text-align: center; padding: 16px 20px;">
                         <div class="action-buttons">
                             <a href="{{ route('manage.guru.edit', $guru->id) }}" class="btn btn-warning" title="Edit">
                                 <i class="fas fa-edit"></i>Edit
+                            </a>
+                            <a href="{{ route('manage.guru.availability.edit', $guru->id) }}" class="btn btn-info" title="Atur Ketersediaan">
+                                <i class="fas fa-clock"></i> Atur Jadwal
                             </a>
                             <form action="{{ route('manage.guru.destroy', $guru->id) }}" method="POST" style="display:inline;" class="delete-form">
                                 @csrf
