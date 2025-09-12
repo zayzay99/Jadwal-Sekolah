@@ -1,4 +1,5 @@
 @extends('dashboard.admin')
+```
 
 @section('content')
     <div class="content-header">
@@ -41,174 +42,80 @@
 @push('styles')
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 <style>
-    .main-layout {
-        display: flex;
-    }
-    .content {
-        flex: 1;
-        max-width: calc(100vw - 250px);
-    }
+    .main-layout { display: flex; }
+    .content { flex: 1; max-width: calc(100vw - 250px); }
     @media (max-width: 768px) {
-        .content {
-            max-width: 100vw;
-        }
+        .content { max-width: 100vw; }
     }
-
-    /* Content styles */
     .content-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
         margin-bottom: 1.5rem;
     }
-    
     .custom-table th, .custom-table td {
         vertical-align: middle;
         text-align: center;
         padding: 0.5rem;
     }
-    
     .time-input-container {
         display: flex;
         align-items: center;
         justify-content: center;
         gap: 0.5rem;
     }
-    
-    .time-input {
-        width: 80px;
-        padding: 0.375rem 0.5rem;
-    }
-    
-    .schedule-select {
-        min-width: 150px;
-    }
-    
+    .time-input { width: 80px; padding: 0.375rem 0.5rem; }
+    .schedule-select { min-width: 150px; }
     .delete-row-btn {
-        width: 35px;
-        height: 35px;
-        border-radius: 50%;
-        border: 1px solid #dc3545;
-        background-color: #f8d7da;
-        color: #721c24;
-        font-size: 20px;
-        cursor: pointer;
+        width: 35px; height: 35px; border-radius: 50%;
+        border: 1px solid #dc3545; background-color: #f8d7da;
+        color: #721c24; font-size: 20px; cursor: pointer;
         transition: all 0.2s ease;
     }
-    
-    .delete-row-btn:hover {
-        background-color: #dc3545;
-        color: white;
-    }
-
-    /* Hover effects untuk tabel */
-    .custom-table tbody tr {
-        transition: all 0.3s ease;
-    }
-
+    .delete-row-btn:hover { background-color: #dc3545; color: white; }
+    .custom-table tbody tr { transition: all 0.3s ease; }
     .custom-table tbody tr:hover {
         background-color: #f8fff9;
         transform: translateY(-2px);
         box-shadow: 0 4px 8px rgba(0,0,0,0.05);
     }
-
-    /* Button hover effects */
     .btn:hover {
         transform: translateY(-2px);
         box-shadow: 0 4px 8px rgba(0,0,0,0.15);
     }
-
-    .btn-success:hover {
-        background: linear-gradient(135deg, #218838, #1e7e34);
-    }
-
-    
-
-    
-
-    .btn-secondary:hover {
-        background: linear-gradient(135deg, #5a6268, #495057);
-    }
-
-    /* Mobile responsive */
+    .btn-success:hover { background: linear-gradient(135deg, #218838, #1e7e34); }
+    .btn-secondary:hover { background: linear-gradient(135deg, #5a6268, #495057); }
     @media (max-width: 768px) {
         .content-header {
             flex-direction: column;
             align-items: flex-start;
-            gap: 20px; /* Increased gap for better separation */
+            gap: 20px;
         }
-        
         .content-header > div:last-child {
-            display: grid; /* Use grid for button alignment */
-            grid-template-columns: 1fr 1fr; /* Two neat columns */
+            display: grid;
+            grid-template-columns: 1fr 1fr;
             gap: 10px;
             width: 100%;
         }
-        
         .btn-tiny {
-            /* Remove flex: 1 as grid handles sizing */
-            padding: 10px 12px !important; /* Slightly more padding */
+            padding: 10px 12px !important;
             font-size: 12px !important;
-            white-space: normal; /* Allow text to wrap if needed */
-            text-align: center; /* Center text */
+            white-space: normal;
+            text-align: center;
         }
-        
-        .table-container {
-            padding: 0; /* Remove padding to allow table to use full width */
-            margin: 0;
-            overflow-x: auto;
-        }
-        
-        .custom-table {
-            font-size: 13px; /* Slightly smaller font for more density */
-            min-width: 600px;
-        }
-
-        .custom-table th, .custom-table td {
-            padding: 8px 10px; /* Adjust padding */
-        }
-        
-        .time-input-container {
-            flex-direction: column;
-            gap: 5px;
-        }
-        
-        .time-input {
-            width: 90px; /* A bit more width for time inputs */
-            padding: 0.375rem;
-            font-size: 13px;
-        }
-        
-        .schedule-select {
-            min-width: 130px;
-            font-size: 13px;
-            padding: 0.375rem;
-        }
-        
-        .delete-row-btn {
-            width: 32px;
-            height: 32px;
-            font-size: 18px;
-        } HEAD
-        .delete-row-btn:hover {
-            background-color: #dc3545;
-            color: white;
-        }
-        .schedule-select.is-invalid {
-            border-color: #dc3545;
-            background-color: #f8d7da;
-        }
+        .table-container { padding: 0; margin: 0; overflow-x: auto; }
+        .custom-table { font-size: 13px; min-width: 600px; }
+        .custom-table th, .custom-table td { padding: 8px 10px; }
+        .time-input-container { flex-direction: column; gap: 5px; }
+        .time-input { width: 90px; padding: 0.375rem; font-size: 13px; }
+        .schedule-select { min-width: 130px; font-size: 13px; padding: 0.375rem; }
+        .delete-row-btn { width: 32px; height: 32px; font-size: 18px; }
+        .schedule-select.is-invalid { border-color: #dc3545; background-color: #f8d7da; }
         .cell-error-tooltip {
-            position: absolute;
-            background-color: #721c24;
-            color: white;
-            padding: 5px 10px;
-            border-radius: 4px;
-            font-size: 12px;
-            z-index: 10;
-            display: none;
+            position: absolute; background-color: #721c24; color: white;
+            padding: 5px 10px; border-radius: 4px; font-size: 12px;
+            z-index: 10; display: none;
         }
-    </style>
     }
 </style>
 @endpush
@@ -226,11 +133,9 @@ document.addEventListener('DOMContentLoaded', function () {
     const days = @json($days);
     const kategoris = @json($kategoris->values());
     const scheduleData = @json($scheduleGrid);
-<<<<<<< HEAD
     const allSchedules = @json($allSchedules);
-=======
     const availableGurus = @json($availableGurus);
->>>>>>> 61d5a9cc98bb7274cf73cce17bd4cc2346adfb4d
+    const gurus = @json($gurus);
 
     // --- OPTIONS TEMPLATE ---
     function getSelectOptions(day, jam) {
@@ -251,7 +156,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // --- DATA HELPERS ---
-    const teacherClashMap = {}; // { guru_id: { hari: { jam: 'Nama Kelas' } } }
+    const teacherClashMap = {};
     allSchedules.forEach(s => {
         if (!s.guru_id) return;
         if (!teacherClashMap[s.guru_id]) teacherClashMap[s.guru_id] = {};
@@ -259,7 +164,7 @@ document.addEventListener('DOMContentLoaded', function () {
         teacherClashMap[s.guru_id][s.hari][s.jam] = s.kelas.nama_kelas;
     });
 
-    const teacherLimits = {}; // { guru_id: max_jp_per_hari }
+    const teacherLimits = {};
     gurus.forEach(g => {
         if (g.max_jp_per_hari) teacherLimits[g.id] = g.max_jp_per_hari;
     });
@@ -277,9 +182,9 @@ document.addEventListener('DOMContentLoaded', function () {
         let cells = `
             <td>
                 <div class="time-input-container">
-                    <input type="time" class="form-control time-input time-start" value="${timeParts[0] || ''}">
+                    <input type="time" class="form-control time-input time-start" value="${timeParts[0]}">
                     <span>-</span>
-                    <input type="time" class="form-control time-input time-end" value="${timeParts[1] || ''}">
+                    <input type="time" class="form-control time-input time-end" value="${timeParts[1]}">
                 </div>
             </td>
         `;
@@ -288,13 +193,8 @@ document.addEventListener('DOMContentLoaded', function () {
             const currentJam = timeParts.join(' - ');
             cells += `
                 <td>
-<<<<<<< HEAD
-                    <select class="form-control schedule-select" data-day="${day}" data-jam="${jam}">
-                        ${selectOptionsHtml}
-=======
-                    <select class="form-control schedule-select" data-day="${day}">
+                    <select class="form-control schedule-select" data-day="${day}" data-jam="${currentJam}">
                         ${getSelectOptions(day, currentJam)}
->>>>>>> 61d5a9cc98bb7274cf73cce17bd4cc2346adfb4d
                     </select>
                 </td>
             `;
@@ -329,7 +229,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // --- VALIDATION LOGIC ---
     function validateAllCells() {
-        const teacherDailyJP = {}; // { guru_id: { hari: total_jp } }
+        const teacherDailyJP = {};
         const rows = scheduleBody.querySelectorAll('.schedule-row');
 
         // Reset all previous errors
@@ -345,7 +245,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             const jam = `${startTime} - ${endTime}`;
             const durasiMenit = (new Date(`1970-01-01T${endTime}:00`) - new Date(`1970-01-01T${startTime}:00`)) / 60000;
-            const jp = Math.floor(durasiMenit / 35); // 1 JP = 35 menit
+            const jp = Math.floor(durasiMenit / 35);
 
             row.querySelectorAll('.schedule-select').forEach(select => {
                 const selectedValue = select.value;
@@ -376,7 +276,6 @@ document.addEventListener('DOMContentLoaded', function () {
             for (const day in teacherDailyJP[guruId]) {
                 const totalJP = teacherDailyJP[guruId][day];
                 if (totalJP > guruLimit) {
-                    // Find all selects for this guru on this day and mark them as invalid
                     rows.forEach(row => {
                         const select = row.querySelector(`select[data-day="${day}"]`);
                         if (select.value === `guru-${guruId}`) {
@@ -393,30 +292,24 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // --- INITIALIZE VIEW ---
     function initialize() {
-        // Group schedule data by jam
         const groupedByJam = {};
         for (const day in scheduleData) {
             for (const jam in scheduleData[day]) {
-                if (!groupedByJam[jam]) {
-                    groupedByJam[jam] = {};
-                }
+                if (!groupedByJam[jam]) groupedByJam[jam] = {};
                 groupedByJam[jam][day] = scheduleData[day][jam];
             }
         }
 
-        // Get sorted time slots
         const sortedTimeSlots = Object.keys(groupedByJam).sort((a, b) => {
             return a.split(' - ')[0].localeCompare(b.split(' - ')[0]);
         });
 
-        // Create and append rows for existing data
         sortedTimeSlots.forEach(jam => {
             const rowData = groupedByJam[jam];
             const newRow = createRow(jam, rowData);
             scheduleBody.appendChild(newRow);
         });
 
-        // Add one empty row if no data exists
         if (sortedTimeSlots.length === 0) {
             scheduleBody.appendChild(createRow());
         }
@@ -435,10 +328,9 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     scheduleBody.addEventListener('change', (e) => {
-<<<<<<< HEAD
         if (e.target.classList.contains('schedule-select') || e.target.classList.contains('time-input')) {
             validateAllCells();
-=======
+        }
         if (e.target.classList.contains('time-input')) {
             const row = e.target.closest('.schedule-row');
             const startTime = row.querySelector('.time-start').value;
@@ -451,7 +343,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     select.innerHTML = getSelectOptions(day, jam);
                 });
             }
->>>>>>> 61d5a9cc98bb7274cf73cce17bd4cc2346adfb4d
         }
     });
 
@@ -487,7 +378,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             row.querySelectorAll('.schedule-select').forEach(select => {
                 const selectedValue = select.value;
-                if (!selectedValue) return; // Skip if empty
+                if (!selectedValue) return;
 
                 const day = select.dataset.day;
                 const selectedOption = select.options[select.selectedIndex];

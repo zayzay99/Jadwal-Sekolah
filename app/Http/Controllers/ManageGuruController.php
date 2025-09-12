@@ -3,13 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Guru;
-<<<<<<< HEAD
 use App\Models\Jadwal;
 use Illuminate\Http\Request;
-=======
 use App\Models\GuruAvailability;
 use App\Models\Tabelj;
->>>>>>> 61d5a9cc98bb7274cf73cce17bd4cc2346adfb4d
 use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
 
@@ -161,12 +158,20 @@ class ManageGuruController extends Controller
 
         if ($request->has('availability')) {
             foreach ($request->availability as $hari => $jams) {
-                foreach ($jams as $jam) {
-                    GuruAvailability::create([
-                        'guru_id' => $id,
-                        'hari' => $hari,
-                        'jam' => $jam,
-                    ]);
+                foreach ($jams as $jamString) {
+                    $jamParts = explode(' - ', $jamString);
+                    if (count($jamParts) == 2) {
+                        try {
+                            GuruAvailability::create([
+                                'guru_id' => $id,
+                                'hari' => $hari,
+                                'jam_mulai' => trim($jamParts[0]),
+                                'jam_selesai' => trim($jamParts[1]),
+                            ]);
+                        } catch (\Exception $e) {
+                            // Abaikan jika format jam tidak valid atau terjadi error lain
+                        }
+                    }
                 }
             }
         }

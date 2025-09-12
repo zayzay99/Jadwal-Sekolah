@@ -14,6 +14,13 @@
         <a href="{{ route('admin.jadwal.cetak', ['kelas' => $kelas->id]) }}" class="btn btn-primary">             
             <i class="fas fa-print"></i> Cetak PDF         
         </a>
+        @if($is_management && $jadwals->count() > 0)
+        <form id="delete-all-form" action="{{ route('jadwal.destroyAll', $kelas->id) }}" method="POST" style="display:inline;">
+            @csrf
+            @method('DELETE')
+            <button type="button" class="btn btn-danger" onclick="showDeleteAllConfirmation(event)"><i class="fas fa-trash-alt"></i> Hapus Semua</button>
+        </form>
+        @endif
     </div>      
 
     <div class="table-responsive">         
@@ -81,5 +88,27 @@
         });     
     @endif 
 </script>  
+
+@if($is_management)
+<script>
+function showDeleteAllConfirmation(event) {
+    event.preventDefault();
+    Swal.fire({
+        title: 'Apakah Anda yakin?',
+        text: "Semua jadwal untuk kelas ini akan dihapus secara permanen! Tindakan ini tidak dapat dibatalkan.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'Ya, hapus semua!',
+        cancelButtonText: 'Batal'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            document.getElementById('delete-all-form').submit();
+        }
+    });
+}
+</script>
+@endif
 
 @endsection

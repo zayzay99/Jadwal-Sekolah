@@ -41,10 +41,10 @@
                     <td style="text-align: center; padding: 16px 20px;">
                         <div class="action-buttons">
                             <a href="{{ route('manage.guru.edit', $guru->id) }}" class="btn btn-warning" title="Edit">
-                                <i class="fas fa-edit"></i>Edit
+                                <i class="fas fa-edit"></i>
                             </a>
-                            <a href="{{ route('manage.guru.availability.edit', $guru->id) }}" class="btn btn-info" title="Atur Ketersediaan">
-                                <i class="fas fa-clock"></i> Atur Jadwal
+                            <a href="{{ route('manage.guru.availability.edit', $guru->id) }}" class="btn-jadwal " title="Atur Ketersediaan">
+                                <i class="fas fa-clock"></i> 
                             </a>
                             <form action="{{ route('manage.guru.destroy', $guru->id) }}" method="POST" style="display:inline;" class="delete-form">
                                 @csrf
