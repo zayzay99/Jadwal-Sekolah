@@ -32,9 +32,15 @@
                     <td style="text-align: center">{{ $kategori->nama_kategori }}</td>
                     <td style="text-align: center; padding: 16px 20px;">
                         <div class="action-buttons">
+<<<<<<< HEAD
                             
                             <a href="{{ route('jadwal-kategori.edit', $kategori->id) }}" class="btn btn-edit" title="Edit">
                                 <i class="fas fa-edit"></i>
+=======
+                            {{-- <a href="#" class="btn btn-warning" title="Edit"> --}}
+                            <a href="{{ route('jadwal-kategori.edit', $kategori->id) }}" class="btn btn-warning" title="Edit">
+                                <i class="fas fa-edit"></i>Edit
+>>>>>>> fce38a7211fae0a3108e935569c6dce7e9286de8
                             </a>
                             <form action="#" method="POST" style="display:inline;" class="delete-form">
                             <form action="{{ route('jadwal-kategori.destroy', $kategori->id) }}" method="POST" style="display:inline;" class="delete-form">

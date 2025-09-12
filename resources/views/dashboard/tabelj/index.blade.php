@@ -131,7 +131,10 @@ document.addEventListener('DOMContentLoaded', function () {
                             <td>${slot.jam_mulai}</td>
                             <td>${slot.jam_selesai}</td>
                             <td>
-                                <button class="btn btn-danger delete-timeslot-btn" data-id="${slot.id}">
+                                <a href="/tabelj/${slot.id}/edit" class="btn btn-warning btn-sm">
+                                    <i class="fas fa-edit"></i> Edit
+                                </a>
+                                <button class="btn btn-danger btn-sm delete-timeslot-btn" data-id="${slot.id}">
                                     <i class="fas fa-trash"></i> Hapus
                                 </button>
                             </td>
@@ -210,13 +213,25 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (!confirmation.isConfirmed) return;
 
-        // Since we don't have a bulk delete endpoint, we delete one by one.
-        // For a large number of slots, a dedicated backend endpoint would be better.
-        const deleteButtons = tableBody.querySelectorAll('.delete-timeslot-btn');
-        for (const btn of deleteButtons) {
-            await deleteSlot(btn.dataset.id);
+        try {
+            const response = await fetch('{{ route("tabelj.clear") }}', {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Accept': 'application/json'
+                }
+            });
+            const result = await response.json();
+
+            if (response.ok && result.success) {
+                tableBody.innerHTML = '<tr id="no-data-row"><td colspan="3" class="text-center">Belum ada slot waktu.</td></tr>';
+                Swal.fire('Berhasil!', result.message, 'success');
+            } else {
+                Swal.fire('Gagal!', result.message || 'Gagal menghapus semua slot.', 'error');
+            }
+        } catch (error) {
+            Swal.fire('Error!', 'Tidak dapat terhubung ke server.', 'error');
         }
-        Swal.fire('Selesai', 'Semua slot waktu telah dihapus.', 'info');
     });
 });
 </script>
