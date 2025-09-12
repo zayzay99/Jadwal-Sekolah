@@ -13,11 +13,11 @@ class AdminSeeder extends Seeder
         User::where('email', 'admin@example.com')->delete();
 
         User::create([
-            'name' => 'Admin',
-            'email' => 'admin@example.com',
+            'name' => 'Kesya Apri Pujiatmoko',
+            'email' => 'kesya@admin.com',
             'password' => Hash::make('admin123'),
-            'nip' => 'ADM001',
-            'pelajaran' => null,
+            'nip' => 'ADM000',
+            'pelajaran' => 'Critical Thinking', // Bisa di isi sesuai kebutuhan dengan 'Mapel' atau null jika kosong
         ]);
     }
 }

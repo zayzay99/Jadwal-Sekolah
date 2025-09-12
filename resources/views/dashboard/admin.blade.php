@@ -24,7 +24,7 @@
             <h2>Admin Dashboard</h2>
         </div>
         <div class="nav-user">
-            <span>Welcome, Admin</span>
+            <span>Welcome,  {{ Auth::guard('web')->user()->name }}</span>
             <div class="user-avatar">
                 <i class="fas fa-user"></i>
             </div>
@@ -109,7 +109,16 @@
                 <h1>Dashboard Overview</h1>
                 <p>Kelola data guru, siswa, kelas, dan jadwal dengan mudah</p>
             </div>
-
+            <!--
+<div class="profile-card">
+ <div class="profile-info">
+              <p><strong>Nama </strong>: {{ Auth::guard('web')->user()->name }}</p>
+              <p><strong>NIP </strong>: {{ Auth::guard('web')->user()->nip }}</p>
+              <p><strong>Pengampu Pelajaran</strong>: {{ Auth::guard('web')->user()->pelajaran?? '-' }}</p>
+              <p><strong>E-Mail</strong>: {{ Auth::guard('web')->user()->email }}</p>
+            </div>
+</div>
+-->
             <!-- Stats Section -->
             @if (isset($guruCount))
                 <div class="stats-container">
