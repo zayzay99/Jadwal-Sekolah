@@ -25,7 +25,7 @@ Route::middleware('auth:siswa')->group(function () {
     Route::get('/dashboard/siswa', [SiswaController::class, 'index'])->name('siswa.dashboard');
     Route::get('/dashboard/siswa/jadwal', [SiswaController::class, 'jadwal'])->name('siswa.jadwal');
     Route::get('/dashboard/siswa/jadwal/cetak', [SiswaController::class, 'cetakJadwal'])->name('siswa.jadwal.cetak');
-    Route::post('/dashboard/siswa/profile/update', [App\Http\Controllers\SiswaController::class, 'updateProfile'])
+    Route::post('/dashboard/siswa/profile/update', [SiswaController::class, 'updateProfile'])
     ->name('siswa.profile.update');
 });
 
@@ -46,8 +46,9 @@ Route::middleware('auth:web')->group(function () {
     Route::get('/jadwal/kelas/{kelas}/cetak', [JadwalController::class, 'cetakJadwal'])->name('admin.jadwal.cetak');
     Route::post('/jadwal/bulk-store', [JadwalController::class, 'bulkStore'])->name('jadwal.bulkStore');
     Route::delete('/jadwal/{jadwal}', [JadwalController::class, 'destroy'])->name('jadwal.destroy');
-    Route::get('/tabelj', [TabeljController::class, 'index'])->name('tabelj.index');
+    Route::get('/manage/tabelj', [TabeljController::class, 'index'])->name('manage.tabelj.index');
     Route::post('/tabelj', [TabeljController::class, 'store'])->name('tabelj.store');
+    Route::post('/tabelj/generate', [TabeljController::class, 'generate'])->name('tabelj.generate');
     Route::delete('/tabelj/{tabelj}', [TabeljController::class, 'destroy'])->name('tabelj.destroy');
     Route::resource('manage/guru', ManageGuruController::class, ['names' => [
         'index' => 'manage.guru.index',
@@ -58,6 +59,8 @@ Route::middleware('auth:web')->group(function () {
         'destroy' => 'manage.guru.destroy',
         'show' => 'manage.guru.show',
     ]]);
+    Route::get('manage/guru/{guru}/availability', [ManageGuruController::class, 'editAvailability'])->name('manage.guru.availability.edit');
+    Route::post('manage/guru/{guru}/availability', [ManageGuruController::class, 'updateAvailability'])->name('manage.guru.availability.update');
     Route::resource('manage/siswa', ManageSiswaController::class, ['names' => [
         'index' => 'manage.siswa.index',
         'create' => 'manage.siswa.create',
@@ -67,7 +70,7 @@ Route::middleware('auth:web')->group(function () {
         'destroy' => 'manage.siswa.destroy',
         'show' => 'manage.siswa.show',
     ]]);
-    Route::resource('manage/kelas', \App\Http\Controllers\ManageKelasController::class, ['names' => [
+    Route::resource('manage/kelas', ManageKelasController::class, ['names' => [
         'index' => 'manage.kelas.index',
         'create' => 'manage.kelas.create',
         'store' => 'manage.kelas.store',

@@ -205,17 +205,19 @@ document.addEventListener('DOMContentLoaded', function () {
     const bulkSaveBtn = document.getElementById('bulkSaveBtn');
 
     const days = @json($days);
-    const gurus = @json($gurus->values());
     const kategoris = @json($kategoris->values());
     const scheduleData = @json($scheduleGrid);
+    const availableGurus = @json($availableGurus);
 
     // --- OPTIONS TEMPLATE ---
-    function getSelectOptions() {
+    function getSelectOptions(day, jam) {
         let options = '<option value="">-- Kosong --</option>';
         options += '<optgroup label="Pelajaran">';
-        gurus.forEach(guru => {
-            options += `<option value="guru-${guru.id}" data-mapel="${guru.pengampu}">${guru.nama} (${guru.pengampu})</option>`;
-        });
+        if (availableGurus[day] && availableGurus[day][jam]) {
+            availableGurus[day][jam].forEach(guru => {
+                options += `<option value="guru-${guru.id}" data-mapel="${guru.pengampu}">${guru.nama} (${guru.pengampu})</option>`;
+            });
+        }
         options += '</optgroup>';
         options += '<optgroup label="Kategori Khusus">';
         kategoris.forEach(kategori => {
@@ -224,7 +226,6 @@ document.addEventListener('DOMContentLoaded', function () {
         options += '</optgroup>';
         return options;
     }
-    const selectOptionsHtml = getSelectOptions();
 
     // --- ROW TEMPLATE ---
     function createRow(jam = '', data = {}) {
@@ -247,10 +248,11 @@ document.addEventListener('DOMContentLoaded', function () {
         `;
 
         days.forEach(day => {
+            const currentJam = timeParts.join(' - ');
             cells += `
                 <td>
                     <select class="form-control schedule-select" data-day="${day}">
-                        ${selectOptionsHtml}
+                        ${getSelectOptions(day, currentJam)}
                     </select>
                 </td>
             `;
@@ -322,6 +324,22 @@ document.addEventListener('DOMContentLoaded', function () {
     scheduleBody.addEventListener('click', (e) => {
         if (e.target.classList.contains('delete-row-btn')) {
             e.target.closest('.schedule-row').remove();
+        }
+    });
+
+    scheduleBody.addEventListener('change', (e) => {
+        if (e.target.classList.contains('time-input')) {
+            const row = e.target.closest('.schedule-row');
+            const startTime = row.querySelector('.time-start').value;
+            const endTime = row.querySelector('.time-end').value;
+            const jam = `${startTime} - ${endTime}`;
+
+            if (startTime && endTime) {
+                row.querySelectorAll('.schedule-select').forEach(select => {
+                    const day = select.dataset.day;
+                    select.innerHTML = getSelectOptions(day, jam);
+                });
+            }
         }
     });
 

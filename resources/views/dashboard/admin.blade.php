@@ -74,6 +74,11 @@
                     </a>
                 </li>
                 <li>
+                    <a href="{{ route('manage.tabelj.index') }}" class="menu-item">
+                        <i class="fas fa-clock"></i><span>Manajemen Slot Waktu</span>
+                    </a>
+                </li>
+                <li>
                     <a href="{{ route('kelas.kategori') }}" class="menu-item">
                         <i class="fa-solid fa-people-roof"></i><span>Lihat Kelas</span>
                     </a>
