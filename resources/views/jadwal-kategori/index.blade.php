@@ -33,9 +33,11 @@
                     <td style="text-align: center; padding: 16px 20px;">
                         <div class="action-buttons">
                             <a href="#" class="btn btn-warning" title="Edit">
+                            <a href="{{ route('jadwal-kategori.edit', $kategori->id) }}" class="btn btn-warning" title="Edit">
                                 <i class="fas fa-edit"></i>Edit
                             </a>
                             <form action="#" method="POST" style="display:inline;" class="delete-form">
+                            <form action="{{ route('jadwal-kategori.destroy', $kategori->id) }}" method="POST" style="display:inline;" class="delete-form">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="btn btn-danger" title="Hapus">

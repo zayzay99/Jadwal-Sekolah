@@ -189,8 +189,7 @@
             width: 32px;
             height: 32px;
             font-size: 18px;
-        }
-<<<<<<< HEAD
+        } HEAD
         .delete-row-btn:hover {
             background-color: #dc3545;
             color: white;
@@ -210,10 +209,8 @@
             display: none;
         }
     </style>
-=======
     }
 </style>
->>>>>>> ef56041a41fc934a8c6a05417ae1868619c2e84e
 @endpush
 
 @push('scripts')
