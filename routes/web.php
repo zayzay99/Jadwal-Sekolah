@@ -49,7 +49,10 @@ Route::middleware('auth:web')->group(function () {
     Route::get('/manage/tabelj', [TabeljController::class, 'index'])->name('manage.tabelj.index');
     Route::post('/tabelj', [TabeljController::class, 'store'])->name('tabelj.store');
     Route::post('/tabelj/generate', [TabeljController::class, 'generate'])->name('tabelj.generate');
+    Route::delete('/tabelj/clear', [TabeljController::class, 'clear'])->name('tabelj.clear');
     Route::delete('/tabelj/{tabelj}', [TabeljController::class, 'destroy'])->name('tabelj.destroy');
+    Route::get('/tabelj/{tabelj}/edit', [TabeljController::class, 'edit'])->name('tabelj.edit');
+    Route::put('/tabelj/{tabelj}', [TabeljController::class, 'update'])->name('tabelj.update');
     Route::resource('manage/guru', ManageGuruController::class, ['names' => [
         'index' => 'manage.guru.index',
         'create' => 'manage.guru.create',

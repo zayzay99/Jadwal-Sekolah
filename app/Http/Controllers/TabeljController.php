@@ -52,6 +52,35 @@ class TabeljController extends Controller
         }
     }
 
+    public function edit(Tabelj $tabelj)
+    {
+        return view('dashboard.tabelj.edit', compact('tabelj'));
+    }
+
+    public function update(Request $request, Tabelj $tabelj)
+    {
+        $validator = Validator::make($request->all(), [
+            'jam_mulai' => 'required|date_format:H:i',
+            'jam_selesai' => 'required|date_format:H:i|after:jam_mulai',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
+        }
+
+        try {
+            $tabelj->update([
+                'jam_mulai' => $request->jam_mulai,
+                'jam_selesai' => $request->jam_selesai,
+                'jam' => $request->jam_mulai . ' - ' . $request->jam_selesai,
+            ]);
+
+            return response()->json(['success' => true, 'message' => 'Jam berhasil diperbarui!', 'timeSlot' => $tabelj]);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Gagal memperbarui jam: ' . $e->getMessage()], 500);
+        }
+    }
+
     public function generate(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -94,6 +123,16 @@ class TabeljController extends Controller
             return response()->json(['success' => true, 'message' => 'Slot waktu berhasil dibuat!', 'timeSlots' => $timeSlots]);
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => 'Gagal membuat slot waktu: ' . $e->getMessage()], 500);
+        }
+    }
+
+    public function clear()
+    {
+        try {
+            Tabelj::truncate();
+            return response()->json(['success' => true, 'message' => 'Semua jam berhasil dihapus.']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Gagal menghapus semua jam.'], 500);
         }
     }
 }
