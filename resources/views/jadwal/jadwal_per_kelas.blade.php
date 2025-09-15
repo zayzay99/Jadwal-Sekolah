@@ -30,10 +30,7 @@
                     <th>Hari</th>                     
                     <th>Jam</th>                     
                     <th>Mata Pelajaran</th>                     
-                    <th>Guru</th>
-                    @if($is_management)
-                    <th>Aksi</th>
-                    @endif                 
+                    <th>Guru</th>                 
                 </tr>             
             </thead>             
             <tbody>                 
@@ -51,23 +48,13 @@
                                     <td>{{ $jadwal->mapel }}</td>                                     
                                     <td>{{ $jadwal->guru ? $jadwal->guru->nama : '-' }}</td>                                 
                                 @endif                                 
-                                @if($is_management)                                 
-                                <td>                                     
-                                    <form action="{{ route('jadwal.destroy', $jadwal->id) }}" method="POST" style="display:inline;">                                         
-                                        @csrf                                         
-                                        @method('DELETE')                                         
-                                        <button type="submit" class="btn btn-danger" title="Hapus" onclick="showDeleteConfirmation(event)">                                             
-                                            <i class="fas fa-trash"></i>                                         
-                                        </button>                                     
-                                    </form>                                 
-                                </td>
-                                @endif                             
+                                                             
                             </tr>                         
                         @endforeach                     
                     @endforeach                 
                 @else                     
                     <tr>                         
-                        <td colspan="{{ $is_management ? 5 : 4 }}" class="no-data">                             
+                        <td colspan="4" class="no-data">                             
                             <i class="fas fa-info-circle"></i> Tidak ada jadwal untuk kelas ini                         
                         </td>                     
                     </tr>                 
@@ -88,6 +75,8 @@
         });     
     @endif 
 </script>  
+
+
 
 @if($is_management)
 <script>

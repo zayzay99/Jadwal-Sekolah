@@ -12,10 +12,10 @@ use Carbon\Carbon;
 
 class ManageGuruController extends Controller
 {
-    private function calculateTotalJP($guruId)
+    private function calculateUsedMinutes($guruId)
     {
         $jadwals = Jadwal::where('guru_id', $guruId)->whereNull('jadwal_kategori_id')->get();
-        $totalJP = 0;
+        $totalMenit = 0;
 
         foreach ($jadwals as $jadwal) {
             $jamParts = explode(' - ', $jadwal->jam);
@@ -23,14 +23,28 @@ class ManageGuruController extends Controller
                 try {
                     $jamMulai = Carbon::parse($jamParts[0]);
                     $jamSelesai = Carbon::parse($jamParts[1]);
-                    $durasiMenit = $jamSelesai->diffInMinutes($jamMulai);
-                    $totalJP += floor($durasiMenit / 35); // Asumsi 1 JP = 35 menit
+                    $totalMenit += $jamSelesai->diffInMinutes($jamMulai);
                 } catch (\Exception $e) {
                     // Abaikan jika format jam tidak valid
                 }
             }
         }
-        return $totalJP;
+        return $totalMenit;
+    }
+
+    private function calculateAvailabilityMinutes($availabilities)
+    {
+        $totalMinutes = 0;
+        foreach ($availabilities as $availability) {
+            try {
+                $jamMulai = Carbon::parse($availability->jam_mulai);
+                $jamSelesai = Carbon::parse($availability->jam_selesai);
+                $totalMinutes += $jamSelesai->diffInMinutes($jamMulai);
+            } catch (\Exception $e) {
+                // Log or handle invalid time format if necessary
+            }
+        }
+        return $totalMinutes;
     }
 
     public function index(Request $request)
@@ -42,7 +56,8 @@ class ManageGuruController extends Controller
         $gurus = $query->paginate(10);
 
         foreach ($gurus as $guru) {
-            $guru->total_jp = $this->calculateTotalJP($guru->id);
+            $usedMinutes = $this->calculateUsedMinutes($guru->id);
+            $guru->used_minutes = $usedMinutes; // Tambahkan properti baru
         }
 
         return view('dashboard.guru_manage.index', compact('gurus', 'search'));
@@ -122,8 +137,8 @@ class ManageGuruController extends Controller
             unset($data['password']);
         }
 
-        $used_hours = $guru->total_jam_mengajar - $guru->sisa_jam_mengajar;
-        $data['sisa_jam_mengajar'] = $data['total_jam_mengajar'] - $used_hours;
+        // When total_jam_mengajar is updated, sisa_jam_mengajar should reset to the new total_jam_mengajar
+        $data['sisa_jam_mengajar'] = $data['total_jam_mengajar'];
 
         $guru->update($data);
 
@@ -154,27 +169,49 @@ class ManageGuruController extends Controller
             'availability' => 'nullable|array',
         ]);
 
+        $guru = Guru::findOrFail($id);
+
+        // Calculate old availability minutes before deleting
+        $oldAvailabilities = GuruAvailability::where('guru_id', $id)->get();
+        $oldAvailabilityMinutes = $this->calculateAvailabilityMinutes($oldAvailabilities);
+
         GuruAvailability::where('guru_id', $id)->delete();
 
+        $newAvailabilitiesData = [];
         if ($request->has('availability')) {
             foreach ($request->availability as $hari => $jams) {
                 foreach ($jams as $jamString) {
                     $jamParts = explode(' - ', $jamString);
                     if (count($jamParts) == 2) {
                         try {
-                            GuruAvailability::create([
+                            $newAvailabilitiesData[] = [
                                 'guru_id' => $id,
                                 'hari' => $hari,
                                 'jam_mulai' => trim($jamParts[0]),
                                 'jam_selesai' => trim($jamParts[1]),
-                            ]);
+                            ];
                         } catch (\Exception $e) {
-                            // Abaikan jika format jam tidak valid atau terjadi error lain
+                            // Log or handle invalid time format if necessary
                         }
                     }
                 }
             }
+            GuruAvailability::insert($newAvailabilitiesData); // Use insert for bulk creation
         }
+
+        // Calculate new availability minutes
+        // For simplicity, let's retrieve them again from DB after insert
+        $newAvailabilities = GuruAvailability::where('guru_id', $id)->get();
+        $newAvailabilityMinutes = $this->calculateAvailabilityMinutes($newAvailabilities);
+
+        // Calculate the change in availability minutes
+        $changeInAvailabilityMinutes = $newAvailabilityMinutes - $oldAvailabilityMinutes;
+
+        // Update sisa_jam_mengajar
+        // If new availability is more, sisa_jam_mengajar decreases (more hours are "reserved")
+        // If new availability is less, sisa_jam_mengajar increases (fewer hours are "reserved")
+        $guru->sisa_jam_mengajar -= $changeInAvailabilityMinutes;
+        $guru->save();
 
         return redirect()->route('manage.guru.index')->with('success', 'Ketersediaan guru berhasil diperbarui!');
     }
