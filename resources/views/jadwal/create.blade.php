@@ -1,14 +1,12 @@
 @extends('dashboard.admin')
-```
 
 @section('content')
     <div class="content-header">
         <div>
             <h1>Manajemen Jadwal Untuk Kelas: <strong>{{ $kelas->nama_kelas }}</strong></h1>
-            <p>Atur jadwal di bawah ini. Klik "Tambah Baris Jadwal" untuk menambah slot waktu baru.</p>
+            <p>Atur jadwal di bawah ini. Semua slot waktu yang tersedia ditampilkan secara default.</p>
         </div>
         <div class="flex gap-4">
-            <button id="add-row-btn" class="btn btn-success btn-tiny">Tambah Baris Jadwal</button>
             <button id="bulkSaveBtn" class="btn btn-info btn-tiny">Simpan Semua Jadwal</button>
             <a href="{{ route('jadwal.perKelas', $kelas->id) }}" class="btn btn-primary btn-tiny">Lihat Jadwal Selesai</a>
             <a href="{{ route('jadwal.pilihKelas') }}" class="btn btn-secondary btn-tiny">
@@ -28,7 +26,6 @@
                         @foreach ($days as $day)
                             <th>{{ $day }}</th>
                         @endforeach
-                        <th style="width: 60px;">Aksi</th>
                     </tr>
                 </thead>
                 <tbody id="schedule-body">
@@ -64,15 +61,8 @@
         justify-content: center;
         gap: 0.5rem;
     }
-    .time-input { width: 80px; padding: 0.375rem 0.5rem; }
+    .time-input { width: 80px; padding: 0.375rem 0.5rem; background-color: #e9ecef; }
     .schedule-select { min-width: 150px; }
-    .delete-row-btn {
-        width: 35px; height: 35px; border-radius: 50%;
-        border: 1px solid #dc3545; background-color: #f8d7da;
-        color: #721c24; font-size: 20px; cursor: pointer;
-        transition: all 0.2s ease;
-    }
-    .delete-row-btn:hover { background-color: #dc3545; color: white; }
     .custom-table tbody tr { transition: all 0.3s ease; }
     .custom-table tbody tr:hover {
         background-color: #f8fff9;
@@ -109,7 +99,6 @@
         .time-input-container { flex-direction: column; gap: 5px; }
         .time-input { width: 90px; padding: 0.375rem; font-size: 13px; }
         .schedule-select { min-width: 130px; font-size: 13px; padding: 0.375rem; }
-        .delete-row-btn { width: 32px; height: 32px; font-size: 18px; }
         .schedule-select.is-invalid { border-color: #dc3545; background-color: #f8d7da; }
         .cell-error-tooltip {
             position: absolute; background-color: #721c24; color: white;
@@ -127,7 +116,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const csrfToken = '{{ csrf_token() }}';
     const kelasId = document.getElementById('kelas_id').value;
     const scheduleBody = document.getElementById('schedule-body');
-    const addRowBtn = document.getElementById('add-row-btn');
     const bulkSaveBtn = document.getElementById('bulkSaveBtn');
 
     const days = @json($days);
@@ -136,6 +124,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const allSchedules = @json($allSchedules);
     const availableGurus = @json($availableGurus);
     const gurus = @json($gurus);
+    const timeSlots = @json($timeSlots);
 
     // --- OPTIONS TEMPLATE ---
     function getSelectOptions(day, jam) {
@@ -182,9 +171,9 @@ document.addEventListener('DOMContentLoaded', function () {
         let cells = `
             <td>
                 <div class="time-input-container">
-                    <input type="time" class="form-control time-input time-start" value="${timeParts[0]}">
+                    <input type="time" class="form-control time-input time-start" value="${timeParts[0]}" readonly>
                     <span>-</span>
-                    <input type="time" class="form-control time-input time-end" value="${timeParts[1]}">
+                    <input type="time" class="form-control time-input time-end" value="${timeParts[1]}" readonly>
                 </div>
             </td>
         `;
@@ -193,18 +182,15 @@ document.addEventListener('DOMContentLoaded', function () {
             const currentJam = timeParts.join(' - ');
             cells += `
                 <td>
-                    <select class="form-control schedule-select" data-day="${day}" data-jam="${currentJam}">
-                        ${getSelectOptions(day, currentJam)}
-                    </select>
+                    <div class="schedule-cell-content">
+                        <select class="form-control schedule-select" data-day="${day}" data-jam="${currentJam}">
+                            ${getSelectOptions(day, currentJam)}
+                        </select>
+                        <button type="button" class="clear-selection-btn" title="Hapus Pilihan">&times;</button>
+                    </div>
                 </td>
             `;
         });
-
-        cells += `
-            <td>
-                <button class="delete-row-btn" title="Hapus Baris">&times;</button>
-            </td>
-        `;
 
         tr.innerHTML = cells;
 
@@ -292,57 +278,37 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // --- INITIALIZE VIEW ---
     function initialize() {
-        const groupedByJam = {};
+        const scheduleByJam = {};
+        // Create a map of the existing schedule data for quick lookup
         for (const day in scheduleData) {
             for (const jam in scheduleData[day]) {
-                if (!groupedByJam[jam]) groupedByJam[jam] = {};
-                groupedByJam[jam][day] = scheduleData[day][jam];
+                if (!scheduleByJam[jam]) {
+                    scheduleByJam[jam] = {};
+                }
+                scheduleByJam[jam][day] = scheduleData[day][jam];
             }
         }
 
-        const sortedTimeSlots = Object.keys(groupedByJam).sort((a, b) => {
-            return a.split(' - ')[0].localeCompare(b.split(' - ')[0]);
-        });
-
-        sortedTimeSlots.forEach(jam => {
-            const rowData = groupedByJam[jam];
+        // Loop through all predefined time slots and create a row for each
+        timeSlots.forEach(slot => {
+            const jam = slot.jam;
+            const rowData = scheduleByJam[jam] || {};
             const newRow = createRow(jam, rowData);
             scheduleBody.appendChild(newRow);
         });
 
-        if (sortedTimeSlots.length === 0) {
-            scheduleBody.appendChild(createRow());
+        // If there are no predefined time slots, log a warning.
+        if (timeSlots.length === 0) {
+            console.warn("Tidak ada slot waktu yang terdefinisi di database (tabelj).");
         }
+        
         validateAllCells();
     }
 
     // --- EVENT LISTENERS ---
-    addRowBtn.addEventListener('click', () => {
-        scheduleBody.appendChild(createRow());
-    });
-
-    scheduleBody.addEventListener('click', (e) => {
-        if (e.target.classList.contains('delete-row-btn')) {
-            e.target.closest('.schedule-row').remove();
-        }
-    });
-
     scheduleBody.addEventListener('change', (e) => {
-        if (e.target.classList.contains('schedule-select') || e.target.classList.contains('time-input')) {
+        if (e.target.classList.contains('schedule-select')) {
             validateAllCells();
-        }
-        if (e.target.classList.contains('time-input')) {
-            const row = e.target.closest('.schedule-row');
-            const startTime = row.querySelector('.time-start').value;
-            const endTime = row.querySelector('.time-end').value;
-            const jam = `${startTime} - ${endTime}`;
-
-            if (startTime && endTime) {
-                row.querySelectorAll('.schedule-select').forEach(select => {
-                    const day = select.dataset.day;
-                    select.innerHTML = getSelectOptions(day, jam);
-                });
-            }
         }
     });
 
@@ -362,18 +328,6 @@ document.addEventListener('DOMContentLoaded', function () {
         rows.forEach(row => {
             const startTime = row.querySelector('.time-start').value;
             const endTime = row.querySelector('.time-end').value;
-
-            if (!startTime || !endTime) {
-                Swal.fire('Error', 'Setiap baris harus memiliki Waktu Mulai dan Selesai.', 'error');
-                validationError = true;
-                return;
-            }
-            if (startTime >= endTime) {
-                Swal.fire('Error', `Waktu Selesai harus setelah Waktu Mulai untuk baris (${startTime} - ${endTime}).`, 'error');
-                validationError = true;
-                return;
-            }
-
             const jam = `${startTime} - ${endTime}`;
 
             row.querySelectorAll('.schedule-select').forEach(select => {
@@ -395,7 +349,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 if (type === 'guru') {
                     scheduleData.guru_id = id;
-                    scheduleData.mapel = selectedOption.dataset.mapel;
+                    // Find the teacher from the main list to get the definitive subject name
+                    const guru = gurus.find(g => g.id == id);
+                    if (guru) {
+                        scheduleData.mapel = guru.pengampu;
+                    } else {
+                        // Fallback for safety, though it should not be reached
+                        scheduleData.mapel = selectedOption.dataset.mapel;
+                    }
                 } else if (type === 'kategori') {
                     scheduleData.jadwal_kategori_id = id;
                 }

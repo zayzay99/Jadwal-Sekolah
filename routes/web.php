@@ -41,11 +41,14 @@ Route::middleware('auth:web')->group(function () {
     Route::get('/dashboard/admin', [AdminController::class, 'index'])->name('admin.dashboard');
     Route::get('/jadwal/pilih-kelas', [JadwalController::class, 'pilihKelas'])->name('jadwal.pilihKelas');
     Route::get('/jadwal/create/{kelas}', [JadwalController::class, 'create'])->name('jadwal.create');
+    Route::post('/jadwal/store', [JadwalController::class, 'store'])->name('jadwal.store');
+    Route::post('/jadwal/store-kategori', [JadwalController::class, 'storeKategori'])->name('jadwal.storeKategori');
     Route::get('/jadwal/kelas', [JadwalController::class, 'pilihKelasLihat'])->name('jadwal.pilihKelasLihat');
     Route::get('/jadwal/kelas/{kelas}', [JadwalController::class, 'jadwalPerKelas'])->name('jadwal.perKelas');
     Route::get('/jadwal/kelas/{kelas}/cetak', [JadwalController::class, 'cetakJadwal'])->name('admin.jadwal.cetak');
     Route::post('/jadwal/bulk-store', [JadwalController::class, 'bulkStore'])->name('jadwal.bulkStore');
     Route::delete('/jadwal/{jadwal}', [JadwalController::class, 'destroy'])->name('jadwal.destroy');
+    Route::delete('/jadwal/destroy-all/{kelas}', [JadwalController::class, 'destroyAll'])->name('jadwal.destroyAll');
     Route::get('/manage/tabelj', [TabeljController::class, 'index'])->name('manage.tabelj.index');
     Route::post('/tabelj', [TabeljController::class, 'store'])->name('tabelj.store');
     Route::post('/tabelj/generate', [TabeljController::class, 'generate'])->name('tabelj.generate');

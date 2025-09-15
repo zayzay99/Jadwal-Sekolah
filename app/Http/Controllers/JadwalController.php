@@ -11,6 +11,7 @@ use App\Models\GuruAvailability;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Models\Tabelj;
 
 class JadwalController extends Controller
 {
@@ -22,53 +23,150 @@ class JadwalController extends Controller
     public function create($kelas_id)
     {
         $kelas = Kelas::findOrFail($kelas_id);
-        $gurus = Guru::orderBy('nama')->get();
-        $jadwals = Jadwal::where('kelas_id', $kelas_id)->with('guru')->get();
-        $days = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
-        $timeSlots = \App\Models\Tabelj::orderBy('jam_mulai')->get();
+        $gurus = Guru::with(['availabilities' => function ($query) {
+            $query->orderBy('hari')->orderBy('jam_mulai');
+        }])->orderBy('nama')->get();
+        
         $kategoris = JadwalKategori::all();
+        $days = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+        $timeSlots = Tabelj::orderBy('jam_mulai')->get();
 
-        // Susun grid jadwal untuk tampilan awal
+        $jadwals = Jadwal::where('kelas_id', $kelas_id)
+            ->with('guru', 'kategori')
+            ->orderByRaw("FIELD(hari, 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu')")
+            ->orderBy('jam')
+            ->get();
+
+        // Mengambil semua jadwal yang ada untuk validasi di frontend
+        $allSchedules = Jadwal::with(['guru:id,nama', 'kelas:id,nama_kelas'])->get();
+
         $scheduleGrid = [];
-        foreach ($jadwals as $jadwal) {
-            $scheduleGrid[$jadwal->hari][$jadwal->jam] = $jadwal;
+        foreach ($timeSlots as $slot) {
+            foreach ($days as $day) {
+                $scheduleGrid[$slot->jam][$day] = null;
+            }
         }
 
-        // Mengambil semua ketersediaan guru
-        $availabilities = GuruAvailability::all()->keyBy(function ($item) {
-            return $item->guru_id . '-' . $item->hari . '-' . $item->jam;
+        foreach ($jadwals as $jadwal) {
+            if (isset($scheduleGrid[$jadwal->jam][$jadwal->hari])) {
+                $scheduleGrid[$jadwal->jam][$jadwal->hari] = $jadwal;
+            }
+        }
+
+        $guruAvailabilities = $gurus->mapWithKeys(function ($guru) {
+            return [$guru->id => $guru->availabilities->map(function ($avail) {
+                return [
+                    'id' => $avail->id,
+                    'hari' => $avail->hari,
+                    'jam' => $avail->jam_mulai . ' - ' . $avail->jam_selesai,
+                ];
+            })];
         });
 
-        // Ambil semua jadwal untuk validasi bentrok di frontend
-        $allSchedules = Jadwal::with('kelas:id,nama_kelas')
-            ->get(['guru_id', 'kelas_id', 'hari', 'jam']);
-
-        // Siapkan daftar guru yang tersedia untuk setiap slot waktu
+        // Data untuk dropdown guru yang tersedia per slot waktu
+        $availabilities = GuruAvailability::with('guru:id,nama,pengampu')->get();
         $availableGurus = [];
-        foreach ($days as $day) {
-            foreach ($timeSlots as $timeSlot) {
-                $jam = $timeSlot->jam_mulai . ' - ' . $timeSlot->jam_selesai;
-                $availableGurus[$day][$jam] = [];
 
-                foreach ($gurus as $guru) {
-                    $availabilityKey = $guru->id . '-' . $day . '-' . $jam;
-                    if ($availabilities->has($availabilityKey)) {
-                        $availableGurus[$day][$jam][] = $guru;
-                    }
-                }
+        // 1. Inisialisasi struktur data untuk view, menggunakan kolom 'jam' asli sebagai kunci
+        foreach ($days as $day) {
+            foreach ($timeSlots as $slot) {
+                $availableGurus[$day][$slot->jam] = [];
+            }
+        }
+
+        // 2. Buat peta lookup dari jam_mulai/selesai yang dinormalisasi ke kolom 'jam' asli dari tabelj
+        $lookupMap = [];
+        foreach ($timeSlots as $slot) {
+            $key = preg_replace('/\s+/', '', trim($slot->jam_mulai) . '-' . trim($slot->jam_selesai));
+            $lookupMap[$key] = $slot->jam;
+        }
+
+        // 3. Cocokkan dan isi guru yang tersedia
+        foreach ($availabilities as $availability) {
+            $key = preg_replace('/\s+/', '', trim($availability->jam_mulai) . '-' . trim($availability->jam_selesai));
+            if (isset($lookupMap[$key])) {
+                $originalJamKey = $lookupMap[$key];
+                $availableGurus[$availability->hari][$originalJamKey][] = $availability->guru;
             }
         }
 
         return view('jadwal.create', compact(
             'kelas',
             'gurus',
+            'kategoris',
+            'jadwals',
+            'guruAvailabilities',
             'days',
             'timeSlots',
             'scheduleGrid',
-            'kategoris',
             'allSchedules',
             'availableGurus'
         ));
+    }
+
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'kelas_id' => 'required|exists:kelas,id',
+            'guru_id' => 'required|exists:gurus,id',
+            'availability_id' => 'required|exists:guru_availabilities,id',
+        ]);
+
+        $availability = GuruAvailability::findOrFail($validated['availability_id']);
+        $guru = Guru::findOrFail($validated['guru_id']);
+        $kelasId = $validated['kelas_id'];
+
+        $jam = $availability->jam_mulai . ' - ' . $availability->jam_selesai;
+
+        // Validasi bentrok
+        $existingJadwal = Jadwal::where('hari', $availability->hari)
+            ->where('jam', $jam)
+            ->where(function ($query) use ($kelasId, $guru) {
+                $query->where('kelas_id', $kelasId)
+                      ->orWhere('guru_id', $guru->id);
+            })
+            ->first();
+
+        if ($existingJadwal) {
+            $errorMessage = $existingJadwal->guru_id == $guru->id
+                ? "Jadwal bentrok! Guru {$guru->nama} sudah mengajar di kelas lain pada waktu tersebut."
+                : "Jadwal bentrok! Sudah ada jadwal lain di kelas ini pada waktu tersebut.";
+            return back()->with('error', $errorMessage);
+        }
+
+        Jadwal::create([
+            'kelas_id' => $kelasId,
+            'guru_id' => $guru->id,
+            'mapel' => $guru->pengampu,
+            'hari' => $availability->hari,
+            'jam' => $jam,
+        ]);
+
+        return back()->with('success', 'Jadwal berhasil ditambahkan.');
+    }
+
+    public function storeKategori(Request $request)
+    {
+        $validated = $request->validate([
+            'kelas_id' => 'required|exists:kelas,id',
+            'kategori_id' => 'required|exists:jadwal_kategoris,id',
+            'hari' => 'required|string|in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu',
+            'jam' => 'required|string',
+        ]);
+        
+        // Basic validation for jam format
+        if (!preg_match('/^\d{2}:\d{2} - \d{2}:\d{2}$/', $validated['jam'])) {
+            return back()->with('error', 'Format jam tidak valid. Harusnya HH:MM - HH:MM');
+        }
+
+        Jadwal::create([
+            'kelas_id' => $validated['kelas_id'],
+            'jadwal_kategori_id' => $validated['kategori_id'],
+            'hari' => $validated['hari'],
+            'jam' => $validated['jam'],
+        ]);
+
+        return back()->with('success', 'Kategori jadwal berhasil ditambahkan.');
     }
 
     public function bulkStore(Request $request)
@@ -139,30 +237,47 @@ class JadwalController extends Controller
         DB::beginTransaction();
         try {
             // --- Validasi Jadwal ---
-            $availabilities = GuruAvailability::all()->keyBy(fn($item) => $item->guru_id . '-' . $item->hari . '-' . $item->jam);
+
+            // 1. Create a lookup map of all possible time slots from Tabelj
+            $timeSlotMap = Tabelj::all()->keyBy('jam')->map(function ($slot) {
+                return preg_replace('/\s+/', '', trim($slot->jam_mulai) . '-' . trim($slot->jam_selesai));
+            });
+
+            // 2. Create a set of available slots for each teacher
+            $availabilitySet = GuruAvailability::all()->mapWithKeys(function ($avail) {
+                $key = $avail->guru_id . '-' . $avail->hari . '-' . preg_replace('/\s+/', '', trim($avail->jam_mulai) . '-' . trim($avail->jam_selesai));
+                return [$key => true];
+            });
+
+            // 3. Get other schedules for clash validation
             $otherSchedules = Jadwal::where('kelas_id', '!=', $kelasId)->get()
                 ->keyBy(fn($item) => $item->hari . '-' . $item->jam . '-' . $item->guru_id);
 
+
+            // 4. Loop and validate
             foreach ($schedules as $scheduleData) {
                 if ($scheduleData['guru_id']) {
                     $guru = Guru::find($scheduleData['guru_id']);
-                    $availabilityKey = $scheduleData['guru_id'] . '-' . $scheduleData['hari'] . '-' . $scheduleData['jam'];
-                    $scheduleKey = $scheduleData['hari'] . '-' . $scheduleData['jam'] . '-' . $scheduleData['guru_id'];
+                    $submittedJam = $scheduleData['jam'];
 
-                    if (!$availabilities->has($availabilityKey)) {
+                    // --- Availability Check ---
+                    if (!isset($timeSlotMap[$submittedJam])) {
                         DB::rollBack();
-                        return response()->json([
-                            'success' => false,
-                            'message' => "Guru {$guru->nama} tidak tersedia pada {$scheduleData['hari']} jam {$scheduleData['jam']}."
-                        ], 400);
+                        return response()->json(['success' => false, 'message' => "Jam tidak valid: {$submittedJam}."], 400);
+                    }
+                    $normalizedJam = $timeSlotMap[$submittedJam];
+                    $availabilityKey = $scheduleData['guru_id'] . '-' . $scheduleData['hari'] . '-' . $normalizedJam;
+
+                    if (!isset($availabilitySet[$availabilityKey])) {
+                        DB::rollBack();
+                        return response()->json(['success' => false, 'message' => "Guru {$guru->nama} tidak tersedia pada {$scheduleData['hari']} jam {$scheduleData['jam']}."], 400);
                     }
 
+                    // --- Clash Check ---
+                    $scheduleKey = $scheduleData['hari'] . '-' . $scheduleData['jam'] . '-' . $scheduleData['guru_id'];
                     if ($otherSchedules->has($scheduleKey)) {
                         DB::rollBack();
-                        return response()->json([
-                            'success' => false,
-                            'message' => "Guru {$guru->nama} sudah dijadwalkan di kelas lain pada waktu yang sama."
-                        ], 400);
+                        return response()->json(['success' => false, 'message' => "Guru {$guru->nama} sudah dijadwalkan di kelas lain pada waktu yang sama."], 400);
                     }
                 }
             }
