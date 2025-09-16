@@ -1,136 +1,147 @@
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    
+
+    html {
+      height: 100%;
+      overflow: hidden;
     }
 
-    body {
-      background-color: #f5f7fb;
-      color: #333;
-      min-height: 100vh;
-    }
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
 
-    /* Navbar */
-    .navbar {
-      background: linear-gradient(135deg, #2d6a4f, #1c3d2e);
-      color: white;
-      padding: 15px 30px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
+body {
+  background-color: #f5f7fb;
+  color: #333;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
 
-    .nav-brand h2 {
-      font-weight: 600;
-    }
+/* Navbar */
+.navbar {
+  background: linear-gradient(135deg, #2d6a4f, #1c3d2e);
+  color: white;
+  padding: 15px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  z-index: 100;
+  flex-shrink: 0;
+}
 
-    .nav-user {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-    }
+.nav-brand h2 {
+  font-weight: 600;
+}
 
-    .user-avatar {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background: #3a7d5d;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 18px;
-    }
+.nav-user {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
 
-    /* Main Layout */
-    .main-layout {
-      display: flex;
-      flex: 1;
-    }
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #3a7d5d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
 
-    /* Sidebar */
-    .sidebar {
-      width: 250px;
-      background: #1c3d2e;
-      color: white;
-      height: calc(100vh - 70px);
-      position: sticky;
-      top: 70px;
-      overflow-y: auto;
-      box-shadow: 2px 0 10px rgba(0,0,0,0.05);
-      z-index: 90;
-    }
+/* Main Layout */
+.main-layout {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
 
-    .sidebar-header {
-      padding: 20px 15px;
-      border-bottom: 1px solid rgba(255,255,255,0.1);
-    }
+/* Sidebar */
+.sidebar {
+  width: 250px;
+  background: #1c3d2e;
+  color: white;
+  box-shadow: 2px 0 10px rgba(0,0,0,0.05);
+  z-index: 90;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+}
 
-    .sidebar-header h3 {
-      font-size: 18px;
-      font-weight: 500;
-    }
+.sidebar-header {
+  padding: 20px 15px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
 
-    .sidebar-menu {
-      list-style: none;
-      padding: 10px 0;
-    }
+.sidebar-header h3 {
+  font-size: 18px;
+  font-weight: 500;
+}
 
-    .menu-item {
-      display: flex;
-      align-items: center;
-      padding: 15px 20px;
-      color: rgba(255,255,255,0.8);
-      text-decoration: none;
-      transition: all 0.3s ease;
-      border-left: 4px solid transparent;
-    }
+.sidebar-menu {
+  list-style: none;
+  padding: 10px 0;
+  overflow-y: auto;
+  flex-grow: 1;
+}
 
-    .menu-item:hover {
-      background: #3a7d5d;
-      color: white;
-      padding-left: 25px;
-      border-left: 4px solid #2d6a4f;
-    }
+.menu-item {
+  display: flex;
+  align-items: center;
+  padding: 15px 20px;
+  color: rgba(255,255,255,0.8);
+  text-decoration: none;
+  transition: all 0.3s ease;
+  border-left: 4px solid transparent;
+}
 
-    .menu-item.active {
-      background: #3a7d5d;
-      color: white;
-      padding-left: 25px; /* Menyamakan dengan hover */
-      border-left: 4px solid #2d6a4f;
-      animation: pulse-active 2s infinite;
-      box-shadow: 0 0 0 rgba(58, 125, 93, 0.4);
-      position: relative; /* Diperlukan untuk z-index */
-      z-index: 1; /* Memastikan animasi tampil di atas elemen lain */
-    }
+.menu-item:hover {
+  background: #3a7d5d;
+  color: white;
+  padding-left: 25px;
+  border-left: 4px solid #2d6a4f;
+}
 
-    .menu-item i {
-      margin-right: 15px;
-      width: 20px;
-      text-align: center;
-    }
+.menu-item.active {
+  background: #3a7d5d;
+  color: white;
+  padding-left: 25px; /* Menyamakan dengan hover */
+  border-left: 4px solid #2d6a4f;
+  animation: pulse-active 2s infinite;
+  box-shadow: 0 0 0 rgba(58, 125, 93, 0.4);
+  position: relative; /* Diperlukan untuk z-index */
+  z-index: 1; /* Memastikan animasi tampil di atas elemen lain */
+}
 
-    .logout {
-      background: #f86a6a;
-      margin-top: auto;
-      border-radius: 0 0 10px 10px;
-    }
+.menu-item i {
+  margin-right: 15px;
+  width: 20px;
+  text-align: center;
+}
 
-    .logout:hover {
-      background: #ff5252;
-    }
+.logout {
+  background: #f86a6a;
+  margin-top: auto;
+  border-radius: 0 0 10px 10px;
+}
 
-    /* Main Content */
-    .content {
-      flex: 1;
-      padding: 30px;
-      background-color: #f5f7fb;
-    }
+.logout:hover {
+  background: #ff5252;
+}
+
+/* Main Content */
+.content {
+  flex: 1;
+  padding: 30px;
+  background-color: #f5f7fb;
+  overflow-y: auto;
+}
 
     .content-header {
       margin-bottom: 30px;
@@ -338,6 +349,11 @@
         border: 1px solid rgba(0,0,0,0.05);
     }
 
+    /* Automatically widen form containers that have a table inside */
+    .form-container:has(.custom-table) {
+        max-width: 900px;
+    }
+
     .form-group {
         margin-bottom: 25px;
     }
@@ -355,7 +371,7 @@
         position: relative;
         width: 100%;
         border-radius: 12px;
-        overflow: hidden;
+        /* overflow: hidden; */
         box-shadow: 0 2px 6px rgba(0,0,0,0.05);
         border: 1px solid #e0e0e0;
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -849,7 +865,7 @@
         margin-top: 20px;
         box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         border-radius: 12px;
-        overflow: hidden;
+        /* overflow: hidden; */
     }
 
     .custom-table thead {
@@ -1239,7 +1255,7 @@
     margin: 0;
     background: white;
     border-radius: 12px;
-    overflow: hidden;
+    /* overflow: hidden; */ /* Removed to prevent clipping of content like time pickers */
     border: 2px solid #2d6a4f;
 }
 

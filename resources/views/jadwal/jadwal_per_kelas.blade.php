@@ -8,10 +8,10 @@
 <!-- PENTING: Tambahkan class jadwal-table-container di sini -->
 <div class="table-container jadwal-table-container">     
     <div class="table-header">          
-        <button class="btn btn-secondary" onclick="window.history.back()">             
+        <button class="btn btn-secondary btn-tiny" onclick="window.history.back()">             
             <i class="fas fa-arrow-left"></i> Kembali         
         </button>
-        <a href="{{ route('admin.jadwal.cetak', ['kelas' => $kelas->id]) }}" class="btn btn-primary">             
+        <a href="{{ route('admin.jadwal.cetak', ['kelas' => $kelas->id]) }}" class="btn btn-primary btn-tiny">             
             <i class="fas fa-print"></i> Cetak PDF         
         </a>
         @if($is_management && $jadwals->count() > 0)

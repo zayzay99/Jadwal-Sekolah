@@ -4,6 +4,23 @@
     <h2>Tambah Guru</h2>
 </div>
 
+<div class="table-container">
+    @if (session('success'))
+        <div class="alert alert-success">
+            {{ session('success') }}
+        </div>
+    @endif
+    
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            <ul style="margin:0; padding-left:18px;">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+    
 <div class="form-container">
     <form action="{{ route('manage.guru.store') }}" method="POST">
         @csrf
@@ -47,4 +64,5 @@
         </div>
     </form>
 </div>
+
 @endsection

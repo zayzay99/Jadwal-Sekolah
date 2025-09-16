@@ -29,7 +29,11 @@ class JadwalController extends Controller
         
         $kategoris = JadwalKategori::all();
         $days = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
-        $timeSlots = Tabelj::with('jadwalKategori')->orderBy('jam_mulai')->get();
+        $timeSlots = Tabelj::with('jadwalKategori')->orderBy('jam_mulai')->get()->map(function ($slot) {
+            $slot->jam_mulai = \Carbon\Carbon::parse($slot->jam_mulai)->format('H:i');
+            $slot->jam_selesai = \Carbon\Carbon::parse($slot->jam_selesai)->format('H:i');
+            return $slot;
+        });
 
         $jadwals = Jadwal::where('kelas_id', $kelas_id)
             ->with('guru', 'kategori')
@@ -55,10 +59,12 @@ class JadwalController extends Controller
 
         $guruAvailabilities = $gurus->mapWithKeys(function ($guru) {
             return [$guru->id => $guru->availabilities->map(function ($avail) {
+                $jam_mulai_formatted = \Carbon\Carbon::parse($avail->jam_mulai)->format('H:i');
+                $jam_selesai_formatted = \Carbon\Carbon::parse($avail->jam_selesai)->format('H:i');
                 return [
                     'id' => $avail->id,
                     'hari' => $avail->hari,
-                    'jam' => $avail->jam_mulai . ' - ' . $avail->jam_selesai,
+                    'jam' => $jam_mulai_formatted . ' - ' . $jam_selesai_formatted,
                 ];
             })];
         });

@@ -35,10 +35,10 @@
             </div>
 
             <div class="form-actions">
-                <button type="submit" class="btn btn-success">
+                <button type="submit" class="btn btn-success btn-tiny">
                     <i class="fas fa-save"></i> Simpan Ketersediaan
                 </button>
-                <a href="{{ route('manage.guru.index') }}" class="btn btn-secondary">
+                <a href="{{ route('manage.guru.index') }}" class="btn btn-secondary btn-tiny">
                     <i class="fas fa-times"></i> Batal
                 </a>
             </div>

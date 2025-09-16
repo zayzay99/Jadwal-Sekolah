@@ -7,7 +7,7 @@
 <div class="table-container">
     <div class="table-header">
         <h2>Daftar Kelas</h2>
-        <a href="{{ route('manage.kelas.create') }}" class="btn btn-success">
+        <a href="{{ route('manage.kelas.create') }}" class="btn btn-success btn-tiny">
             <i class="fas fa-plus"></i> Tambah Kelas
         </a>
     </div>
@@ -30,8 +30,8 @@
                     <td style="text-align: center">{{ $k->siswas->count() }}</td>
                     <td style="text-align: center; padding: 16px 20px;">
                         <div class="action-buttons">
-                            <a href="{{ route('manage.kelas.edit', $k->id) }}" class="btn btn-warning" title="Edit">
-                                <i class="fas fa-edit"></i>Edit
+                            <a href="{{ route('manage.kelas.edit', $k->id) }}" class="btn btn-edit" title="Edit">
+                                <i class="fas fa-edit"></i>
                             </a>
                             <form action="{{ route('manage.kelas.destroy', $k->id) }}" method="POST" style="display:inline;" class="delete-form">
                                 @csrf

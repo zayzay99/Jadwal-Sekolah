@@ -7,7 +7,7 @@
 <div class="table-container">
     <div class="table-header">
         <h2>Daftar Guru</h2>
-        <a href="{{ route('manage.guru.create') }}" class="btn btn-success">
+        <a href="{{ route('manage.guru.create') }}" class="btn btn-success btn-tiny">
             <i class="fas fa-plus"></i> Tambah Guru
         </a>
     </div>

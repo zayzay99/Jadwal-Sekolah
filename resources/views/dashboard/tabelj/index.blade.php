@@ -21,13 +21,13 @@
     <div class="table-header">
         <h2>Daftar Slot Waktu</h2>
         <div>
-            <a href="{{ route('manage.tabelj.create') }}" class="btn btn-success">
+            <a href="{{ route('manage.tabelj.create') }}" class="btn btn-success btn-tiny">
                 <i class="fas fa-plus"></i> Tambah Slot Waktu
             </a>
-            <a href="{{ route('manage.tabelj.assignCategory') }}" class="btn btn-info">
+            <a href="{{ route('manage.tabelj.assignCategory') }}" class="btn btn-info btn-tiny">
                 <i class="fas fa-tags"></i> Tetapkan Kategori
             </a>
-            <button id="clear-all-btn" class="btn btn-danger">
+            <button id="clear-all-btn" class="btn btn-danger btn-tiny">
                 <i class="fas fa-trash-alt"></i> Hapus Semua
             </button>
         </div>
@@ -49,16 +49,16 @@
                         <td>{{ Carbon\Carbon::parse($tabelj->jam_selesai)->format('H:i') }}</td>
                         <td>{{ $tabelj->jadwalKategori->nama_kategori ?? 'Tidak ada kategori' }}</td>
                         <td>
-                            <a href="{{ route('manage.tabelj.edit', $tabelj->id) }}" class="btn btn-warning btn-sm" title="Edit">
+                            <a href="{{ route('manage.tabelj.edit', $tabelj->id) }}" class="btn btn-warning btn-sm btn-tiny" title="Edit">
                                 <i class="fas fa-edit"></i>
                             </a>
-                            <button type="button" class="btn btn-info btn-sm add-break-btn" data-id="{{ $tabelj->id }}" title="Tambah Istirahat">
+                            <button type="button" class="btn btn-info btn-sm add-break-btn btn-tiny" data-id="{{ $tabelj->id }}" title="Tambah Istirahat">
                                 <i class="fas fa-clock"></i>
                             </button>
                             <form action="{{ route('manage.tabelj.destroy', $tabelj->id) }}" method="POST" style="display:inline;" class="delete-form">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="btn btn-danger btn-sm" title="Hapus">
+                                <button type="submit" class="btn btn-danger btn-sm btn-tiny" title="Hapus">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </form>

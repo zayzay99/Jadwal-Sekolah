@@ -22,7 +22,7 @@
             <table class="custom-table" id="schedule-builder">
                 <thead>
                     <tr>
-                        <th style="width: 180px;">Jam</th>
+                        <th style="width: 200px;">Jam</th>
                         @foreach ($days as $day)
                             <th>{{ $day }}</th>
                         @endforeach
@@ -68,18 +68,167 @@
             padding: 0.5rem;
         }
 
-        .time-input-container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-        }
+        /* PERBAIKAN UTAMA UNTUK KOLOM JAM */
+        /* PERBAIKAN UTAMA UNTUK KOLOM JAM - Updated */
+.custom-table th:first-child {
+    width: 240px;
+    min-width: 240px;
+    max-width: 240px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
 
-        .time-input {
-            width: 80px;
-            padding: 0.375rem 0.5rem;
-            background-color: #e9ecef;
-        }
+.time-input-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 10px;
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+    min-height: 50px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.time-input {
+    width: 95px;
+    min-width: 95px;
+    max-width: 95px;
+    padding: 8px 10px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    text-align: center;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    background: white;
+    color: #2d6a4f;
+    box-sizing: border-box;
+    line-height: 1.4;
+    letter-spacing: 0.5px;
+    margin: 0 2px;
+}
+
+.time-input:focus {
+    outline: none;
+    border-color: #2d6a4f;
+    box-shadow: 0 0 0 2px rgba(45, 106, 79, 0.2);
+}
+
+/* Webkit specific fixes for time input */
+.time-input::-webkit-datetime-edit {
+    padding: 2px;
+    color: #2d6a4f;
+    font-weight: 600;
+    font-size: 15px;
+}
+
+.time-input::-webkit-datetime-edit-fields-wrapper {
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.time-input::-webkit-datetime-edit-hour-field,
+.time-input::-webkit-datetime-edit-minute-field {
+    padding: 2px 3px;
+    color: #2d6a4f;
+    font-weight: 600;
+    font-size: 15px;
+    min-width: 20px;
+    text-align: center;
+}
+
+.time-input::-webkit-datetime-edit-text {
+    color: #2d6a4f;
+    font-weight: 600;
+    font-size: 15px;
+    padding: 0 2px;
+}
+
+.time-separator {
+    color: #2d6a4f;
+    font-weight: bold;
+    font-size: 16px;
+    margin: 0 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 12px;
+}
+
+/* Mobile adjustments untuk kolom jam */
+@media (max-width: 768px) {
+    .custom-table th:first-child {
+        width: 200px;
+        min-width: 200px;
+        max-width: 200px;
+    }
+
+    .time-input-container {
+        flex-direction: column;
+        gap: 5px;
+        padding: 10px 8px;
+        min-height: 70px;
+    }
+
+    .time-input {
+        width: 90px;
+        min-width: 90px;
+        max-width: 90px;
+        padding: 6px 8px;
+        font-size: 14px;
+    }
+
+    .time-input::-webkit-datetime-edit,
+    .time-input::-webkit-datetime-edit-hour-field,
+    .time-input::-webkit-datetime-edit-minute-field,
+    .time-input::-webkit-datetime-edit-text {
+        font-size: 14px;
+    }
+
+    .time-separator {
+        font-size: 14px;
+        margin: 2px 0;
+    }
+}
+
+/* Additional responsive for very small screens */
+@media (max-width: 480px) {
+    .custom-table th:first-child {
+        width: 160px;
+        min-width: 160px;
+        max-width: 160px;
+    }
+
+    .time-input {
+        width: 75px;
+        min-width: 75px;
+        max-width: 75px;
+        font-size: 13px;
+        padding: 4px 6px;
+    }
+
+    .time-input::-webkit-datetime-edit,
+    .time-input::-webkit-datetime-edit-hour-field,
+    .time-input::-webkit-datetime-edit-minute-field,
+    .time-input::-webkit-datetime-edit-text {
+        font-size: 13px;
+    }
+
+    .time-input-container {
+        padding: 6px 4px;
+        min-height: 60px;
+    }
+
+    .time-separator {
+        font-size: 13px;
+    }
+}
 
         .schedule-select {
             min-width: 150px;
@@ -106,6 +255,35 @@
 
         .btn-secondary:hover {
             background: linear-gradient(135deg, #5a6268, #495057);
+        }
+
+        .schedule-cell-content {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .clear-selection-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 11px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+
+        .clear-selection-btn:hover {
+            background: #c82333;
+            transform: scale(1.1);
         }
 
         @media (max-width: 768px) {
@@ -137,7 +315,7 @@
 
             .custom-table {
                 font-size: 13px;
-                min-width: 600px;
+                min-width: 700px;
             }
 
             .custom-table th,
@@ -145,15 +323,31 @@
                 padding: 8px 10px;
             }
 
+            /* Mobile adjustments untuk kolom jam */
+            .custom-table th:first-child {
+                width: 180px;
+                min-width: 180px;
+                max-width: 180px;
+            }
+
             .time-input-container {
                 flex-direction: column;
-                gap: 5px;
+                gap: 3px;
+                padding: 8px 6px;
+                min-height: 65px;
             }
 
             .time-input {
-                width: 90px;
-                padding: 0.375rem;
+                width: 80px;
+                min-width: 80px;
+                max-width: 80px;
+                padding: 5px 6px;
                 font-size: 13px;
+            }
+
+            .time-separator {
+                font-size: 13px;
+                margin: 0;
             }
 
             .schedule-select {
@@ -176,6 +370,37 @@
                 font-size: 12px;
                 z-index: 10;
                 display: none;
+            }
+        }
+
+        /* Additional responsive for very small screens */
+        @media (max-width: 480px) {
+            .custom-table {
+                min-width: 650px;
+            }
+
+            .custom-table th:first-child {
+                width: 140px;
+                min-width: 140px;
+                max-width: 140px;
+            }
+
+            .time-input {
+                width: 65px;
+                min-width: 65px;
+                max-width: 65px;
+                font-size: 11px;
+                padding: 2px 3px;
+            }
+
+            .time-input-container {
+                padding: 4px 2px;
+                min-height: 55px;
+            }
+
+            .schedule-select {
+                min-width: 110px;
+                font-size: 12px;
             }
         }
     </style>
@@ -240,26 +465,24 @@
                 const timeRange = `${startTime} - ${endTime}`;
 
                 let cells = `
-            <td>
-                <div class="time-input-container">
-                    <input type="time" class="form-control time-input time-start" value="${startTime}" readonly>
-                    <span>-</span>
-                    <input type="time" class="form-control time-input time-end" value="${endTime}" readonly>
-                </div>
-            </td>
-        `;
+    <td>
+        <div class="time-display" style="padding: 8px; text-align: center;">
+            ${timeRange}
+        </div>
+    </td>
+`;
 
                 days.forEach(day => {
                     cells += `
-                <td>
-                    <div class="schedule-cell-content">
-                        <select class="form-control schedule-select" data-day="${day}" data-jam="${timeRange}">
-                            ${getSelectOptions(day, jam)}
-                        </select>
-                        <button type="button" class="clear-selection-btn" title="Hapus Pilihan">&times;</button>
-                    </div>
-                </td>
-            `;
+                        <td>
+                            <div class="schedule-cell-content">
+                                <select class="form-control schedule-select" data-day="${day}" data-jam="${timeRange}">
+                                    ${getSelectOptions(day, jam)}
+                                </select>
+                                <button type="button" class="clear-selection-btn" title="Hapus Pilihan">&times;</button>
+                            </div>
+                        </td>
+                    `;
                 });
 
                 tr.innerHTML = cells;
@@ -287,65 +510,77 @@
                 return tr;
             }
 
+            // Fungsi untuk memformat waktu dari hh:mm:ss ke hh:mm
+function formatTime(timeString) {
+    if (!timeString) return '';
+    const timeParts = timeString.split(':');
+    return `${timeParts[0]}:${timeParts[1]}`;
+}
 
             // --- VALIDATION LOGIC ---
-            function validateAllCells() {
-                const teacherDailyJP = {};
-                const rows = scheduleBody.querySelectorAll('.schedule-row');
+function validateAllCells() {
+    const teacherDailyJP = {};
+    const rows = scheduleBody.querySelectorAll('.schedule-row');
 
-                document.querySelectorAll('.schedule-select.is-invalid').forEach(el => {
-                    el.classList.remove('is-invalid');
-                    el.title = '';
-                });
+    document.querySelectorAll('.schedule-select.is-invalid').forEach(el => {
+        el.classList.remove('is-invalid');
+        el.title = '';
+    });
 
-                rows.forEach(row => {
-                    const startTime = row.querySelector('.time-start').value;
-                    const endTime = row.querySelector('.time-end').value;
-                    if (!startTime || !endTime || startTime >= endTime) return;
+    rows.forEach(row => {
+        // Gunakan format waktu yang sudah diformat
+        const startTimeInput = row.querySelector('.time-start');
+        const endTimeInput = row.querySelector('.time-end');
+        
+        // Jika menggunakan input time, ambil format hh:mm
+        const startTime = startTimeInput ? formatTime(startTimeInput.value) : '';
+        const endTime = endTimeInput ? formatTime(endTimeInput.value) : '';
+        
+        if (!startTime || !endTime || startTime >= endTime) return;
 
-                    const jam = `${startTime} - ${endTime}`;
-                    const durasiMenit = (new Date(`1970-01-01T${endTime}:00`) - new Date(`1970-01-01T${startTime}:00`)) / 60000;
-                    const jp = Math.floor(durasiMenit / 35);
+        const jam = `${startTime} - ${endTime}`;
+        const durasiMenit = (new Date(`1970-01-01T${endTime}:00`) - new Date(`1970-01-01T${startTime}:00`)) / 60000;
+        const jp = Math.floor(durasiMenit / 35);
 
-                    row.querySelectorAll('.schedule-select').forEach(select => {
-                        const selectedValue = select.value;
-                        if (!selectedValue || !selectedValue.startsWith('guru-')) return;
+        row.querySelectorAll('.schedule-select').forEach(select => {
+            const selectedValue = select.value;
+            if (!selectedValue || !selectedValue.startsWith('guru-')) return;
 
-                        const day = select.dataset.day;
-                        const guruId = selectedValue.split('-')[1];
+            const day = select.dataset.day;
+            const guruId = selectedValue.split('-')[1];
 
-                        if (teacherClashMap[guruId] && teacherClashMap[guruId][day] &&
-                            teacherClashMap[guruId][day][jam]) {
-                            const clashKelas = teacherClashMap[guruId][day][jam];
-                            select.classList.add('is-invalid');
-                            select.title = `Bentrok! Sudah mengajar di kelas ${clashKelas}.`;
-                        }
-
-                        if (!teacherDailyJP[guruId]) teacherDailyJP[guruId] = {};
-                        if (!teacherDailyJP[guruId][day]) teacherDailyJP[guruId][day] = 0;
-                        teacherDailyJP[guruId][day] += jp;
-                    });
-                });
-
-                for (const guruId in teacherDailyJP) {
-                    const guruLimit = teacherLimits[guruId];
-                    if (!guruLimit) continue;
-
-                    for (const day in teacherDailyJP[guruId]) {
-                        const totalJP = teacherDailyJP[guruId][day];
-                        if (totalJP > guruLimit) {
-                            rows.forEach(row => {
-                                const select = row.querySelector(`select[data-day="${day}"]`);
-                                if (select.value === `guru-${guruId}`) {
-                                    select.classList.add('is-invalid');
-                                    const newTitle = `Batas harian terlampaui! (${totalJP} dari maks ${guruLimit} JP).`;
-                                    select.title = select.title ? `${select.title}\n${newTitle}` : newTitle;
-                                }
-                            });
-                        }
-                    }
-                }
+            if (teacherClashMap[guruId] && teacherClashMap[guruId][day] &&
+                teacherClashMap[guruId][day][jam]) {
+                const clashKelas = teacherClashMap[guruId][day][jam];
+                select.classList.add('is-invalid');
+                select.title = `Bentrok! Sudah mengajar di kelas ${clashKelas}.`;
             }
+
+            if (!teacherDailyJP[guruId]) teacherDailyJP[guruId] = {};
+            if (!teacherDailyJP[guruId][day]) teacherDailyJP[guruId][day] = 0;
+            teacherDailyJP[guruId][day] += jp;
+        });
+    });
+
+    for (const guruId in teacherDailyJP) {
+        const guruLimit = teacherLimits[guruId];
+        if (!guruLimit) continue;
+
+        for (const day in teacherDailyJP[guruId]) {
+            const totalJP = teacherDailyJP[guruId][day];
+            if (totalJP > guruLimit) {
+                rows.forEach(row => {
+                    const select = row.querySelector(`select[data-day="${day}"]`);
+                    if (select.value === `guru-${guruId}`) {
+                        select.classList.add('is-invalid');
+                        const newTitle = `Batas harian terlampaui! (${totalJP} dari maks ${guruLimit} JP).`;
+                        select.title = select.title ? `${select.title}\n${newTitle}` : newTitle;
+                    }
+                });
+            }
+        }
+    }
+}
 
             // --- INITIALIZE VIEW ---
             function initialize() {

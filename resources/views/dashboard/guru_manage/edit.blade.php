@@ -1,9 +1,10 @@
 @extends('dashboard.admin')
 @section('content')
+
 <div class="content-header">
     <h2>Manajemen Guru Bagian Edit Guru</h2>
 </div>
-<div class="form-container">
+<div class="table-container">
     @if (session('success'))
         <div class="alert alert-success">
             {{ session('success') }}

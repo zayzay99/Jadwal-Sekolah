@@ -7,7 +7,7 @@
 <div class="table-container">
     <div class="table-header">
         <h2>Daftar Kategori</h2>
-        <a href="{{ route('jadwal-kategori.create') }}" class="btn btn-success">
+        <a href="{{ route('jadwal-kategori.create') }}" class="btn btn-success btn-tiny">
             <i class="fas fa-plus"></i> Tambah Kategori
         </a>
     </div>
@@ -36,16 +36,6 @@
                             
                             <a href="{{ route('jadwal-kategori.edit', $kategori->id) }}" class="btn btn-edit" title="Edit">
                                 <i class="fas fa-edit"></i>
-                            {{-- <a href="#" class="btn btn-warning" title="Edit"> --}}
-                            <a href="{{ route('jadwal-kategori.edit', $kategori->id) }}" class="btn btn-warning" title="Edit">
-                                <i class="fas fa-edit"></i>Edit                            {{-- <a href="{{ route('jadwal-kategori.edit', $kategori->id) }}" class="btn btn-edit" title="Edit"> --}}
-                                {{-- <i class="fas fa-edit"></i> --}}
-
-                            {{-- <a href="#" class="btn btn-warning" title="Edit"> --}}
-                            <a href="{{ route('jadwal-kategori.edit', $kategori->id) }}" class="btn btn-warning" title="Edit">
-                                <i class="fas fa-edit"></i>Edit
-
-
                             </a>
                             <form action="#" method="POST" style="display:inline;" class="delete-form">
                             <form action="{{ route('jadwal-kategori.destroy', $kategori->id) }}" method="POST" style="display:inline;" class="delete-form">
