@@ -3,136 +3,199 @@
 namespace App\Http\Controllers;
 
 use App\Models\Tabelj;
+use App\Models\JadwalKategori;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
 
 class TabeljController extends Controller
 {
     public function index()
     {
-        $tabeljs = Tabelj::orderBy('jam_mulai')->get();
+        $tabeljs = Tabelj::with('jadwalKategori')->orderBy('jam_mulai')->get();
         return view('dashboard.tabelj.index', compact('tabeljs'));
+    }
+
+    public function create()
+    {
+        return view('dashboard.tabelj.create');
     }
 
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), [
+        $request->validate([
             'jam_mulai' => 'required|date_format:H:i',
-            'jam_selesai' => 'required|date_format:H:i|after:jam_mulai',
+            'jumlah_jam_pelajaran' => 'required|integer|min:1',
+            'durasi' => 'required|integer|min:1',
+            'istirahat_setelah_jam_ke' => 'nullable|array',
+            'istirahat_setelah_jam_ke.*' => 'required|integer|min:1',
+            'durasi_istirahat_menit' => 'nullable|array',
+            'durasi_istirahat_menit.*' => 'required|integer|min:1',
+            'keterangan_istirahat' => 'nullable|array',
+            'keterangan_istirahat.*' => 'nullable|string|max:255',
         ]);
 
-        if ($validator->fails()) {
-            return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
+        $startTime = Carbon::createFromTimeString($request->jam_mulai);
+        $lessonCount = (int)$request->jumlah_jam_pelajaran;
+        $duration = (int)$request->durasi;
+
+        $breaks = [];
+        if ($request->has('istirahat_setelah_jam_ke')) {
+            foreach ($request->istirahat_setelah_jam_ke as $index => $jamKe) {
+                if (isset($request->durasi_istirahat_menit[$index])) {
+                    $breaks[$jamKe] = [
+                        'duration' => (int)$request->durasi_istirahat_menit[$index],
+                        'description' => $request->keterangan_istirahat[$index] ?? 'Istirahat'
+                    ];
+                }
+            }
+        }
+        ksort($breaks);
+
+        $istirahatKategori = JadwalKategori::firstOrCreate(['nama_kategori' => 'Istirahat']);
+        $currentTime = $startTime->copy();
+        $generatedCount = 0;
+
+        if ($request->has('replace_existing')) {
+            // Clear existing slots before generating new ones
+            Tabelj::truncate();
         }
 
-        try {
-            $jam_mulai = $request->input('jam_mulai');
-            $jam_selesai = $request->input('jam_selesai');
+        for ($i = 1; $i <= $lessonCount; $i++) {
+            $slotEndTime = $currentTime->copy()->addMinutes($duration);
 
-            $tabelj = Tabelj::create([
-                'jam_mulai' => $jam_mulai,
-                'jam_selesai' => $jam_selesai,
-                'jam' => $jam_mulai . '-' . $jam_selesai,
+            Tabelj::create([
+                'jam_mulai' => $currentTime->format('H:i'),
+                'jam_selesai' => $slotEndTime->format('H:i'),
+                'jam' => $currentTime->format('H:i') . ' - ' . $slotEndTime->format('H:i'),
             ]);
 
-            return response()->json(['success' => true, 'message' => 'Jam berhasil ditambahkan!', 'timeSlot' => $tabelj]);
-        } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => 'Gagal menyimpan jam: ' . $e->getMessage()], 500);
-        }
-    }
+            $generatedCount++;
+            $currentTime = $slotEndTime->copy();
 
-    public function destroy(Tabelj $tabelj)
-    {
-        try {
-            $tabelj->delete();
-            return response()->json(['success' => true, 'message' => 'Jam berhasil dihapus.']);
-        } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => 'Gagal menghapus jam.'], 500);
+            // Check for break after this lesson
+            if (isset($breaks[$i])) {
+                $breakDuration = $breaks[$i]['duration'];
+                $breakDescription = $breaks[$i]['description'];
+                $breakEndTime = $currentTime->copy()->addMinutes($breakDuration);
+
+                Tabelj::create([
+                    'jam_mulai' => $currentTime->format('H:i'),
+                    'jam_selesai' => $breakEndTime->format('H:i'),
+                    'jam' => $breakDescription,
+                    'jadwal_kategori_id' => $istirahatKategori->id,
+                ]);
+
+                $currentTime = $breakEndTime->copy();
+                $generatedCount++;
+            }
+        }
+
+        if ($generatedCount > 0) {
+            return redirect()->route('manage.tabelj.index')->with('success', "Berhasil generate {$generatedCount} slot waktu.");
+        } else {
+            return back()->with('error', 'Tidak ada slot waktu yang dapat digenerate dengan pengaturan yang diberikan.')->withInput();
         }
     }
 
     public function edit(Tabelj $tabelj)
     {
-        return view('dashboard.tabelj.edit', compact('tabelj'));
+        $kategoris = JadwalKategori::all();
+        return view('dashboard.tabelj.edit', compact('tabelj', 'kategoris'));
     }
 
     public function update(Request $request, Tabelj $tabelj)
     {
-        $validator = Validator::make($request->all(), [
+        $request->validate([
             'jam_mulai' => 'required|date_format:H:i',
             'jam_selesai' => 'required|date_format:H:i|after:jam_mulai',
+            'jadwal_kategori_id' => 'required|exists:jadwal_kategoris,id',
         ]);
 
-        if ($validator->fails()) {
-            return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
-        }
+        $tabelj->update([
+            'jam_mulai' => $request->jam_mulai,
+            'jam_selesai' => $request->jam_selesai,
+            'jam' => $request->jam_mulai . ' - ' . $request->jam_selesai,
+            'jadwal_kategori_id' => $request->jadwal_kategori_id,
+        ]);
 
-        try {
-            $tabelj->update([
-                'jam_mulai' => $request->jam_mulai,
-                'jam_selesai' => $request->jam_selesai,
-                'jam' => $request->jam_mulai . ' - ' . $request->jam_selesai,
+        return redirect()->route('manage.tabelj.index')->with('success', 'Slot waktu berhasil diperbarui.');
+    }
+
+    public function destroy(Tabelj $tabelj)
+    {
+        // Optional: Add validation to check if this timeslot is currently in use in any schedule.
+        // For now, we will just delete it.
+        $tabelj->delete();
+
+        return redirect()->route('manage.tabelj.index')->with('success', 'Slot waktu berhasil dihapus.');
+    }
+
+    public function destroyAll()
+    {
+        Tabelj::truncate();
+        return redirect()->route('manage.tabelj.index')->with('success', 'Semua slot waktu berhasil dihapus.');
+    }
+
+    public function assignCategory()
+    {
+        $tabeljs = Tabelj::orderBy('jam_mulai')->get();
+        $kategoris = JadwalKategori::all();
+        return view('dashboard.tabelj.assign_category', compact('tabeljs', 'kategoris'));
+    }
+
+    public function storeAssignedCategory(Request $request)
+    {
+        $request->validate([
+            'selected_slots' => 'required|array',
+            'selected_slots.*' => 'exists:tabeljs,id',
+            'jadwal_kategori_id' => 'required|exists:jadwal_kategoris,id',
+        ]);
+
+        Tabelj::whereIn('id', $request->selected_slots)->update([
+            'jadwal_kategori_id' => $request->jadwal_kategori_id,
+        ]);
+
+        return redirect()->route('manage.tabelj.index')->with('success', 'Kategori berhasil ditetapkan ke slot waktu yang dipilih.');
+    }
+
+    public function addBreak(Request $request, Tabelj $tabelj)
+    {
+        $request->validate([
+            'durasi_istirahat' => 'required|integer|min:1',
+        ]);
+
+        $breakDuration = (int)$request->input('durasi_istirahat');
+        
+        // Find all slots that start at or after the current one ends.
+        $subsequentSlots = Tabelj::where('jam_mulai', '>=', $tabelj->jam_selesai)
+                                  ->orderBy('jam_mulai')
+                                  ->get();
+
+        // Shift subsequent slots
+        // We iterate in reverse to avoid unique constraint violations if times overlap.
+        foreach ($subsequentSlots->reverse() as $slot) {
+            $newStartTime = Carbon::parse($slot->jam_mulai)->addMinutes($breakDuration);
+            $newEndTime = Carbon::parse($slot->jam_selesai)->addMinutes($breakDuration);
+            $slot->update([
+                'jam_mulai' => $newStartTime->format('H:i:s'),
+                'jam_selesai' => $newEndTime->format('H:i:s'),
+                'jam' => $newStartTime->format('H:i') . ' - ' . $newEndTime->format('H:i'),
             ]);
-
-            return response()->json(['success' => true, 'message' => 'Jam berhasil diperbarui!', 'timeSlot' => $tabelj]);
-        } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => 'Gagal memperbarui jam: ' . $e->getMessage()], 500);
         }
-    }
 
-    public function generate(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'jam_masuk_sekolah' => 'required|date_format:H:i',
-            'durasi_pelajaran' => 'required|integer|min:1',
-            'jumlah_pelajaran' => 'required|integer|min:1',
-            'durasi_istirahat' => 'nullable|integer|min:0',
-            'istirahat_setelah_jam_ke' => 'nullable|integer|min:0',
+        // Now, create the break slot
+        $breakStartTime = Carbon::parse($tabelj->jam_selesai);
+        $breakEndTime = $breakStartTime->copy()->addMinutes($breakDuration);
+
+        $istirahatKategori = JadwalKategori::firstOrCreate(['nama_kategori' => 'Istirahat']);
+
+        Tabelj::create([
+            'jam_mulai' => $breakStartTime->format('H:i:s'),
+            'jam_selesai' => $breakEndTime->format('H:i:s'),
+            'jam' => $breakStartTime->format('H:i') . ' - ' . $breakEndTime->format('H:i'),
+            'jadwal_kategori_id' => $istirahatKategori->id,
         ]);
 
-        if ($validator->fails()) {
-            return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
-        }
-
-        try {
-            Tabelj::truncate(); // Clear old time slots
-
-            $startTime = Carbon::createFromFormat('H:i', $request->jam_masuk_sekolah);
-            $lessonDuration = (int) $request->durasi_pelajaran;
-            $numberOfLessons = (int) $request->jumlah_pelajaran;
-            $breakDuration = (int) $request->durasi_istirahat;
-            $breakAfterLesson = (int) $request->istirahat_setelah_jam_ke;
-
-            $timeSlots = [];
-
-            for ($i = 1; $i <= $numberOfLessons; $i++) {
-                $endTime = $startTime->copy()->addMinutes($lessonDuration);
-                $timeSlots[] = Tabelj::create([
-                    'jam_mulai' => $startTime->format('H:i'),
-                    'jam_selesai' => $endTime->format('H:i'),
-                    'jam' => $startTime->format('H:i') . ' - ' . $endTime->format('H:i'),
-                ]);
-                $startTime = $endTime;
-
-                if ($breakDuration && $breakAfterLesson && $i == $breakAfterLesson) {
-                    $startTime->addMinutes($breakDuration);
-                }
-            }
-
-            return response()->json(['success' => true, 'message' => 'Slot waktu berhasil dibuat!', 'timeSlots' => $timeSlots]);
-        } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => 'Gagal membuat slot waktu: ' . $e->getMessage()], 500);
-        }
-    }
-
-    public function clear()
-    {
-        try {
-            Tabelj::truncate();
-            return response()->json(['success' => true, 'message' => 'Semua jam berhasil dihapus.']);
-        } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => 'Gagal menghapus semua jam.'], 500);
-        }
+        return redirect()->route('manage.tabelj.index')->with('success', 'Jam istirahat berhasil ditambahkan.');
     }
 }

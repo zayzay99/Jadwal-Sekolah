@@ -29,7 +29,7 @@ class JadwalController extends Controller
         
         $kategoris = JadwalKategori::all();
         $days = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
-        $timeSlots = Tabelj::orderBy('jam_mulai')->get();
+        $timeSlots = Tabelj::with('jadwalKategori')->orderBy('jam_mulai')->get();
 
         $jadwals = Jadwal::where('kelas_id', $kelas_id)
             ->with('guru', 'kategori')
@@ -115,30 +115,36 @@ class JadwalController extends Controller
         $availability = GuruAvailability::findOrFail($validated['availability_id']);
         $guru = Guru::findOrFail($validated['guru_id']);
         $kelasId = $validated['kelas_id'];
-
+        $hari = $availability->hari;
         $jam = $availability->jam_mulai . ' - ' . $availability->jam_selesai;
 
-        // Validasi bentrok
-        $existingJadwal = Jadwal::where('hari', $availability->hari)
+        // Validasi 1: Cek apakah sudah ada jadwal di kelas dan waktu yang sama
+        $slotTaken = Jadwal::where('kelas_id', $kelasId)
+            ->where('hari', $hari)
             ->where('jam', $jam)
-            ->where(function ($query) use ($kelasId, $guru) {
-                $query->where('kelas_id', $kelasId)
-                      ->orWhere('guru_id', $guru->id);
-            })
+            ->exists();
+
+        if ($slotTaken) {
+            return back()->with('error', 'Jadwal bentrok! Sudah ada jadwal lain di kelas ini pada waktu tersebut.');
+        }
+
+        // Validasi 2: Cek apakah guru sudah mengajar di kelas lain pada waktu yang sama
+        $teacherClash = Jadwal::where('guru_id', $guru->id)
+            ->where('hari', $hari)
+            ->where('jam', $jam)
+            ->where('kelas_id', '!=', $kelasId)
             ->first();
 
-        if ($existingJadwal) {
-            $errorMessage = $existingJadwal->guru_id == $guru->id
-                ? "Jadwal bentrok! Guru {$guru->nama} sudah mengajar di kelas lain pada waktu tersebut."
-                : "Jadwal bentrok! Sudah ada jadwal lain di kelas ini pada waktu tersebut.";
-            return back()->with('error', $errorMessage);
+        if ($teacherClash) {
+            $kelasBentrok = Kelas::find($teacherClash->kelas_id);
+            return back()->with('error', "Jadwal bentrok! Guru {$guru->nama} sudah mengajar di kelas {$kelasBentrok->nama_kelas} pada waktu tersebut.");
         }
 
         Jadwal::create([
             'kelas_id' => $kelasId,
             'guru_id' => $guru->id,
             'mapel' => $guru->pengampu,
-            'hari' => $availability->hari,
+            'hari' => $hari,
             'jam' => $jam,
         ]);
 

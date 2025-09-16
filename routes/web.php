@@ -49,13 +49,20 @@ Route::middleware('auth:web')->group(function () {
     Route::post('/jadwal/bulk-store', [JadwalController::class, 'bulkStore'])->name('jadwal.bulkStore');
     Route::delete('/jadwal/{jadwal}', [JadwalController::class, 'destroy'])->name('jadwal.destroy');
     Route::delete('/jadwal/destroy-all/{kelas}', [JadwalController::class, 'destroyAll'])->name('jadwal.destroyAll');
-    Route::get('/manage/tabelj', [TabeljController::class, 'index'])->name('manage.tabelj.index');
-    Route::post('/tabelj', [TabeljController::class, 'store'])->name('tabelj.store');
-    Route::post('/tabelj/generate', [TabeljController::class, 'generate'])->name('tabelj.generate');
-    Route::delete('/tabelj/clear', [TabeljController::class, 'clear'])->name('tabelj.clear');
-    Route::delete('/tabelj/{tabelj}', [TabeljController::class, 'destroy'])->name('tabelj.destroy');
-    Route::get('/tabelj/{tabelj}/edit', [TabeljController::class, 'edit'])->name('tabelj.edit');
-    Route::put('/tabelj/{tabelj}', [TabeljController::class, 'update'])->name('tabelj.update');
+    
+    Route::resource('manage/tabelj', TabeljController::class)->except(['show'])->names([
+        'index' => 'manage.tabelj.index',
+        'create' => 'manage.tabelj.create',
+        'store' => 'manage.tabelj.store',
+        'edit' => 'manage.tabelj.edit',
+        'update' => 'manage.tabelj.update',
+        'destroy' => 'manage.tabelj.destroy',
+    ]);
+    Route::post('/manage/tabelj/destroy-all', [TabeljController::class, 'destroyAll'])->name('manage.tabelj.destroyAll');
+    Route::get('/manage/tabelj/assign-category', [TabeljController::class, 'assignCategory'])->name('manage.tabelj.assignCategory');
+    Route::post('/manage/tabelj/assign-category', [TabeljController::class, 'storeAssignedCategory'])->name('manage.tabelj.storeAssignedCategory');
+    Route::post('/manage/tabelj/{tabelj}/add-break', [TabeljController::class, 'addBreak'])->name('manage.tabelj.addBreak');
+
     Route::resource('manage/guru', ManageGuruController::class, ['names' => [
         'index' => 'manage.guru.index',
         'create' => 'manage.guru.create',
