@@ -7,9 +7,15 @@
 <div class="table-container">
     <div class="table-header">
         <h2>Daftar Siswa</h2>
-        <a href="{{ route('manage.siswa.create') }}" class="btn btn-success btn-tiny">
-            <i class="fas fa-plus"></i> Tambah Siswa
-        </a>
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <form action="{{ route('manage.siswa.index') }}" method="GET" style="display: flex; gap: 10px;">
+                <input type="text" name="search" class="form-control" placeholder="Cari nama, NIS, kelas..." value="{{ $search ?? '' }}" style="min-width: 250px;">
+                <button type="submit" class="btn btn-primary btn-tiny">Cari</button>
+            </form>
+            <a href="{{ route('manage.siswa.create') }}" class="btn btn-success btn-tiny">
+                <i class="fas fa-plus"></i> Tambah Siswa
+            </a>
+        </div>
     </div>
     
     <div class="table-responsive">

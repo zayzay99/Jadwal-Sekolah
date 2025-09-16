@@ -10,10 +10,22 @@ use Illuminate\Support\Facades\DB;
 
 class ManageSiswaController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $siswas = Siswa::with('kelas')->orderBy('nama', 'asc')->get();
-        return view('dashboard.siswa_manage.index', compact('siswas'));
+        $search = $request->input('search');
+
+        $siswas = Siswa::with('kelas')
+            ->when($search, function ($query, $search) {
+                return $query->where('nama', 'like', "%{$search}%")
+                             ->orWhere('nis', 'like', "%{$search}%")
+                             ->orWhere('email', 'like', "%{$search}%")
+                             ->orWhereHas('kelas', function ($q) use ($search) {
+                                 $q->where('nama_kelas', 'like', "%{$search}%");
+                             });
+            })
+            ->orderBy('nama', 'asc')->get();
+
+        return view('dashboard.siswa_manage.index', compact('siswas', 'search'));
     }
 
     public function create()

@@ -17,11 +17,11 @@
         <table class="custom-table">
             <thead>
                 <tr>
-                    <th>No</th>
-                    <th>Foto</th>
-                    <th>Nama</th>
-                    <th>NIS</th>
-                    <th>Email</th>
+                    <th style="text-align: center;">No</th>
+                    <th style="text-align: center;">Foto</th>
+                    <th style="text-align: center;">Nama</th>
+                    <th style="text-align: center;">NIS</th>
+                    <th style="text-align: center;">Email</th>
                 </tr>
             </thead>
             <tbody>
@@ -31,9 +31,9 @@
                     <td style="text-align: center;">
                         <img src="{{ $siswa->profile_picture ? asset('storage/' . $siswa->profile_picture) : asset('storage/Default-Profile.png') }}" alt="Foto Profil" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;">
                     </td>
-                    <td>{{ $siswa->nama }}</td>
-                    <td>{{ $siswa->nis }}</td>
-                    <td>{{ $siswa->email }}</td>
+                    <td style="text-align: center;">{{ $siswa->nama }}</td>
+                    <td style="text-align: center;">{{ $siswa->nis }}</td>
+                    <td style="text-align: center;">{{ $siswa->email }}</td>
                 </tr>
                 @empty
                 <tr>
