@@ -34,12 +34,17 @@
                         <div class="action-buttons">
 
                             
-                            {{-- <a href="{{ route('jadwal-kategori.edit', $kategori->id) }}" class="btn btn-edit" title="Edit"> --}}
+                            <a href="{{ route('jadwal-kategori.edit', $kategori->id) }}" class="btn btn-edit" title="Edit">
+                                <i class="fas fa-edit"></i>
+                            {{-- <a href="#" class="btn btn-warning" title="Edit"> --}}
+                            <a href="{{ route('jadwal-kategori.edit', $kategori->id) }}" class="btn btn-warning" title="Edit">
+                                <i class="fas fa-edit"></i>Edit                            {{-- <a href="{{ route('jadwal-kategori.edit', $kategori->id) }}" class="btn btn-edit" title="Edit"> --}}
                                 {{-- <i class="fas fa-edit"></i> --}}
 
                             {{-- <a href="#" class="btn btn-warning" title="Edit"> --}}
                             <a href="{{ route('jadwal-kategori.edit', $kategori->id) }}" class="btn btn-warning" title="Edit">
                                 <i class="fas fa-edit"></i>Edit
+
 
                             </a>
                             <form action="#" method="POST" style="display:inline;" class="delete-form">
