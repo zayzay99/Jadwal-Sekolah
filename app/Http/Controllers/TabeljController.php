@@ -192,7 +192,7 @@ class TabeljController extends Controller
         Tabelj::create([
             'jam_mulai' => $breakStartTime->format('H:i:s'),
             'jam_selesai' => $breakEndTime->format('H:i:s'),
-            'jam' => $breakStartTime->format('H:i') . ' - ' . $breakEndTime->format('H:i'),
+            'jam' => 'Istirahat',
             'jadwal_kategori_id' => $istirahatKategori->id,
         ]);
 

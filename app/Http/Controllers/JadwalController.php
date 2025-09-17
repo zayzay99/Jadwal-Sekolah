@@ -46,8 +46,9 @@ class JadwalController extends Controller
 
         $scheduleGrid = [];
         foreach ($timeSlots as $slot) {
+            $jam = $slot->jam_mulai . ' - ' . $slot->jam_selesai;
             foreach ($days as $day) {
-                $scheduleGrid[$slot->jam][$day] = null;
+                $scheduleGrid[$jam][$day] = null;
             }
         }
 
@@ -73,26 +74,22 @@ class JadwalController extends Controller
         $availabilities = GuruAvailability::with('guru:id,nama,pengampu')->get();
         $availableGurus = [];
 
-        // 1. Inisialisasi struktur data untuk view, menggunakan kolom 'jam' asli sebagai kunci
+        // Initialize with formatted jam string
         foreach ($days as $day) {
             foreach ($timeSlots as $slot) {
-                $availableGurus[$day][$slot->jam] = [];
+                $jam = $slot->jam_mulai . ' - ' . $slot->jam_selesai;
+                $availableGurus[$day][$jam] = [];
             }
         }
 
-        // 2. Buat peta lookup dari jam_mulai/selesai yang dinormalisasi ke kolom 'jam' asli dari tabelj
-        $lookupMap = [];
-        foreach ($timeSlots as $slot) {
-            $key = preg_replace('/\s+/', '', trim($slot->jam_mulai) . '-' . trim($slot->jam_selesai));
-            $lookupMap[$key] = $slot->jam;
-        }
-
-        // 3. Cocokkan dan isi guru yang tersedia
+        // Populate available gurus
         foreach ($availabilities as $availability) {
-            $key = preg_replace('/\s+/', '', trim($availability->jam_mulai) . '-' . trim($availability->jam_selesai));
-            if (isset($lookupMap[$key])) {
-                $originalJamKey = $lookupMap[$key];
-                $availableGurus[$availability->hari][$originalJamKey][] = $availability->guru;
+            $jamMulai = \Carbon\Carbon::parse($availability->jam_mulai)->format('H:i');
+            $jamSelesai = \Carbon\Carbon::parse($availability->jam_selesai)->format('H:i');
+            $jam = $jamMulai . ' - ' . $jamSelesai;
+
+            if (isset($availableGurus[$availability->hari][$jam])) {
+                $availableGurus[$availability->hari][$jam][] = $availability->guru;
             }
         }
 
@@ -329,6 +326,31 @@ class JadwalController extends Controller
 
             // --- Simpan Jadwal ---
             Jadwal::where('kelas_id', $kelasId)->delete();
+
+            // Add break times
+            $breakSlots = \App\Models\Tabelj::whereHas('jadwalKategori', function ($query) {
+                $query->where('nama_kategori', 'Istirahat');
+            })->get();
+
+            $days = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+
+            foreach ($breakSlots as $slot) {
+                $jamMulai = \Carbon\Carbon::parse($slot->jam_mulai)->format('H:i');
+                $jamSelesai = \Carbon\Carbon::parse($slot->jam_selesai)->format('H:i');
+                $jam = $jamMulai . ' - ' . $jamSelesai;
+                
+                foreach ($days as $day) {
+                    Jadwal::create([
+                        'kelas_id' => $kelasId,
+                        'guru_id' => null,
+                        'mapel' => null,
+                        'jadwal_kategori_id' => $slot->jadwal_kategori_id,
+                        'hari' => $day,
+                        'jam' => $jam,
+                    ]);
+                }
+            }
+
             foreach ($schedules as $scheduleData) {
                 Jadwal::create([
                     'kelas_id' => $kelasId,
@@ -361,8 +383,26 @@ class JadwalController extends Controller
 
     public function pilihKelas()
     {
-        $kelas = Kelas::all();
-        return view('jadwal.pilih_kelas', compact('kelas'));
+        $kategoriList = ['VII', 'VIII', 'IX', 'X', 'XI', 'XII'];
+        $kategoriData = [];
+
+        foreach ($kategoriList as $kategori) {
+            $kelasCount = Kelas::where('nama_kelas', 'like', $kategori . '-%')->count();
+
+            $kategoriData[] = (object)[
+                'nama' => $kategori,
+                'kelas_count' => $kelasCount,
+            ];
+        }
+        return view('jadwal.pilih_kelas', ['kategori' => $kategoriData]);
+    }
+
+    public function pilihSubKelas($kategori)
+    {
+        $subkelas = Kelas::where('nama_kelas', 'like', $kategori . '-%')
+                         ->orderBy('nama_kelas')
+                         ->get();
+        return view('jadwal.pilih_subkelas', compact('kategori', 'subkelas'));
     }
 
     public function pilihKelasLihat()
