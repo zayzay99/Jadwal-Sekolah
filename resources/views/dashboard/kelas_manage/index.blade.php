@@ -5,6 +5,13 @@
 </div>
 
 <div class="table-container">
+    <div class="filter-bar">
+        <a href="{{ route('manage.kelas.index') }}" class="btn btn-filter {{ !$selectedKategori ? 'active' : '' }}">Semua</a>
+        @foreach($kategoriList as $kategori)
+            <a href="{{ route('manage.kelas.index', ['kategori' => $kategori]) }}" class="btn btn-filter {{ $selectedKategori == $kategori ? 'active' : '' }}">{{ $kategori }}</a>
+        @endforeach
+    </div>
+
     <div class="table-header">
         <h2>Daftar Kelas</h2>
         <a href="{{ route('manage.kelas.create') }}" class="btn btn-success btn-tiny">
@@ -23,7 +30,7 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach($kelas as $k)
+                @forelse($kelas as $k)
                 <tr>
                     <td style="text-align: center">{{ $k->nama_kelas }}</td>
                     <td style="text-align: center">{{ $k->guru ? $k->guru->nama : '-' }}</td>
@@ -43,7 +50,13 @@
                         </div>
                     </td>
                 </tr>
-                @endforeach
+                @empty
+                <tr>
+                    <td colspan="4" class="no-data">
+                        <i class="fas fa-info-circle"></i> Tidak ada kelas untuk kategori ini.
+                    </td>
+                </tr>
+                @endforelse
             </tbody>
         </table>
     </div>
@@ -52,6 +65,27 @@
 
 @push('styles')
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<style>
+    .filter-bar {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+    .btn-filter {
+        padding: 8px 15px;
+        border: 1px solid #ddd;
+        border-radius: 20px;
+        text-decoration: none;
+        color: #333;
+        background-color: #f8f9fa;
+        transition: all 0.3s;
+    }
+    .btn-filter.active, .btn-filter:hover {
+        background-color: #2d6a4f;
+        color: white;
+        border-color: #2d6a4f;
+    }
+</style>
 @endpush
 
 @push('scripts')

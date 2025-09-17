@@ -13,7 +13,7 @@ class KelasKategoriController extends Controller
         $kategoriData = [];
 
         foreach ($kategoriList as $kategori) {
-            $kelasCount = Kelas::where('nama_kelas', 'like', $kategori . ' - %')->count();
+            $kelasCount = Kelas::where('nama_kelas', 'like', $kategori . '-%')->count();
 
             $kategoriData[] = (object)[
                 'nama' => $kategori,
@@ -27,7 +27,7 @@ class KelasKategoriController extends Controller
     // Daftar subkelas (X-1, X-2, dst)
     public function show($kategori)
     {
-        $subkelas = Kelas::where('nama_kelas', 'like', $kategori . ' - %')
+        $subkelas = Kelas::where('nama_kelas', 'like', $kategori . '-%')
                          ->withCount('siswas')
                          ->get();
         return view('dashboard.kelas_kategori.show', compact('kategori', 'subkelas'));

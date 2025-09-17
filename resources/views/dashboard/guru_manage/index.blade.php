@@ -21,7 +21,7 @@
                     <th style="text-align: center">NIP</th>
                     <th style="text-align: center">Pengampu</th>
                     <th style="text-align: center">Jam Mengajar</th>
-                    <th style="text-align: center">Sisa Jam Mengajar</th>
+                    <th style="text-align: center">Total Jam Ngajar</th>
                     <th style="text-align: center">Email</th>
                     <th style="text-align: center">Aksi</th>
                 </tr>
@@ -36,7 +36,7 @@
                     <td style="text-align: center">{{ $guru->nip }}</td>
                     <td style="text-align: center">{{ $guru->pengampu }}</td>
                     <td style="text-align: center">{{ $guru->formatted_total_jam_mengajar }}</td>
-                    <td style="text-align: center">{{ $guru->formatted_sisa_jam_mengajar }}</td>
+                    <td style="text-align: center">{{ $guru->formatted_used_minutes }}</td>
                     <td style="text-align: center">{{ $guru->email }}</td>
                     <td style="text-align: center; padding: 16px 20px;">
                         <div class="action-buttons">

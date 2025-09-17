@@ -9,10 +9,20 @@ use Illuminate\Http\Request;
 
 class ManageKelasController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $kelas = Kelas::with(['guru', 'siswas'])->get();
-        return view('dashboard.kelas_manage.index', compact('kelas'));
+        $kategoriList = ['VII', 'VIII', 'IX', 'X', 'XI', 'XII'];
+        $selectedKategori = $request->input('kategori');
+
+        $query = Kelas::with(['guru', 'siswas']);
+
+        if ($selectedKategori && in_array($selectedKategori, $kategoriList)) {
+            $query->where('nama_kelas', 'like', $selectedKategori . '-%');
+        }
+
+        $kelas = $query->get();
+
+        return view('dashboard.kelas_manage.index', compact('kelas', 'kategoriList', 'selectedKategori'));
     }
 
     public function create()

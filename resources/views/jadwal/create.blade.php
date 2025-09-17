@@ -128,6 +128,17 @@
             font-size: 14px;
         }
 
+        .break-row {
+            background-color: #f8f9fa;
+        }
+
+        .break-cell {
+            text-align: center;
+            font-weight: bold;
+            color: #6c757d;
+            padding: 0.5rem;
+        }
+
         /* Modal Styles */
         .schedule-modal {
             display: none;
@@ -330,21 +341,32 @@
                 let tableHtml = '';
                 timeSlots.forEach(slot => {
                     const jam = `${slot.jam_mulai} - ${slot.jam_selesai}`;
-                    tableHtml += '<tr>';
-                    tableHtml += `<td><div class="time-display">${jam}</div></td>`;
-                    days.forEach(day => {
-                        tableHtml += `<td><div class="schedule-cell" data-day="${day}" data-jam="${jam}"></div></td>`;
-                    });
-                    tableHtml += '</tr>';
+                    
+                    // Check if the slot is a break time
+                    if (slot.jadwal_kategori && slot.jadwal_kategori.nama_kategori === 'Istirahat') {
+                        tableHtml += '<tr class="break-row">';
+                        tableHtml += `<td><div class="time-display">${jam}</div></td>`;
+                        tableHtml += `<td colspan="${days.length}" class="break-cell">${slot.jadwal_kategori.nama_kategori}</td>`;
+                        tableHtml += '</tr>';
+                    } else {
+                        tableHtml += '<tr>';
+                        tableHtml += `<td><div class="time-display">${jam}</div></td>`;
+                        days.forEach(day => {
+                            tableHtml += `<td><div class="schedule-cell" data-day="${day}" data-jam="${jam}"></div></td>`;
+                        });
+                        tableHtml += '</tr>';
+                    }
                 });
                 scheduleBody.innerHTML = tableHtml;
 
                 // Initial render of all cells
                 timeSlots.forEach(slot => {
-                    const jam = `${slot.jam_mulai} - ${slot.jam_selesai}`;
-                    days.forEach(day => {
-                        renderCellContent(day, jam);
-                    });
+                    if (!slot.jadwal_kategori || slot.jadwal_kategori.nama_kategori !== 'Istirahat') {
+                        const jam = `${slot.jam_mulai} - ${slot.jam_selesai}`;
+                        days.forEach(day => {
+                            renderCellContent(day, jam);
+                        });
+                    }
                 });
             }
 
