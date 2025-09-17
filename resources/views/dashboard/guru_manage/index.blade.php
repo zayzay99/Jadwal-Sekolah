@@ -23,7 +23,7 @@
         <table class="custom-table">
             <thead>
                 <tr>
-<<<<<<< HEAD
+
                     <th>Foto</th>
                     <th>Nama</th>
                     <th>NIP</th>
@@ -71,49 +71,10 @@
                         <td colspan="8" class="no-data-cell">Tidak ada data guru yang ditemukan.</td>
                     </tr>
                 @endif
-=======
-                    <th style="text-align: center">Foto</th>
-                    <th style="text-align: center">Nama</th>
-                    <th style="text-align: center">NIP</th>
-                    <th style="text-align: center">Pengampu</th>
-                    <th style="text-align: center">Jam Mengajar</th>
-                    <th style="text-align: center">Total Jam Ngajar</th>
-                    <th style="text-align: center">Email</th>
-                    <th style="text-align: center">Aksi</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($gurus as $guru)
-                <tr>
-                    <td style="text-align: center; vertical-align: middle;">
-                        <img src="{{ $guru->profile_picture ? asset('storage/' . $guru->profile_picture) : asset('storage/Default-Profile.png') }}" alt="Foto Profil" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid #ddd; display: inline-block;">
-                    </td>
-                    <td style="text-align: center">{{ $guru->nama }}</td>
-                    <td style="text-align: center">{{ $guru->nip }}</td>
-                    <td style="text-align: center">{{ $guru->pengampu }}</td>
-                    <td style="text-align: center">{{ $guru->formatted_total_jam_mengajar }}</td>
-                    <td style="text-align: center">{{ $guru->formatted_used_minutes }}</td>
-                    <td style="text-align: center">{{ $guru->email }}</td>
-                    <td style="text-align: center; padding: 16px 20px;">
-                        <div class="action-buttons">
-                            <a href="{{ route('manage.guru.edit', $guru->id) }}" class="btn btn-warning" title="Edit">
-                                <i class="fas fa-edit"></i>
-                            </a>
-                            <a href="{{ route('manage.guru.availability.edit', $guru->id) }}" class="btn-jadwal " title="Atur Ketersediaan">
-                                <i class="fas fa-clock"></i> 
-                            </a>
-                            <form action="{{ route('manage.guru.destroy', $guru->id) }}" method="POST" style="display:inline;" class="delete-form">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-danger" title="Hapus">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </form>
-                        </div>
-                    </td>
-                </tr>
-                @endforeach
->>>>>>> 648c33e44bbfef00fd2dfdef79ba3681b5f0863b
+
+                    
+            
+
             </tbody>
         </table>
     </div>
