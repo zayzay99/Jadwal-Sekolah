@@ -40,6 +40,7 @@ Route::middleware('auth:guru')->group(function () {
 Route::middleware('auth:web')->group(function () {
     Route::get('/dashboard/admin', [AdminController::class, 'index'])->name('admin.dashboard');
     Route::get('/jadwal/pilih-kelas', [JadwalController::class, 'pilihKelas'])->name('jadwal.pilihKelas');
+    Route::get('/jadwal/pilih-subkelas/{kategori}', [JadwalController::class, 'pilihSubKelas'])->name('jadwal.pilihSubKelas');
     Route::get('/jadwal/create/{kelas}', [JadwalController::class, 'create'])->name('jadwal.create');
     Route::post('/jadwal/store', [JadwalController::class, 'store'])->name('jadwal.store');
     Route::post('/jadwal/store-kategori', [JadwalController::class, 'storeKategori'])->name('jadwal.storeKategori');

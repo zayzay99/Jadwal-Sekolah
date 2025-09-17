@@ -383,8 +383,26 @@ class JadwalController extends Controller
 
     public function pilihKelas()
     {
-        $kelas = Kelas::all();
-        return view('jadwal.pilih_kelas', compact('kelas'));
+        $kategoriList = ['VII', 'VIII', 'IX', 'X', 'XI', 'XII'];
+        $kategoriData = [];
+
+        foreach ($kategoriList as $kategori) {
+            $kelasCount = Kelas::where('nama_kelas', 'like', $kategori . '-%')->count();
+
+            $kategoriData[] = (object)[
+                'nama' => $kategori,
+                'kelas_count' => $kelasCount,
+            ];
+        }
+        return view('jadwal.pilih_kelas', ['kategori' => $kategoriData]);
+    }
+
+    public function pilihSubKelas($kategori)
+    {
+        $subkelas = Kelas::where('nama_kelas', 'like', $kategori . '-%')
+                         ->orderBy('nama_kelas')
+                         ->get();
+        return view('jadwal.pilih_subkelas', compact('kategori', 'subkelas'));
     }
 
     public function pilihKelasLihat()
