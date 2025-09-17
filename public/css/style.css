@@ -1,7 +1,4 @@
-
-    
-
-    html {
+html {
       height: 100%;
       overflow: hidden;
     }
@@ -1383,3 +1380,121 @@ body {
 .backdrop.show {
     display: block;
 }
+
+/* Pagination Styles */
+/* ---------- Pagination: unified styles for Bootstrap-like and Tailwind outputs ---------- */
+.pagination-container {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    padding: 12px 0;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* general flex wrapper for both ul.pagination and Tailwind nav inline-flex groups */
+.pagination,
+nav[role="navigation"] .inline-flex,
+nav[role="navigation"] .relative {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    list-style: none;
+    padding: 6px;
+    margin: 0;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+}
+
+/* items and links (covers .page-link, <a>, <span>) */
+.pagination li,
+.pagination .page-item,
+nav[role="navigation"] > * {
+    margin: 0;
+}
+
+.pagination a,
+.pagination span,
+.pagination .page-link,
+nav[role="navigation"] a,
+nav[role="navigation"] span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 12px;
+    min-width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    text-decoration: none;
+    color: #2d6a4f;
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.15s ease;
+    background: transparent;
+    border: none;
+    box-sizing: border-box;
+}
+
+/* hover */
+.pagination a:hover,
+.pagination .page-link:hover,
+nav[role="navigation"] a:hover,
+nav[role="navigation"] span:hover {
+    background: #f6f8f7;
+    transform: translateY(-2px);
+    color: #1c3d2e;
+}
+
+/* active/current */
+.pagination .active a,
+.pagination li.active a,
+.pagination .page-item.active .page-link,
+nav[role="navigation"] .current,
+nav[role="navigation"] .active {
+    background: #2d6a4f;
+    color: #fff;
+    box-shadow: 0 2px 6px rgba(45,106,79,0.18);
+}
+
+/* disabled */
+.pagination .disabled a,
+.pagination li.disabled span,
+nav[role="navigation"] .disabled {
+    color: #cfcfcf;
+    pointer-events: none;
+    opacity: 0.8;
+    background: transparent;
+}
+
+/* smaller prev/next */
+.pagination .prev,
+.pagination .next,
+.pagination li.prev,
+.pagination li.next,
+nav[role="navigation"] a[rel="prev"],
+nav[role="navigation"] a[rel="next"] {
+    padding: 8px 10px;
+    min-width: auto;
+}
+
+/* responsive: make pagination compact on small screens */
+@media (max-width: 480px) {
+    .pagination,
+    nav[role="navigation"] .inline-flex {
+        gap: 4px;
+        padding: 6px;
+    }
+    .pagination a,
+    .pagination span,
+    nav[role="navigation"] a,
+    nav[role="navigation"] span {
+        padding: 6px 8px;
+        min-width: 32px;
+        height: 32px;
+        font-size: 13px;
+    }
+}
+
+/* remove conflicting heavy !important rules & duplicates in your CSS:
+   -> search & delete earlier .pagination-container / .pagination blocks to avoid overrides */

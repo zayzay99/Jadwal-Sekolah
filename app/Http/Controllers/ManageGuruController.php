@@ -52,6 +52,15 @@ class ManageGuruController extends Controller
         $search = $request->input('search');
         
         $query = Guru::query();
+
+        if ($search) {
+            $query->where(function($q) use ($search) {
+                $q->where('nama', 'like', "%{$search}%")
+                  ->orWhere('nip', 'like', "%{$search}%")
+                  ->orWhere('pengampu', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%");
+            });
+        }
         
         $gurus = $query->paginate(10);
 

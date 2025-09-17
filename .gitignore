@@ -9,6 +9,8 @@
 /storage/logs/*.log
 /vendor
 
+!public/storage/Default-Profile.png
+
 .env
 .env.backup
 .phpunit.result.cache

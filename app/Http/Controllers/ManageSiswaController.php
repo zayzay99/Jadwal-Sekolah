@@ -23,7 +23,7 @@ class ManageSiswaController extends Controller
                                  $q->where('nama_kelas', 'like', "%{$search}%");
                              });
             })
-            ->orderBy('nama', 'asc')->get();
+            ->orderBy('nama', 'asc')->paginate(10);
 
         return view('dashboard.siswa_manage.index', compact('siswas', 'search'));
     }
