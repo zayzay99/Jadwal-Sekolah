@@ -43,7 +43,7 @@
         
         <div class="form-group">
             <label for="guru_id">Wali Kelas (Guru)</label>
-            <select name="guru_id" id="guru_id" required class="form-control">
+            <select name="guru_id" id="guru_id" class="form-control">
                 <option value="">-- Pilih Guru --</option>
                 @foreach($gurus as $g)
                     <option value="{{ $g->id }}">{{ $g->nama }}</option>
@@ -53,7 +53,7 @@
         
         <div class="form-group">
             <label for="siswa_ids">Siswa</label>
-            <select name="siswa_ids[]" id="siswa_ids" multiple class="form-control">
+            <select name="siswa_ids[]" id="siswa_ids" multiple class="form-control" style="height: 200px;">
                 @foreach($siswas as $s)
                     <option value="{{ $s->id }}">{{ $s->nama }}</option>
                 @endforeach

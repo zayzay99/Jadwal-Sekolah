@@ -17,7 +17,7 @@ class ManageKelasController extends Controller
         $query = Kelas::with(['guru', 'siswas']);
 
         if ($selectedKategori && in_array($selectedKategori, $kategoriList)) {
-            $query->where('nama_kelas', 'like', $selectedKategori . '-%');
+            $query->where('nama_kelas', 'like', $selectedKategori . '\-%');
         }
 
         $kelas = $query->get();
@@ -38,7 +38,7 @@ class ManageKelasController extends Controller
         $request->validate([
             'tingkat_kelas' => 'required|string|in:VII,VIII,IX,X,XI,XII',
             'sub_kelas' => 'required|string|max:10',
-            'guru_id' => 'required|exists:gurus,id',
+            'guru_id' => 'nullable|exists:gurus,id',
             'siswa_ids' => 'array',
             'siswa_ids.*' => 'exists:siswas,id',
         ]);
@@ -90,7 +90,7 @@ class ManageKelasController extends Controller
         $request->validate([
             'tingkat_kelas' => 'required|string|in:VII,VIII,IX,X,XI,XII',
             'sub_kelas' => 'required|string|max:10',
-            'guru_id' => 'required|exists:gurus,id',
+            'guru_id' => 'nullable|exists:gurus,id',
             'siswa_ids' => 'array',
             'siswa_ids.*' => 'exists:siswas,id',
         ]);
