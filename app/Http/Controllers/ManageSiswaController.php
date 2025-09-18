@@ -42,24 +42,22 @@ public function store(Request $request)
         'kelas_id' => 'required|exists:kelas,id',
         'email' => 'required|email|unique:siswas,email',
         'password' => 'required|min:6',
+        'profile_picture' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
     ]);
 
-    // Buat user baru untuk siswa
-    // $user = \App\Models\User::create([
-    //     'name' => $request->nama,
-    //     'email' => $request->email,
-    //     'password' => Hash::make($request->password),
-    //     'role' => 'siswa', // pastikan field 'role' ada di tabel users
-    // ]);
+    $data = $request->only(['nama', 'nis', 'email']);
+    $data['password'] = Hash::make($request->password);
 
-    // Buat data siswa dan relasikan dengan user
-    $siswa = Siswa::create([
-        // 'user_id' => $user->id, // pastikan field user_id ada di tabel siswas
-        'nama' => $request->nama,
-        'nis' => $request->nis,
-        'email' => $request->email,
-        'password' => Hash::make($request->password),
-    ]);
+    if ($request->hasFile('profile_picture')) {
+        $image = $request->file('profile_picture');
+        $name = 'profile-pictures/' . time().'.'.$image->getClientOriginalExtension();
+        $image->storeAs('public', $name);
+        $data['profile_picture'] = $name;
+    } else {
+        $data['profile_picture'] = 'Default-Profile.png';
+    }
+
+    $siswa = Siswa::create($data);
 
     // Simpan ke pivot
     $siswa->kelas()->attach($request->kelas_id);
@@ -82,13 +80,24 @@ public function store(Request $request)
             'nis' => 'required|unique:siswas,nis,'.$id,
             'kelas_id' => 'required|exists:kelas,id',
             'email' => 'required|email|unique:siswas,email,'.$id,
+            'profile_picture' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
-        $siswa->update([
-            'nama' => $request->nama,
-            'nis' => $request->nis,
-            'email' => $request->email,
-            'password' => $request->password ? Hash::make($request->password) : $siswa->password,
-        ]);
+
+        $data = $request->only(['nama', 'nis', 'email']);
+
+        if ($request->password) {
+            $data['password'] = Hash::make($request->password);
+        }
+
+        if ($request->hasFile('profile_picture')) {
+            $image = $request->file('profile_picture');
+            $name = 'profile-pictures/' . time().'.'.$image->getClientOriginalExtension();
+            $image->storeAs('public', $name);
+            $data['profile_picture'] = $name;
+        }
+
+        $siswa->update($data);
+
         // Update relasi pivot
         $siswa->kelas()->sync([$request->kelas_id]);
 

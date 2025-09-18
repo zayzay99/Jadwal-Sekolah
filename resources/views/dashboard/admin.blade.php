@@ -45,32 +45,8 @@
                 </li>
 
                 <li>
-                    <a href="{{ route('manage.siswa.index') }}" class="menu-item">
-                        <i class="fas fa-users"></i><span>Manajemen Siswa</span>
-                    </a>
-                </li>
-
-                <li>
-                    <a href="{{ route('manage.guru.index') }}" class="menu-item">
-                        <i class="fas fa-chalkboard-teacher"></i><span>Manajemen Guru</span>
-                    </a>
-                </li>
-
-                <li>
                     <a href="{{ route('manage.kelas.index') }}" class="menu-item">
                         <i class="fas fa-building"></i><span>Manajemen Kelas</span>
-                    </a>
-                </li>
-                
-                <li>
-                    <a href="{{ route('jadwal.pilihKelas') }}" class="menu-item">
-                        <i class="fas fa-calendar-check"></i><span>Manajemen Jadwal</span>
-                    </a>
-                </li>
-
-                <li>
-                    <a href="{{ route('jadwal-kategori.index') }}" class="menu-item">
-                        <i class="fas fa-tags"></i><span>Manajemen Kategori Jadwal</span>
                     </a>
                 </li>
                 <li>
@@ -78,6 +54,27 @@
                         <i class="fas fa-clock"></i><span>Manajemen Slot Waktu</span>
                     </a>
                 </li>
+                <li>
+                    <a href="{{ route('manage.guru.index') }}" class="menu-item">
+                        <i class="fas fa-chalkboard-teacher"></i><span>Manajemen Guru</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ route('jadwal-kategori.index') }}" class="menu-item">
+                        <i class="fas fa-tags"></i><span>Manajemen Kategori Jadwal</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ route('jadwal.pilihKelas') }}" class="menu-item">
+                        <i class="fas fa-calendar-check"></i><span>Manajemen Jadwal</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ route('manage.siswa.index') }}" class="menu-item">
+                        <i class="fas fa-users"></i><span>Manajemen Siswa</span>
+                    </a>
+                </li>
+
                 <li>
                     <a href="{{ route('kelas.kategori') }}" class="menu-item">
                         <i class="fa-solid fa-people-roof"></i><span>Lihat Kelas</span>

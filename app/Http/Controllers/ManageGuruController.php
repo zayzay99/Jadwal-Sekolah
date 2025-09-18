@@ -96,10 +96,11 @@ class ManageGuruController extends Controller
 
         if ($request->hasFile('profile_picture')) {
             $image = $request->file('profile_picture');
-            $name = time().'.'.$image->getClientOriginalExtension();
-            $destinationPath = public_path('/img');
-            $image->move($destinationPath, $name);
+            $name = 'profile-pictures/' . time().'.'.$image->getClientOriginalExtension();
+            $image->storeAs('public', $name);
             $data['profile_picture'] = $name;
+        } else {
+            $data['profile_picture'] = 'Default-Profile.png';
         }
 
         $data['password'] = Hash::make($request->password);
@@ -134,9 +135,8 @@ class ManageGuruController extends Controller
 
         if ($request->hasFile('profile_picture')) {
             $image = $request->file('profile_picture');
-            $name = time().'.'.$image->getClientOriginalExtension();
-            $destinationPath = public_path('/img');
-            $image->move($destinationPath, $name);
+            $name = 'profile-pictures/' . time().'.'.$image->getClientOriginalExtension();
+            $image->storeAs('public', $name);
             $data['profile_picture'] = $name;
         }
 
