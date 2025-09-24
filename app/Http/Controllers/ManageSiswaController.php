@@ -111,4 +111,40 @@ public function store(Request $request)
         $siswa->delete();
         return redirect()->route('manage.siswa.index')->with('success', 'Siswa berhasil dihapus!');
     }
+
+    public function showImportForm()
+    {
+        return view('dashboard.siswa_manage.import');
+    }
+
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls,csv'
+        ]);
+    
+        $import = new \App\Imports\SiswaImport;
+
+        try {
+            \Maatwebsite\Excel\Facades\Excel::import($import, $request->file('file'));
+        } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
+            $failures = $e->failures();
+            $errorMessages = [];
+            foreach ($failures as $failure) {
+                $errorMessages[] = 'Baris ' . $failure->row() . ': ' . implode(', ', $failure->errors());
+            }
+            return back()->with('import_errors', $errorMessages);
+        }
+    
+        $successMessage = 'Data siswa berhasil diimpor. ' . $import->getImportedCount() . ' baris ditambahkan.';
+    
+        return redirect()->route('manage.siswa.index')->with('success', $successMessage);
+    }
+
+    public function export()
+    {
+        // Logika untuk mengekspor data ke Excel akan ditambahkan di sini.
+        // Contoh: return Excel::download(new SiswasExport, 'siswa.xlsx');
+        return redirect()->route('manage.siswa.index')->with('info', 'Fitur export sedang dalam pengembangan.');
+    }
 }

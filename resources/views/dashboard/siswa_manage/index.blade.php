@@ -13,6 +13,12 @@
                 <input type="text" name="search" class="form-control" placeholder="Cari nama, NIS, kelas..." value="{{ $search ?? '' }}">
                 <button type="submit" class="btn btn-primary btn-tiny">Cari</button>
             </form>
+            <a href="{{ route('manage.siswa.import.form') }}" class="btn btn-info btn-tiny">
+                <i class="fas fa-file-import"></i> Import
+            </a>
+            <a href="{{ route('manage.siswa.export') }}" class="btn btn-secondary btn-tiny">
+                <i class="fas fa-file-export"></i> Export
+            </a>
             <a href="{{ route('manage.siswa.create') }}" class="btn btn-success btn-tiny">
                 <i class="fas fa-plus"></i> Tambah Siswa
             </a>

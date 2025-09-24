@@ -76,7 +76,7 @@
         border: 1px solid #ddd;
         border-radius: 20px;
         text-decoration: none;
-        color: #333;
+        color: #b1a1a1ff;
         background-color: #f8f9fa;
         transition: all 0.3s;
     }

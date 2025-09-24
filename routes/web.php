@@ -75,15 +75,18 @@ Route::middleware('auth:web')->group(function () {
     ]]);
     Route::get('manage/guru/{guru}/availability', [ManageGuruController::class, 'editAvailability'])->name('manage.guru.availability.edit');
     Route::post('manage/guru/{guru}/availability', [ManageGuruController::class, 'updateAvailability'])->name('manage.guru.availability.update');
-    Route::resource('manage/siswa', ManageSiswaController::class, ['names' => [
+    // Rute 'show' untuk siswa tidak digunakan, jadi dihapus untuk menghindari error.
+    Route::get('manage/siswa/export', [ManageSiswaController::class, 'export'])->name('manage.siswa.export');
+    Route::get('manage/siswa/import', [ManageSiswaController::class, 'showImportForm'])->name('manage.siswa.import.form');
+    Route::post('manage/siswa/import', [ManageSiswaController::class, 'import'])->name('manage.siswa.import.process');
+    Route::resource('manage/siswa', ManageSiswaController::class)->except(['show'])->names([
         'index' => 'manage.siswa.index',
         'create' => 'manage.siswa.create',
         'store' => 'manage.siswa.store',
         'edit' => 'manage.siswa.edit',
         'update' => 'manage.siswa.update',
         'destroy' => 'manage.siswa.destroy',
-        'show' => 'manage.siswa.show',
-    ]]);
+    ]);
     Route::resource('manage/kelas', ManageKelasController::class, ['names' => [
         'index' => 'manage.kelas.index',
         'create' => 'manage.kelas.create',
