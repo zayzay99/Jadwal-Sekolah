@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Controller;
 use App\Models\Jadwal;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Log;
 
 class GuruController extends Controller
 {
@@ -19,16 +20,30 @@ class GuruController extends Controller
     public function index()
     {
         $guru = Auth::guard('guru')->user();
-        $jadwals = Jadwal::where('guru_id', $guru->id)->with('kelas')->get();
+        $activeTahunAjaranId = session('tahun_ajaran_id');
+
+        $jadwals = Jadwal::where('guru_id', $guru->id)
+                         ->where('tahun_ajaran_id', $activeTahunAjaranId)
+                         ->with('kelas')
+                         ->get();
         
-        return view('dashboard.guru', compact('guru', 'jadwals'));
+        $inactiveTahunAjarans = \App\Models\TahunAjaran::where('is_active', false)->get();
+
+        return view('dashboard.guru', compact('guru', 'jadwals', 'inactiveTahunAjarans'));
     }
 
-    public function jadwal()
+    public function jadwal(Request $request)
     {
         $guru = Auth::guard('guru')->user();
-        $jadwals = Jadwal::where('guru_id', $guru->id)->with('kelas')->get();
-        return view('dashboard.guru_jadwal', compact('guru', 'jadwals'));
+        $tahunAjarans = \App\Models\TahunAjaran::all();
+        $selectedTahunAjaranId = $request->input('tahun_ajaran_id', session('tahun_ajaran_id'));
+
+        $jadwals = Jadwal::where('guru_id', $guru->id)
+                         ->where('tahun_ajaran_id', $selectedTahunAjaranId)
+                         ->with('kelas')
+                         ->get();
+
+        return view('dashboard.guru_jadwal', compact('guru', 'jadwals', 'tahunAjarans', 'selectedTahunAjaranId'));
     }
 
     public function cetakJadwal()
@@ -65,5 +80,21 @@ class GuruController extends Controller
         $guru->save();
 
        return redirect()->route('guru.dashboard')->with('success', 'Foto profil berhasil diperbarui.');
+    }
+
+    public function getArsipJadwal($tahun_ajaran_id)
+    {
+        Log::info('Fetching arsip jadwal for tahun ajaran: ' . $tahun_ajaran_id);
+        $guru = Auth::guard('guru')->user();
+        $jadwals = Jadwal::where('guru_id', $guru->id)
+                         ->where('tahun_ajaran_id', $tahun_ajaran_id)
+                         ->with('kelas')
+                         ->orderByRaw("FIELD(hari, 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu')")
+                         ->orderBy('jam')
+                         ->get();
+
+        Log::info('Found ' . $jadwals->count() . ' jadwals for guru: ' . $guru->nama);
+
+        return response()->json($jadwals);
     }
 }

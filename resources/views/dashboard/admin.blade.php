@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Beranda Admin - Klipaa Solusi Indonesia</title>
 
     <!-- Styles -->
@@ -12,6 +13,55 @@
     <link rel="icon" type="image/png" sizes="60x60" href="{{ asset('img/Klipaa Original.png') }}">
 
     @stack('styles')
+    <style>
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1000; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+            opacity: 0; /* Start invisible */
+            transition: opacity 0.3s ease-out; /* Fade in/out */
+        }
+
+        .modal.show {
+            opacity: 1;
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 10% auto; /* 10% from the top and centered */
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%; /* Could be more or less, depending on screen size */
+            border-radius: 8px;
+            position: relative;
+            transform: translateY(-50px); /* Start slightly above */
+            transition: opacity 0.3s ease-out, transform 0.3s ease-out; /* Slide and fade */
+        }
+
+        .modal.show .modal-content {
+            transform: translateY(0); /* Slide to original position */
+        }
+
+        .modal-close-button {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .modal-close-button:hover,
+        .modal-close-button:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
     <div id="admin-backdrop" class="backdrop"></div>
@@ -24,6 +74,24 @@
             <h2>Admin Dashboard</h2>
         </div>
         <div class="nav-user">
+            <div style="display: flex; align-items: center; margin-right: 20px;">
+                @if(isset($activeTahunAjaran) && $tahunAjarans->isNotEmpty())
+                    <form method="GET" id="tahunAjaranSwitchForm" style="margin-right: 5px;">
+                        <select name="tahun_ajaran" class="form-control" onchange="this.form.action = '{{ url('manage/tahun-ajaran') }}/' + this.value + '/switch'; this.form.submit();" style="height: 38px; min-width: 180px;" title="Ganti Tahun Ajaran Aktif">
+                            @foreach($tahunAjarans as $tahun)
+                                <option value="{{ $tahun->id }}" {{ $tahun->id == $activeTahunAjaran->id ? 'selected' : '' }}>
+                                    {{ $tahun->tahun_ajaran }} {{ $tahun->semester }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </form>
+                @else
+                    <span style="margin-right: 10px; color: #888;">Belum ada Tahun Ajaran.</span>
+                @endif
+                <button type="button" class="btn" id="openTahunAjaranModal" title="Kelola Tahun Ajaran" style="height: 38px; width: 38px; display: flex; align-items: center; justify-content: center; border: 1px solid #ced4da;">
+                    <i class="fas fa-plus"></i>
+                </button>
+            </div>
             <span>Welcome,  {{ Auth::guard('web')->user()->name }}</span>
             <div class="user-avatar">
                 <i class="fas fa-user"></i>
@@ -64,6 +132,7 @@
                         <i class="fas fa-tags"></i><span>Manajemen Kategori Jadwal</span>
                     </a>
                 </li>
+                
                 <li>
                     <a href="{{ route('jadwal.pilihKelas') }}" class="menu-item">
                         <i class="fas fa-calendar-check"></i><span>Manajemen Jadwal</span>
@@ -114,8 +183,7 @@
               <p><strong>Pengampu Pelajaran</strong>: {{ Auth::guard('web')->user()->pelajaran?? '-' }}</p>
               <p><strong>E-Mail</strong>: {{ Auth::guard('web')->user()->email }}</p>
             </div>
-</div>
--->
+</div>-->
             <!-- Stats Section -->
             @if (isset($guruCount))
                 <div class="stats-container">
@@ -275,5 +343,293 @@
         });
     </script>
     @stack('scripts')
+
+    <!-- Tahun Ajaran Management Modal -->
+    <div id="tahunAjaranModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close-button">&times;</span>
+            <div class="content-header">
+                <h1>Manajemen Tahun Ajaran</h1>
+                <button type="button" class="btn btn-success" id="openCreateTahunAjaranModal">Tambah Tahun Ajaran</button>
+            </div>
+            <div class="content-body">
+                @if(session('success'))
+                    <div class="alert alert-success">
+                        {{ session('success') }}
+                    </div>
+                @endif
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Tahun Ajaran</th>
+                            <th>Semester</th>
+                            <th>Status</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($tahunAjarans as $tahunAjaran)
+                            <tr>
+                                <td>{{ $tahunAjaran->id }}</td>
+                                <td>{{ $tahunAjaran->tahun_ajaran }}</td>
+                                <td>{{ $tahunAjaran->semester }}</td>
+                                <td>
+                                    @if($tahunAjaran->is_active)
+                                        <span class="badge bg-success">Aktif</span>
+                                    @else
+                                        <span class="badge bg-secondary">Tidak Aktif</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-info btn-sm edit-tahun-ajaran" data-id="{{ $tahunAjaran->id }}" data-tahun_ajaran="{{ $tahunAjaran->tahun_ajaran }}" data-semester="{{ $tahunAjaran->semester }}" data-is_active="{{ $tahunAjaran->is_active }}">Edit</button>
+                                    <button type="button" class="btn btn-danger btn-sm delete-tahun-ajaran" data-id="{{ $tahunAjaran->id }}">Delete</button>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Tahun Ajaran Modal -->
+    <div id="createTahunAjaranModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close-button">&times;</span>
+            <div class="content-header">
+                <h1>Tambah Tahun Ajaran Baru</h1>
+            </div>
+            <div class="content-body">
+                @if ($errors->any())
+                    <div class="alert alert-danger">
+                        <ul>
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+                <form action="{{ route('manage.tahun-ajaran.store') }}" method="POST">
+                    @csrf
+                    
+                    <div class="form-group">
+                        <label for="tahun_ajaran">Tahun Ajaran (format: YYYY/YYYY)</label>
+                        <input type="text" class="form-control" id="tahun_ajaran" name="tahun_ajaran" placeholder="Contoh: 2025/2026" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="semester">Semester</label>
+                        <select class="form-control" id="semester" name="semester" required>
+                            <option value="Ganjil">Ganjil</option>
+                            <option value="Genap">Genap</option>
+                        </select>
+                    </div>
+                
+                    <div class="form-group form-check">
+                        <input class="form-check-input" type="checkbox" id="is_active" name="is_active" value="1">
+                        <label class="form-check-label" for="is_active">Langsung aktifkan tahun ajaran ini</label>
+                    </div>
+                
+                    <hr>
+                
+                    <div class="form-group">
+                        <label for="source_tahun_ajaran_id">Salin Data dari Tahun Ajaran:</label>
+                        <select class="form-control" id="source_tahun_ajaran_id" name="source_tahun_ajaran_id">
+                            <option value="">-- Jangan Salin Data (Buat Kosong) --</option>
+                            @foreach($tahunAjarans as $tahun)
+                                <option value="{{ $tahun->id }}">{{ $tahun->tahun_ajaran }} - {{ $tahun->semester }}</option>
+                            @endforeach
+                        </select>
+                        <small class="text-muted">Pilih tahun ajaran untuk menyalin data. Jika tidak dipilih, tahun ajaran baru akan kosong.</small>
+                    </div>
+                
+                    <div class="form-group">
+                        <label>Opsi untuk Tahun Ajaran Baru:</label>
+                        <p class="text-muted small" style="font-size: 0.85rem; margin-bottom: 10px;">Opsi berikut hanya berlaku untuk <strong>Tahun Ajaran Baru</strong> yang sedang dibuat. Data dari tahun ajaran yang Anda salin akan tetap utuh dan tidak akan berubah (tersimpan sebagai arsip).</p>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="skip_kelas_assignments" name="skip_kelas_assignments" value="1">
+                            <label class="form-check-label" for="skip_kelas_assignments">
+                                <strong>Jangan Salin Penempatan Kelas Siswa</strong><br>
+                                <small class="text-muted">(Siswa di tahun ajaran BARU ini tidak akan dimasukkan ke kelas. Data di tahun ajaran LAMA tetap aman).</small>
+                            </label>
+                        </div>
+                        <div class="form-check mt-2">
+                            <input class="form-check-input" type="checkbox" id="skip_jadwal" name="skip_jadwal" value="1">
+                            <label class="form-check-label" for="skip_jadwal">
+                                <strong>Jangan Salin Jadwal Pelajaran</strong><br>
+                                <small class="text-muted">(Jadwal pelajaran di tahun ajaran BARU akan kosong. Data jadwal di tahun ajaran LAMA tetap aman).</small>
+                            </label>
+                        </div>
+                    </div>
+                
+                    <div style="margin-top: 20px;">
+                        <button type="submit" class="btn btn-primary">Simpan</button>
+                        <button type="button" class="btn btn-secondary" data-close-modal="createTahunAjaranModal">Batal</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Tahun Ajaran Modal -->
+    <div id="editTahunAjaranModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close-button">&times;</span>
+            <div class="content-header">
+                <h1>Edit Tahun Ajaran</h1>
+            </div>
+            <div class="content-body">
+                <form action="" method="POST">
+                    @csrf
+                    @method('PUT')
+                    <div class="form-group">
+                        <label for="edit_tahun_ajaran">Tahun Ajaran</label>
+                        <input type="text" name="tahun_ajaran" id="edit_tahun_ajaran" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit_semester">Semester</label>
+                        <select name="semester" id="edit_semester" class="form-control" required>
+                            <option value="Ganjil">Ganjil</option>
+                            <option value="Genap">Genap</option>
+                        </select>
+                    </div>
+                    <div class="form-group form-check">
+                        <input type="checkbox" name="is_active" id="edit_is_active" class="form-check-input" value="1">
+                        <label for="edit_is_active" class="form-check-label">Aktifkan Tahun Ajaran ini?</label>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+                    <button type="button" class="btn btn-secondary" data-close-modal="editTahunAjaranModal">Batal</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const modals = {
+            main: document.getElementById('tahunAjaranModal'),
+            create: document.getElementById('createTahunAjaranModal'),
+            edit: document.getElementById('editTahunAjaranModal')
+        };
+
+        function openModal(modal) {
+            if (modal) {
+                modal.style.display = 'block';
+                setTimeout(() => modal.classList.add('show'), 10);
+            }
+        }
+
+        function closeModal(modal) {
+            if (modal) {
+                modal.classList.remove('show');
+                setTimeout(() => modal.style.display = 'none', 300);
+            }
+        }
+
+        // Open main modal
+        document.getElementById('openTahunAjaranModal').addEventListener('click', () => openModal(modals.main));
+
+        // Open create modal
+        document.getElementById('openCreateTahunAjaranModal').addEventListener('click', () => {
+            closeModal(modals.main);
+            openModal(modals.create);
+        });
+
+        // Close buttons inside modals
+        document.querySelectorAll('.modal-close-button').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const modal = this.closest('.modal');
+                closeModal(modal);
+                if (modal !== modals.main) {
+                    openModal(modals.main);
+                }
+            });
+        });
+        
+        // Cancel buttons
+        document.querySelectorAll('[data-close-modal]').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const modalToClose = document.getElementById(this.dataset.closeModal);
+                closeModal(modalToClose);
+                openModal(modals.main);
+            });
+        });
+
+        // Edit button listeners
+        document.querySelectorAll('.edit-tahun-ajaran').forEach(button => {
+            button.addEventListener('click', function () {
+                const id = this.dataset.id;
+                const form = modals.edit.querySelector('form');
+                form.action = `/manage/tahun-ajaran/${id}`;
+                form.querySelector('#edit_tahun_ajaran').value = this.dataset.tahun_ajaran;
+                form.querySelector('#edit_semester').value = this.dataset.semester;
+                form.querySelector('#edit_is_active').checked = this.dataset.is_active == 1;
+                closeModal(modals.main);
+                openModal(modals.edit);
+            });
+        });
+
+        // Delete button listeners
+        document.querySelectorAll('.delete-tahun-ajaran').forEach(button => {
+            button.addEventListener('click', function () {
+                const id = this.dataset.id;
+                Swal.fire({
+                    title: 'Yakin ingin menghapus?',
+                    text: "Data yang terhapus tidak dapat dikembalikan!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Ya, hapus!',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        fetch(`/manage/tahun-ajaran/${id}`, {
+                            method: 'DELETE',
+                            headers: {
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                                'Accept': 'application/json'
+                            }
+                        })
+                        .then(response => response.json().then(data => ({ status: response.status, body: data })))
+                        .then(({ status, body }) => {
+                            const message = body.message || 'Tidak ada pesan dari server.';
+                            if (status >= 200 && status < 300) {
+                                Swal.fire({
+                                    title: 'Berhasil!',
+                                    text: message,
+                                    icon: 'success'
+                                }).then(() => {
+                                    window.location.reload();
+                                });
+                            } else {
+                                Swal.fire({
+                                    title: 'Gagal!',
+                                    text: message,
+                                    icon: 'error'
+                                });
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            Swal.fire('Gagal!', 'Tidak dapat terhubung ke server atau terjadi kesalahan.', 'error');
+                        });
+                    }
+                });
+            });
+        });
+
+        // Close modal by clicking on the background
+        window.addEventListener('click', function (event) {
+            if (event.target.classList.contains('modal')) {
+                closeModal(event.target);
+                if (event.target !== modals.main) {
+                   openModal(modals.main);
+                }
+            }
+        });
+    });
+    </script>
 </body>
 </html>

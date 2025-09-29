@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\View;
+use App\Models\TahunAjaran;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -19,6 +21,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        View::composer('dashboard.*', function ($view) {
+            $activeTahunAjaran = TahunAjaran::where('is_active', true)->first();
+            $tahunAjarans = TahunAjaran::orderBy('tahun_ajaran', 'desc')->get();
+            $view->with(compact('activeTahunAjaran', 'tahunAjarans'));
+        });
     }
 }

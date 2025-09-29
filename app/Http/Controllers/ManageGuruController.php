@@ -51,7 +51,8 @@ class ManageGuruController extends Controller
     {
         $search = $request->input('search');
         
-        $query = Guru::query();
+        $activeTahunAjaranId = session('tahun_ajaran_id');
+        $query = Guru::query()->where('tahun_ajaran_id', $activeTahunAjaranId);
 
         if ($search) {
             $query->where(function($q) use ($search) {

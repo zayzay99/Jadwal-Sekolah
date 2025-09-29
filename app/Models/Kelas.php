@@ -9,14 +9,14 @@ class Kelas extends Model
 {
     use HasFactory;
     protected $table = 'kelas';
-    protected $fillable = ['nama_kelas', 'guru_id'];
+    protected $fillable = ['nama_kelas', 'guru_id', 'tahun_ajaran_id'];
 
 
 
     
     public function siswas()
     {
-        return $this->belongsToMany(Siswa::class, 'kelas_siswa', 'kelas_id', 'siswa_id');
+        return $this->belongsToMany(Siswa::class, 'kelas_siswa', 'kelas_id', 'siswa_id')->withPivot('tahun_ajaran_id');
     }
     public function jadwals()
     {
@@ -31,6 +31,7 @@ class Kelas extends Model
     public function siswasOrdered()
 {
     return $this->belongsToMany(Siswa::class, 'kelas_siswa', 'kelas_id', 'siswa_id')
+                ->withPivot('tahun_ajaran_id')
                 ->orderBy('nama', 'asc');
 }
 }

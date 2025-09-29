@@ -23,6 +23,11 @@ class JadwalController extends Controller
     public function create($kelas_id)
     {
         $kelas = Kelas::findOrFail($kelas_id);
+        $activeTahunAjaranId = session('tahun_ajaran_id');
+        if (!$activeTahunAjaranId) {
+            abort(400, 'Tahun ajaran tidak aktif. Silakan pilih tahun ajaran terlebih dahulu.');
+        }
+
         $gurus = Guru::with(['availabilities' => function ($query) {
             $query->orderBy('hari')->orderBy('jam_mulai');
         }])->orderBy('nama')->get();
@@ -36,13 +41,15 @@ class JadwalController extends Controller
         });
 
         $jadwals = Jadwal::where('kelas_id', $kelas_id)
+            ->where('tahun_ajaran_id', $activeTahunAjaranId)
             ->with('guru', 'kategori')
             ->orderByRaw("FIELD(hari, 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu')")
             ->orderBy('jam')
             ->get();
 
-        // Mengambil semua jadwal yang ada untuk validasi di frontend
-        $allSchedules = Jadwal::with(['guru:id,nama', 'kelas:id,nama_kelas'])->get();
+        // Mengambil semua jadwal yang ada untuk validasi di frontend, hanya untuk tahun ajaran ini
+        $allSchedules = Jadwal::where('tahun_ajaran_id', $activeTahunAjaranId)
+            ->with(['guru:id,nama', 'kelas:id,nama_kelas'])->get();
 
         $scheduleGrid = [];
         foreach ($timeSlots as $slot) {
@@ -115,27 +122,34 @@ class JadwalController extends Controller
             'availability_id' => 'required|exists:guru_availabilities,id',
         ]);
 
+        $activeTahunAjaranId = session('tahun_ajaran_id');
+        if (!$activeTahunAjaranId) {
+            return back()->with('error', 'Tahun ajaran tidak aktif. Silakan pilih tahun ajaran terlebih dahulu.');
+        }
+
         $availability = GuruAvailability::findOrFail($validated['availability_id']);
         $guru = Guru::findOrFail($validated['guru_id']);
         $kelasId = $validated['kelas_id'];
         $hari = $availability->hari;
         $jam = $availability->jam_mulai . ' - ' . $availability->jam_selesai;
 
-        // Validasi 1: Cek apakah sudah ada jadwal di kelas dan waktu yang sama
+        // Validasi 1: Cek apakah sudah ada jadwal di kelas dan waktu yang sama untuk tahun ajaran ini
         $slotTaken = Jadwal::where('kelas_id', $kelasId)
             ->where('hari', $hari)
             ->where('jam', $jam)
+            ->where('tahun_ajaran_id', $activeTahunAjaranId)
             ->exists();
 
         if ($slotTaken) {
             return back()->with('error', 'Jadwal bentrok! Sudah ada jadwal lain di kelas ini pada waktu tersebut.');
         }
 
-        // Validasi 2: Cek apakah guru sudah mengajar di kelas lain pada waktu yang sama
+        // Validasi 2: Cek apakah guru sudah mengajar di kelas lain pada waktu yang sama untuk tahun ajaran ini
         $teacherClash = Jadwal::where('guru_id', $guru->id)
             ->where('hari', $hari)
             ->where('jam', $jam)
             ->where('kelas_id', '!=', $kelasId)
+            ->where('tahun_ajaran_id', $activeTahunAjaranId)
             ->first();
 
         if ($teacherClash) {
@@ -149,6 +163,7 @@ class JadwalController extends Controller
             'mapel' => $guru->pengampu,
             'hari' => $hari,
             'jam' => $jam,
+            'tahun_ajaran_id' => $activeTahunAjaranId,
         ]);
 
         return back()->with('success', 'Jadwal berhasil ditambahkan.');
@@ -192,27 +207,28 @@ class JadwalController extends Controller
 
         $kelasId = $validated['kelas_id'];
         $schedules = $validated['schedules'];
-        $jamPelajaranMenit = 35;
+        $activeTahunAjaranId = session('tahun_ajaran_id');
 
-        // --- VALIDASI BACKEND ---
-        $teacherSchedules = []; // [guru_id][hari] = total_jp
-        $teacherClashes = [];   // [guru_id][hari][jam] = kelas_id
+        if (!$activeTahunAjaranId) {
+            return response()->json(['success' => false, 'message' => 'Tahun ajaran tidak aktif.'], 400);
+        }
 
-        // 1. Ambil semua jadwal yang ada KECUALI untuk kelas yang sedang diedit
-        $existingSchedules = Jadwal::where('kelas_id', '!=', $kelasId)->whereNotNull('guru_id')->get();
+        // --- Backend Validation (Clash check) ---
+        $teacherClashes = [];
+        $existingSchedules = Jadwal::where('kelas_id', '!=', $kelasId)
+            ->where('tahun_ajaran_id', $activeTahunAjaranId)
+            ->whereNotNull('guru_id')->get();
+
         foreach ($existingSchedules as $jadwal) {
             $teacherClashes[$jadwal->guru_id][$jadwal->hari][$jadwal->jam] = $jadwal->kelas_id;
         }
 
-        // 2. Validasi jadwal baru yang di-submit
         foreach ($schedules as $scheduleData) {
             if (empty($scheduleData['guru_id'])) continue;
-
             $guruId = $scheduleData['guru_id'];
             $hari = $scheduleData['hari'];
             $jam = $scheduleData['jam'];
 
-            // Cek bentrok
             if (isset($teacherClashes[$guruId][$hari][$jam])) {
                 $guru = Guru::find($guruId);
                 $kelas = Kelas::find($teacherClashes[$guruId][$hari][$jam]);
@@ -221,162 +237,104 @@ class JadwalController extends Controller
                     'message' => "Jadwal bentrok! Guru {$guru->nama} sudah mengajar di kelas {$kelas->nama_kelas} pada hari {$hari}, jam {$jam}."
                 ], 422);
             }
-            // Tandai jadwal ini untuk pengecekan selanjutnya
             $teacherClashes[$guruId][$hari][$jam] = $kelasId;
-
-            // Hitung JP harian
-            try {
-                $jamParts = explode(' - ', $jam);
-                $jamMulai = new \DateTime($jamParts[0]);
-                $jamSelesai = new \DateTime($jamParts[1]);
-                $durasiMenit = ($jamSelesai->getTimestamp() - $jamMulai->getTimestamp()) / 60;
-                $jp = floor($durasiMenit / 35); // 1 JP = 35 menit
-
-                if (!isset($teacherSchedules[$guruId][$hari])) {
-                    $teacherSchedules[$guruId][$hari] = 0;
-                }
-                $teacherSchedules[$guruId][$hari] += $jp;
-            } catch (\Exception $e) {
-                // Abaikan jika format jam salah
-            }
         }
-
-        // --- AKHIR VALIDASI BACKEND ---
 
         DB::beginTransaction();
         try {
-            // --- Validasi Jadwal ---
+            // --- Teacher Hour Calculation ---
+            $oldSchedules = Jadwal::where('kelas_id', $kelasId)
+                ->where('tahun_ajaran_id', $activeTahunAjaranId)->get();
 
-            // 1. Create a lookup map of all possible time slots from Tabelj
-            $timeSlotMap = Tabelj::all()->keyBy('jam')->map(function ($slot) {
-                return preg_replace('/\s+/', '', trim($slot->jam_mulai) . '-' . trim($slot->jam_selesai));
-            });
+            $calculateDuration = function($jam) {
+                try {
+                    $parts = explode(' - ', $jam);
+                    if (count($parts) !== 2) return 0;
+                    $start = new \DateTime($parts[0]);
+                    $end = new \DateTime($parts[1]);
+                    return ($end->getTimestamp() - $start->getTimestamp()) / 60;
+                } catch (\Exception $e) { return 0; }
+            };
 
-            // 2. Create a set of available slots for each teacher
-            $availabilitySet = GuruAvailability::all()->mapWithKeys(function ($avail) {
-                $key = $avail->guru_id . '-' . $avail->hari . '-' . preg_replace('/\s+/', '', trim($avail->jam_mulai) . '-' . trim($avail->jam_selesai));
-                return [$key => true];
-            });
-
-            // 3. Get other schedules for clash validation
-            $otherSchedules = Jadwal::where('kelas_id', '!=', $kelasId)->get()
-                ->keyBy(fn($item) => $item->hari . '-' . $item->jam . '-' . $item->guru_id);
-
-
-            // 4. Loop and validate
-            foreach ($schedules as $scheduleData) {
-                if ($scheduleData['guru_id']) {
-                    $guru = Guru::find($scheduleData['guru_id']);
-                    $submittedJam = $scheduleData['jam'];
-
-                    // --- Availability Check ---
-                    if (!isset($timeSlotMap[$submittedJam])) {
-                        DB::rollBack();
-                        return response()->json(['success' => false, 'message' => "Jam tidak valid: {$submittedJam}."], 400);
-                    }
-                    $normalizedJam = $timeSlotMap[$submittedJam];
-                    $availabilityKey = $scheduleData['guru_id'] . '-' . $scheduleData['hari'] . '-' . $normalizedJam;
-
-                    if (!isset($availabilitySet[$availabilityKey])) {
-                        DB::rollBack();
-                        return response()->json(['success' => false, 'message' => "Guru {$guru->nama} tidak tersedia pada {$scheduleData['hari']} jam {$scheduleData['jam']}."], 400);
-                    }
-
-                    // --- Clash Check ---
-                    $scheduleKey = $scheduleData['hari'] . '-' . $scheduleData['jam'] . '-' . $scheduleData['guru_id'];
-                    if ($otherSchedules->has($scheduleKey)) {
-                        DB::rollBack();
-                        return response()->json(['success' => false, 'message' => "Guru {$guru->nama} sudah dijadwalkan di kelas lain pada waktu yang sama."], 400);
-                    }
-                }
-            }
-
-            // --- Kalkulasi Jam Mengajar ---
-            $oldSchedules = Jadwal::where('kelas_id', $kelasId)->get();
-            $oldGuruHours = [];
+            $oldGuruMinutes = [];
             foreach ($oldSchedules as $schedule) {
                 if ($schedule->guru_id) {
-                    $oldGuruHours[$schedule->guru_id] = ($oldGuruHours[$schedule->guru_id] ?? 0) + $jamPelajaranMenit;
+                    $duration = $calculateDuration($schedule->jam);
+                    $oldGuruMinutes[$schedule->guru_id] = ($oldGuruMinutes[$schedule->guru_id] ?? 0) + $duration;
                 }
             }
 
-            $newGuruHours = [];
+            $newGuruMinutes = [];
             foreach ($schedules as $scheduleData) {
-                if ($scheduleData['guru_id']) {
-                    $newGuruHours[$scheduleData['guru_id']] = ($newGuruHours[$scheduleData['guru_id']] ?? 0) + $jamPelajaranMenit;
+                if (!empty($scheduleData['guru_id'])) {
+                    $duration = $calculateDuration($scheduleData['jam']);
+                    $newGuruMinutes[$scheduleData['guru_id']] = ($newGuruMinutes[$scheduleData['guru_id']] ?? 0) + $duration;
                 }
             }
 
-            $allGuruIds = array_unique(array_merge(array_keys($oldGuruHours), array_keys($newGuruHours)));
-            $gurus = Guru::whereIn('id', $allGuruIds)->get()->keyBy('id');
+            $allGuruIds = array_unique(array_merge(array_keys($oldGuruMinutes), array_keys($newGuruMinutes)));
+            $gurus = !empty($allGuruIds) ? Guru::whereIn('id', $allGuruIds)->get()->keyBy('id') : collect();
 
             foreach ($gurus as $guruId => $guru) {
-                $oldHours = $oldGuruHours[$guruId] ?? 0;
-                $newHours = $newGuruHours[$guruId] ?? 0;
-                $change = $newHours - $oldHours;
-
+                $oldMinutes = $oldGuruMinutes[$guruId] ?? 0;
+                $newMinutes = $newGuruMinutes[$guruId] ?? 0;
+                $change = $newMinutes - $oldMinutes;
                 if (($guru->sisa_jam_mengajar - $change) < 0) {
                     DB::rollBack();
-                    return response()->json([
-                        'success' => false,
-                        'message' => 'Guru ' . $guru->nama . ' akan melebihi total jam mengajar.'
-                    ], 400);
+                    return response()->json(['success' => false, 'message' => 'Guru ' . $guru->nama . ' akan melebihi total jam mengajar.'], 422);
                 }
             }
 
-            // --- Simpan Jadwal ---
-            Jadwal::where('kelas_id', $kelasId)->delete();
+            // --- Save Schedule ---
+            // Delete old schedule for this class and academic year
+            Jadwal::where('kelas_id', $kelasId)
+                ->where('tahun_ajaran_id', $activeTahunAjaranId)
+                ->delete();
 
-            // Add break times
-            $breakSlots = \App\Models\Tabelj::whereHas('jadwalKategori', function ($query) {
-                $query->where('nama_kategori', 'Istirahat');
-            })->get();
+            $dataToInsert = [];
+            $now = now();
 
-            $days = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
-
-            foreach ($breakSlots as $slot) {
-                $jamMulai = \Carbon\Carbon::parse($slot->jam_mulai)->format('H:i');
-                $jamSelesai = \Carbon\Carbon::parse($slot->jam_selesai)->format('H:i');
-                $jam = $jamMulai . ' - ' . $jamSelesai;
-                
-                foreach ($days as $day) {
-                    Jadwal::create([
-                        'kelas_id' => $kelasId,
-                        'guru_id' => null,
-                        'mapel' => null,
-                        'jadwal_kategori_id' => $slot->jadwal_kategori_id,
-                        'hari' => $day,
-                        'jam' => $jam,
-                    ]);
-                }
-            }
-
+            // Prepare lesson and break schedules for insertion from the single request array.
+            // The frontend is responsible for sending the complete schedule, including breaks.
             foreach ($schedules as $scheduleData) {
-                Jadwal::create([
-                    'kelas_id' => $kelasId,
-                    'guru_id' => $scheduleData['guru_id'],
-                    'mapel' => $scheduleData['mapel'],
-                    'jadwal_kategori_id' => $scheduleData['jadwal_kategori_id'],
-                    'hari' => $scheduleData['hari'],
-                    'jam' => $scheduleData['jam'],
-                ]);
+                // We only insert if there is a guru or a category. Empty slots are just empty.
+                if (!empty($scheduleData['guru_id']) || !empty($scheduleData['jadwal_kategori_id'])) {
+                    $dataToInsert[] = [
+                        'kelas_id' => $kelasId,
+                        'guru_id' => $scheduleData['guru_id'] ?: null,
+                        'mapel' => $scheduleData['mapel'],
+                        'jadwal_kategori_id' => $scheduleData['jadwal_kategori_id'] ?: null,
+                        'hari' => $scheduleData['hari'],
+                        'jam' => $scheduleData['jam'],
+                        'tahun_ajaran_id' => $activeTahunAjaranId,
+                        'created_at' => $now,
+                        'updated_at' => $now,
+                    ];
+                }
             }
 
-            // --- Update Sisa Jam Mengajar ---
+            // Bulk insert all data
+            if (!empty($dataToInsert)) {
+                Jadwal::insert($dataToInsert);
+            }
+
+            // --- Update Teacher Hours ---
             foreach ($gurus as $guruId => $guru) {
-                $oldHours = $oldGuruHours[$guruId] ?? 0;
-                $newHours = $newGuruHours[$guruId] ?? 0;
-                $change = $newHours - $oldHours;
-                $guru->sisa_jam_mengajar -= $change;
-                $guru->save();
+                $oldMinutes = $oldGuruMinutes[$guruId] ?? 0;
+                $newMinutes = $newGuruMinutes[$guruId] ?? 0;
+                $change = $newMinutes - $oldMinutes;
+                if ($change !== 0) {
+                    $guru->sisa_jam_mengajar -= $change;
+                    $guru->save();
+                }
             }
 
             DB::commit();
-
             return response()->json(['success' => true, 'message' => 'Jadwal telah berhasil disimpan.']);
+
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Bulk store error: ' . $e->getMessage());
+            Log::error('Bulk store error: ' . $e->getMessage() . ' on line ' . $e->getLine() . ' in ' . $e->getFile());
             return response()->json(['success' => false, 'message' => 'Gagal menyimpan jadwal. Terjadi kesalahan server.'], 500);
         }
     }
@@ -414,6 +372,7 @@ class JadwalController extends Controller
     public function jadwalPerKelas(Request $request, $kelas_id)
     {
         $kelas = Kelas::findOrFail($kelas_id);
+        $activeTahunAjaranId = session('tahun_ajaran_id');
         $jadwals = Jadwal::where('kelas_id', $kelas_id)
             ->with('guru', 'kategori')
             ->orderByRaw("FIELD(hari, 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu')")
@@ -429,6 +388,7 @@ class JadwalController extends Controller
     public function cetakJadwal($kelas_id)
     {
         $kelas = Kelas::findOrFail($kelas_id);
+        $activeTahunAjaranId = session('tahun_ajaran_id');
         $jadwals = Jadwal::where('kelas_id', $kelas_id)
             ->with('guru', 'kategori')
             ->orderByRaw("FIELD(hari, 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu')")
@@ -468,9 +428,16 @@ class JadwalController extends Controller
 
     public function destroyAll($kelas_id)
     {
+        $activeTahunAjaranId = session('tahun_ajaran_id');
+        if (!$activeTahunAjaranId) {
+            return back()->with('error', 'Tahun ajaran tidak aktif. Silakan pilih tahun ajaran terlebih dahulu.');
+        }
+
         DB::beginTransaction();
         try {
-            $jadwals = Jadwal::where('kelas_id', $kelas_id)->get();
+            $jadwals = Jadwal::where('kelas_id', $kelas_id)
+                ->where('tahun_ajaran_id', $activeTahunAjaranId)
+                ->get();
 
             // Kelompokkan jadwal berdasarkan guru untuk efisiensi
             $guruHoursToRestore = [];
@@ -500,11 +467,13 @@ class JadwalController extends Controller
                 Guru::where('id', $guruId)->increment('sisa_jam_mengajar', $menit);
             }
 
-            // Hapus semua jadwal untuk kelas ini
-            Jadwal::where('kelas_id', $kelas_id)->delete();
+            // Hapus semua jadwal untuk kelas ini pada tahun ajaran aktif
+            Jadwal::where('kelas_id', $kelas_id)
+                ->where('tahun_ajaran_id', $activeTahunAjaranId)
+                ->delete();
 
             DB::commit();
-            return redirect()->route('jadwal.pilihKelas')->with('success', 'Semua jadwal untuk kelas ini telah berhasil dihapus.');
+            return redirect()->route('jadwal.pilihKelas')->with('success', 'Semua jadwal untuk kelas ini pada tahun ajaran aktif telah berhasil dihapus.');
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Error deleting all schedules: ' . $e->getMessage());

@@ -11,7 +11,7 @@ class Guru extends Authenticatable
     use Notifiable;
 
     protected $fillable = [
-        'nama', 'nip', 'pengampu', 'email', 'password', 'profile_picture', 'total_jam_mengajar', 'sisa_jam_mengajar',
+        'nama', 'nip', 'pengampu', 'email', 'password', 'profile_picture', 'total_jam_mengajar', 'sisa_jam_mengajar', 'tahun_ajaran_id',
     ];
 
     /**

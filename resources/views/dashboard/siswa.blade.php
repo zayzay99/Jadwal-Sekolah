@@ -31,7 +31,8 @@
                               "Email Pengguna: {$user?->email}\n\n" .
                               "Sebutkan masalah dan lampirkan foto (jika ada):";
             @endphp
-            <a href="{{ route('siswa.jadwal') }}" class="menu-btn">Jadwal</a>
+            <a href="{{ route('siswa.dashboard') }}" class="menu-btn">Dashboard</a>
+            <a href="{{ route('siswa.jadwal') }}" class="menu-btn">Jadwal Pelajaran</a>
             <a href="mailto:kesyapujiatmoko@gmail.com?subject=Laporan Masalah Pengguna (Siswa)&body={{ rawurlencode($mailToBody) }}" class="menu-btn" title="Hubungi Customer Service">
                 <img src="/img/CS.svg" alt="Customer Service" width="24">
                 <span>Bantuan</span>
@@ -67,6 +68,7 @@
                 <div class="jadwal-header">
                     <h4>Jadwal Pelajaran Untuk Kelas {{ $user?->kelas?->first()?->nama_kelas ?? '-' }}</h4>
                     <a href="{{ route('siswa.jadwal.cetak') }}" class="print-btn" target="_blank">Cetak Jadwal</a>
+                    <button id="arsipBtn" class="print-btn">Lihat Arsip</button>
                 </div>
                 @if(isset($jadwals) && count($jadwals) > 0)
                     <div class="overflow-x-auto">
@@ -191,6 +193,107 @@
         });
 
         
+    </script>
+    <div id="arsipModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center">
+        <div class="bg-white rounded-lg shadow-xl w-11/12 md:w-3/4 lg:w-1/2 max-h-[80vh] flex flex-col">
+            <div class="flex justify-between items-center p-4 border-b">
+                <h3 class="text-xl font-bold">Arsip Jadwal</h3>
+                <button id="closeArsipModal" class="text-black">&times;</button>
+            </div>
+            <div class="p-4 overflow-y-auto">
+                <div class="mb-4">
+                    <label for="arsip_tahun_ajaran" class="block text-sm font-medium text-gray-700">Pilih Tahun Ajaran:</label>
+                    <div class="flex">
+                        <select name="arsip_tahun_ajaran_id" id="arsip_tahun_ajaran" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                            @foreach($tahunAjarans as $tahun)
+                                <option value="{{ $tahun->id }}">{{ $tahun->tahun_ajaran }} {{ $tahun->semester }}</option>
+                            @endforeach
+                        </select>
+                        <button id="fetchJadwalBtn" class="ml-2 px-4 py-2 bg-blue-500 text-white rounded-md">Go</button>
+                    </div>
+                </div>
+                <div id="arsip_jadwal_content" style="margin-top: 20px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const modal = document.getElementById("arsipModal");
+            const btn = document.getElementById("arsipBtn");
+            const closeBtn = document.getElementById("closeArsipModal");
+            const fetchBtn = document.getElementById("fetchJadwalBtn");
+            const tahunAjaranSelect = document.getElementById('arsip_tahun_ajaran');
+            const jadwalContent = document.getElementById('arsip_jadwal_content');
+
+            btn.onclick = () => modal.style.display = "flex";
+            closeBtn.onclick = () => modal.style.display = "none";
+            window.onclick = (event) => {
+                if (event.target == modal) {
+                    modal.style.display = "none";
+                }
+            }
+
+            fetchBtn.onclick = () => {
+                const tahunAjaranId = tahunAjaranSelect.value;
+                const url = `/dashboard/siswa/jadwal/arsip/${tahunAjaranId}`;
+
+                fetch(url)
+                    .then(response => response.json())
+                    .then(data => {
+                        jadwalContent.innerHTML = '';
+                        if (data.length > 0) {
+                            const table = document.createElement('table');
+                            table.className = 'min-w-full divide-y divide-gray-200';
+                            const thead = document.createElement('thead');
+                            thead.className = 'bg-gray-50';
+                            const headerRow = document.createElement('tr');
+                            ['Hari', 'Mata Pelajaran', 'Guru', 'Jam'].forEach(text => {
+                                const th = document.createElement('th');
+                                th.className = 'px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider';
+                                th.textContent = text;
+                                headerRow.appendChild(th);
+                            });
+                            thead.appendChild(headerRow);
+                            table.appendChild(thead);
+
+                            const tbody = document.createElement('tbody');
+                            tbody.className = 'bg-white divide-y divide-gray-200';
+                            data.forEach(jadwal => {
+                                const row = document.createElement('tr');
+                                const hariCell = document.createElement('td');
+                                hariCell.className = 'px-6 py-4 whitespace-nowrap';
+                                hariCell.textContent = jadwal.hari;
+                                row.appendChild(hariCell);
+
+                                const mapelCell = document.createElement('td');
+                                mapelCell.className = 'px-6 py-4 whitespace-nowrap';
+                                mapelCell.textContent = jadwal.mapel;
+                                row.appendChild(mapelCell);
+
+                                const guruCell = document.createElement('td');
+                                guruCell.className = 'px-6 py-4 whitespace-nowrap';
+                                guruCell.textContent = jadwal.guru ? jadwal.guru.nama : '-';
+                                row.appendChild(guruCell);
+
+                                const jamCell = document.createElement('td');
+                                jamCell.className = 'px-6 py-4 whitespace-nowrap';
+                                jamCell.textContent = jadwal.jam;
+                                row.appendChild(jamCell);
+                                tbody.appendChild(row);
+                            });
+                            table.appendChild(tbody);
+                            jadwalContent.appendChild(table);
+                        } else {
+                            jadwalContent.innerHTML = '<p class="text-center text-gray-500">Tidak ada jadwal untuk tahun ajaran ini.</p>';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching schedule:', error);
+                        jadwalContent.innerHTML = '<p class="text-center text-red-500">Gagal memuat jadwal.</p>';
+                    });
+            };
+        });
     </script>
 </body>
 </html>

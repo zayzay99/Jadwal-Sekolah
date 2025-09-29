@@ -11,6 +11,7 @@ use App\Http\Controllers\ManageKelasController;
 use App\Http\Controllers\KelasKategoriController;
 use App\Http\Controllers\TabeljController;
 use App\Http\Controllers\JadwalKategoriController;
+use App\Http\Controllers\TahunAjaranController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -27,6 +28,7 @@ Route::middleware('auth:siswa')->group(function () {
     Route::get('/dashboard/siswa/jadwal/cetak', [SiswaController::class, 'cetakJadwal'])->name('siswa.jadwal.cetak');
     Route::post('/dashboard/siswa/profile/update', [SiswaController::class, 'updateProfile'])
     ->name('siswa.profile.update');
+    Route::get('/dashboard/siswa/jadwal/arsip/{tahun_ajaran_id}', [SiswaController::class, 'getArsipJadwal'])->name('siswa.jadwal.arsip');
 });
 
 Route::middleware('auth:guru')->group(function () {
@@ -34,6 +36,7 @@ Route::middleware('auth:guru')->group(function () {
     Route::get('/dashboard/guru/jadwal', [GuruController::class, 'jadwal'])->name('guru.jadwal');
     Route::get('/dashboard/guru/jadwal/cetak', [GuruController::class, 'cetakJadwal'])->name('guru.jadwal.cetak');
     Route::post('/dashboard/guru/profile/update', [GuruController::class, 'updateProfilePicture'])->name('guru.profile.update');
+    Route::get('/dashboard/guru/jadwal/arsip/{tahun_ajaran_id}', [GuruController::class, 'getArsipJadwal'])->name('guru.jadwal.arsip');
 });
 
 
@@ -98,6 +101,18 @@ Route::middleware('auth:web')->group(function () {
     ]]);
 
     Route::resource('jadwal-kategori', JadwalKategoriController::class);
+
+    Route::resource('manage/tahun-ajaran', TahunAjaranController::class)->names([
+        'index' => 'manage.tahun-ajaran.index',
+        'create' => 'manage.tahun-ajaran.create',
+        'store' => 'manage.tahun-ajaran.store',
+        'show' => 'manage.tahun-ajaran.show',
+        'edit' => 'manage.tahun-ajaran.edit',
+        'update' => 'manage.tahun-ajaran.update',
+        'destroy' => 'manage.tahun-ajaran.destroy',
+    ]);
+    Route::post('manage/tahun-ajaran/{tahun_ajaran}/set-active', [TahunAjaranController::class, 'setActive'])->name('manage.tahun-ajaran.setActive');
+    Route::get('manage/tahun-ajaran/{tahun_ajaran}/switch', [TahunAjaranController::class, 'switchActive'])->name('manage.tahun-ajaran.switch');
 
     Route::get('/kelas', [KelasKategoriController::class, 'index'])->name('kelas.kategori');
     Route::get('/kelas/{kategori}', [KelasKategoriController::class, 'show'])->name('kelas.show');

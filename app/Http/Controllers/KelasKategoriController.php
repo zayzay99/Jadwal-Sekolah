@@ -59,9 +59,13 @@ class KelasKategoriController extends Controller
     public function detail(Request $request, $kategori, $kelas)
     {
         $search = $request->input('search');
+        $activeTahunAjaranId = session('tahun_ajaran_id');
+
+        // Find the class by name. The school year context is applied when fetching students.
         $kelasObj = Kelas::where('nama_kelas', $kelas)->firstOrFail();
         
-        $siswasQuery = $kelasObj->siswasOrdered(); // Get the query builder
+        // Get the query builder for students and filter by the active school year
+        $siswasQuery = $kelasObj->siswasOrdered()->wherePivot('tahun_ajaran_id', $activeTahunAjaranId);
 
         if ($search) {
             $siswasQuery->where(function ($query) use ($search) {

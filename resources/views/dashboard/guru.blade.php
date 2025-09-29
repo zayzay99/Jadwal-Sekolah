@@ -34,92 +34,31 @@
                 </div>
             </div>
 
-{{-- <<<<<<< HEAD
-            <!-- Menu -->
             <!-- Menu -->
             <nav class="menu">
                 <div class="menu-box">
-                    <a href="{{ route('guru.dashboard') }}"
-                        class="menu-item {{ Request::routeIs('guru.dashboard') ? 'active' : '' }}">Dashboard</a>
+                    <a href="{{ route('guru.dashboard') }}" class="menu-item {{ Request::routeIs('guru.dashboard') ? 'active' : '' }}">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>Dashboard</span>
+                    </a>
                     @php
                         $guru = Auth::guard('guru')->user();
-                        $mailToBody = "Nama Pengguna: {$guru->nama}
-        NIP Pengguna: {$guru->nip}
-        Email Pengguna: {$guru->email}\n
-        Sebutkan masalah dan lampirkan foto (jika ada):";
+                        $mailToBody = "Nama Pengguna: {$guru->nama}\n" .
+                                      "NIP Pengguna: {$guru->nip}\n" .
+                                      "Email Pengguna: {$guru->email}\n\n" .
+                                      "Sebutkan masalah dan lampirkan foto (jika ada):";
                     @endphp
-                    <a href="mailto:kesyapujiatmoko@gmail.com?subject=Laporan Masalah Pengguna Bagian Guru&body={{ rawurlencode($mailToBody) }}"
-                        class="cs-btn" title="Hubungi Customer Service">
-                        <img src="/img/CS.svg" alt="Customer Service" />
+                    <a href="mailto:kesyapujiatmoko@gmail.com?subject=Laporan Masalah Pengguna (Guru)&body={{ rawurlencode($mailToBody) }}" class="cs-btn" title="Hubungi Customer Service">
+                        <i class="fas fa-headset"></i>
+                        <span>Bantuan</span>
                     </a>
-
                     <button class="logout-btn" data-url="{{ route('logout') }}" onclick="showLogoutConfirmation(event)">
-                        Keluar
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Keluar</span>
                     </button>
                 </div>
             </nav>
         </aside>
-=======
-      <!-- Menu --> --}}
-      <!-- Menu -->
-<nav class="menu">
-    <div class="menu-box">
-        <a href="{{ route('guru.dashboard') }}" class="menu-item {{ Request::routeIs('guru.dashboard') ? 'active' : '' }}">
-            <i class="fas fa-tachometer-alt"></i>
-            <span>Dashboard</span>
-        </a>
-        @php
-            $guru = Auth::guard('guru')->user();
-            $mailToBody = "Nama Pengguna: {$guru->nama}\n" .
-                          "NIP Pengguna: {$guru->nip}\n" .
-                          "Email Pengguna: {$guru->email}\n\n" .
-                          "Sebutkan masalah dan lampirkan foto (jika ada):";
-        @endphp
-        <a href="mailto:kesyapujiatmoko@gmail.com?subject=Laporan Masalah Pengguna (Guru)&body={{ rawurlencode($mailToBody) }}" class="cs-btn" title="Hubungi Customer Service">
-            <i class="fas fa-headset"></i>
-            <span>Bantuan</span>
-        </a>
-        <button class="logout-btn" data-url="{{ route('logout') }}" onclick="showLogoutConfirmation(event)">
-            <i class="fas fa-sign-out-alt"></i>
-            <span>Keluar</span>
-        </button>
-    </div>
-</nav>
-    </aside>
-
-    <!-- Main Content -->
-    {{-- <main class="main-content">
-      <!-- Header -->
-      <header class="header">
-        Selamat datang di Meja guru <span class="user-name">{{ Auth::guard('guru')->user()->nama }}</span> 🎉🎉
-      </header>
-
-      <!-- Content -->
-      <section class="content-section">
-        <div class="content-box">
-          <!-- Greeting Card -->
-          <div class="greeting-card">
-            <p><strong>Bagaimana kabarnya hari ini?</strong></p>
-            <p>Tetap semangat mengajar anak-anak ya...</p>
-          </div> --}}
-
-          {{-- <!-- Profile Card -->
-          <div class="profile-card">
-            <div class="profile-pic-container" onclick="document.getElementById('profile_picture_input').click();" title="Klik untuk ganti foto">
-                <img src="{{ $guru->profile_picture ? asset('storage/' . $guru->profile_picture) : asset('storage/Default-Profile.png') }}" alt="Foto Profil" class="profile-pic-image">
-            </div>
-            <form id="profile-pic-form" action="{{ route('guru.profile.update') }}" method="POST" enctype="multipart/form-data" style="display: none;">
-                @csrf
-                <input type="file" id="profile_picture_input" name="profile_picture" accept="image/*" onchange="document.getElementById('profile-pic-form').submit();">
-            </form>
-            <div class="profile-info">
-              <p><strong>Nama guru</strong>: {{ Auth::guard('guru')->user()->nama }}</p>
-              <p><strong>NIP guru</strong>: {{ Auth::guard('guru')->user()->nip }}</p>
-              <p><strong>Pengampu Pelajaran</strong>: {{ Auth::guard('guru')->user()->pengampu }}</p>
-              <p><strong>E-Mail</strong>: {{ Auth::guard('guru')->user()->email }}</p>
-            </div>
-          </div>
->>>>>>> 140f49255fe8e2f93d3b1844e387bec39921c63f --}}
 
         <!-- Main Content -->
         <main class="main-content">
@@ -167,10 +106,15 @@
                         <div class="jadwal-section">
                             <div class="flex justify-between items-center mb-4">
                                 <h2 class="jadwal-title text-xl font-bold">Jadwal Mengajar</h2>
-                                <a href="{{ route('guru.jadwal.cetak') }}" target="_blank"
-                                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-300">
-                                    Cetak Jadwal
-                                </a>
+                                <div>
+                                    <button id="openArsipModal" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded transition duration-300">
+                                        Lihat Arsip
+                                    </button>
+                                    <a href="{{ route('guru.jadwal.cetak') }}" target="_blank"
+                                        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-300">
+                                        Cetak Jadwal
+                                    </a>
+                                </div>
                             </div>
                             <div class="table-container">
                                 @if ($jadwals && $jadwals->count() > 0)
@@ -420,6 +364,115 @@
                 });
             }
         });
+    </script>
+
+    <!-- Arsip Modal -->
+    <div id="arsipModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center">
+        <div class="bg-white rounded-lg shadow-xl w-11/12 md:w-3/4 lg:w-1/2 max-h-[80vh] flex flex-col">
+            <div class="flex justify-between items-center p-4 border-b">
+                <h3 class="text-xl font-bold">Arsip Jadwal Mengajar</h3>
+                <button id="closeArsipModal" class="text-black">&times;</button>
+            </div>
+            <div class="p-4 overflow-y-auto">
+                <div id="arsipTahunAjaranList">
+                    <p>Pilih tahun ajaran untuk melihat arsip jadwal:</p>
+                    <div class="mt-2 grid grid-cols-1 md:grid-cols-2 gap-2">
+                        @foreach($inactiveTahunAjarans as $tahun)
+                            <a href="#" class="block p-2 text-center text-blue-500 hover:underline arsip-link bg-gray-100 rounded-md" data-id="{{ $tahun->id }}">
+                                {{ $tahun->tahun_ajaran }} - {{ $tahun->semester }}
+                            </a>
+                        @endforeach
+                    </div>
+                </div>
+                <div id="arsipJadwalContent" class="mt-4 hidden"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const arsipModal = document.getElementById('arsipModal');
+        const openArsipModalBtn = document.getElementById('openArsipModal');
+        const closeArsipModalBtn = document.getElementById('closeArsipModal');
+        const arsipJadwalContent = document.getElementById('arsipJadwalContent');
+        const arsipTahunAjaranList = document.getElementById('arsipTahunAjaranList');
+
+        openArsipModalBtn.addEventListener('click', () => {
+            arsipModal.classList.remove('hidden');
+        });
+
+        closeArsipModalBtn.addEventListener('click', () => {
+            arsipModal.classList.add('hidden');
+            arsipJadwalContent.classList.add('hidden');
+            arsipTahunAjaranList.classList.remove('hidden');
+            arsipJadwalContent.innerHTML = '';
+        });
+
+        document.querySelectorAll('.arsip-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const tahunAjaranId = this.dataset.id;
+                const url = `/dashboard/guru/jadwal/arsip/${tahunAjaranId}`;
+
+                fetch(url)
+                    .then(response => response.json())
+                    .then(data => {
+                        arsipJadwalContent.innerHTML = '';
+                        if(data.length > 0) {
+                            const table = document.createElement('table');
+                            table.className = 'min-w-full divide-y divide-gray-200';
+                            const thead = document.createElement('thead');
+                            thead.className = 'bg-gray-50';
+                            const headerRow = document.createElement('tr');
+                            ['Hari', 'Mata Pelajaran', 'Kelas', 'Jam'].forEach(text => {
+                                const th = document.createElement('th');
+                                th.className = 'px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider';
+                                th.textContent = text;
+                                headerRow.appendChild(th);
+                            });
+                            thead.appendChild(headerRow);
+                            table.appendChild(thead);
+
+                            const tbody = document.createElement('tbody');
+                            tbody.className = 'bg-white divide-y divide-gray-200';
+                            data.forEach(jadwal => {
+                                const row = document.createElement('tr');
+                                const hariCell = document.createElement('td');
+                                hariCell.className = 'px-6 py-4 whitespace-nowrap';
+                                hariCell.textContent = jadwal.hari;
+                                row.appendChild(hariCell);
+
+                                const mapelCell = document.createElement('td');
+                                mapelCell.className = 'px-6 py-4 whitespace-nowrap';
+                                mapelCell.textContent = jadwal.mapel;
+                                row.appendChild(mapelCell);
+
+                                const kelasCell = document.createElement('td');
+                                kelasCell.className = 'px-6 py-4 whitespace-nowrap';
+                                kelasCell.textContent = jadwal.kelas ? jadwal.kelas.nama_kelas : '-';
+                                row.appendChild(kelasCell);
+
+                                const jamCell = document.createElement('td');
+                                jamCell.className = 'px-6 py-4 whitespace-nowrap';
+                                jamCell.textContent = jadwal.jam;
+                                row.appendChild(jamCell);
+                                tbody.appendChild(row);
+                            });
+                            table.appendChild(tbody);
+                            arsipJadwalContent.appendChild(table);
+                        } else {
+                            arsipJadwalContent.innerHTML = '<p class="text-center text-gray-500">Tidak ada jadwal untuk tahun ajaran ini.</p>';
+                        }
+                        arsipTahunAjaranList.classList.add('hidden');
+                        arsipJadwalContent.classList.remove('hidden');
+                    })
+                    .catch(error => {
+                        console.error('Error fetching arsip:', error);
+                        arsipJadwalContent.innerHTML = '<p class="text-center text-red-500">Gagal memuat data arsip.</p>';
+                    });
+            });
+        });
+    });
     </script>
 </body>
 
