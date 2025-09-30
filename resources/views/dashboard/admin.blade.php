@@ -75,18 +75,18 @@
         </div>
         <div class="nav-user">
             <div style="display: flex; align-items: center; margin-right: 20px;">
-                @if(isset($activeTahunAjaran) && $tahunAjarans->isNotEmpty())
+                @if(isset($activeTahunAjaran))
                     <form method="GET" id="tahunAjaranSwitchForm" style="margin-right: 5px;">
                         <select name="tahun_ajaran" class="form-control" onchange="this.form.action = '{{ url('manage/tahun-ajaran') }}/' + this.value + '/switch'; this.form.submit();" style="height: 38px; min-width: 180px;" title="Ganti Tahun Ajaran Aktif">
                             @foreach($tahunAjarans as $tahun)
-                                <option value="{{ $tahun->id }}" {{ $tahun->id == $activeTahunAjaran->id ? 'selected' : '' }}>
+                                <option value="{{ $tahun->id }}" {{ $tahun->is_active ? 'selected' : '' }}>
                                     {{ $tahun->tahun_ajaran }} {{ $tahun->semester }}
                                 </option>
                             @endforeach
                         </select>
                     </form>
                 @else
-                    <span style="margin-right: 10px; color: #888;">Belum ada Tahun Ajaran.</span>
+                    <span style="color: white; margin-right: 10px; display: flex; align-items: center; height: 38px;">T.A. - Belum diatur</span>
                 @endif
                 <button type="button" class="btn" id="openTahunAjaranModal" title="Kelola Tahun Ajaran" style="height: 38px; width: 38px; display: flex; align-items: center; justify-content: center; border: 1px solid #ced4da;">
                     <i class="fas fa-plus"></i>
@@ -406,6 +406,7 @@
                         <ul>
                             @foreach ($errors->all() as $error)
                                 <li>{{ $error }}</li>
+                                <li style="list-style-type: disc; margin-left: 20px;">{{ $error }}</li>
                             @endforeach
                         </ul>
                     </div>
@@ -448,17 +449,23 @@
                         <label>Opsi untuk Tahun Ajaran Baru:</label>
                         <p class="text-muted small" style="font-size: 0.85rem; margin-bottom: 10px;">Opsi berikut hanya berlaku untuk <strong>Tahun Ajaran Baru</strong> yang sedang dibuat. Data dari tahun ajaran yang Anda salin akan tetap utuh dan tidak akan berubah (tersimpan sebagai arsip).</p>
                         <div class="form-check">
+                        <div class="form-check" style="margin-bottom: 10px;">
                             <input class="form-check-input" type="checkbox" id="skip_kelas_assignments" name="skip_kelas_assignments" value="1">
                             <label class="form-check-label" for="skip_kelas_assignments">
                                 <strong>Jangan Salin Penempatan Kelas Siswa</strong><br>
                                 <small class="text-muted">(Siswa di tahun ajaran BARU ini tidak akan dimasukkan ke kelas. Data di tahun ajaran LAMA tetap aman).</small>
+                                <strong>Kosongkan Penempatan Siswa di Kelas</strong><br>
+                                <small class="text-muted">(Siswa di tahun ajaran BARU ini tidak akan dimasukkan ke kelas. Data di tahun ajaran LAMA tetap aman sebagai arsip).</small>
                             </label>
                         </div>
                         <div class="form-check mt-2">
+                        <div class="form-check">
                             <input class="form-check-input" type="checkbox" id="skip_jadwal" name="skip_jadwal" value="1">
                             <label class="form-check-label" for="skip_jadwal">
                                 <strong>Jangan Salin Jadwal Pelajaran</strong><br>
                                 <small class="text-muted">(Jadwal pelajaran di tahun ajaran BARU akan kosong. Data jadwal di tahun ajaran LAMA tetap aman).</small>
+                                <strong>Kosongkan Jadwal Pelajaran</strong><br>
+                                <small class="text-muted">(Jadwal pelajaran di tahun ajaran BARU akan kosong. Data jadwal di tahun ajaran LAMA tetap aman sebagai arsip).</small>
                             </label>
                         </div>
                     </div>
@@ -553,6 +560,9 @@
                 const modalToClose = document.getElementById(this.dataset.closeModal);
                 closeModal(modalToClose);
                 openModal(modals.main);
+                if (this.dataset.closeModal !== 'tahunAjaranModal') {
+                    openModal(modals.main);
+                }
             });
         });
 
