@@ -37,14 +37,15 @@
                             <a href="{{ route('jadwal-kategori.edit', $kategori->id) }}" class="btn btn-edit" title="Edit">
                                 <i class="fas fa-edit"></i>
                             </a>
-                            <form action="#" method="POST" style="display:inline;" class="delete-form">
                             <form action="{{ route('jadwal-kategori.destroy', $kategori->id) }}" method="POST" style="display:inline;" class="delete-form">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-danger" title="Hapus">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </form>
+    @csrf
+    @method('DELETE')
+    <button type="submit" class="btn btn-danger" title="Hapus">
+        <i class="fas fa-trash"></i>
+    </button>
+</form>
+
+
                         </div>
                     </td>
                 </tr>

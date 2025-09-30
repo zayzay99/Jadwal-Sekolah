@@ -11,7 +11,7 @@
         <div class="table-header-actions">
             <form action="{{ route('manage.siswa.index') }}" method="GET" class="search-form">
                 <input type="text" name="search" class="form-control" placeholder="Cari nama, NIS, kelas..." value="{{ $search ?? '' }}">
-                <button type="submit" class="btn btn-primary btn-tiny">Cari</button>
+                <button type="submit" class="btn btn-primary btn-tiny"> <i class="fas fa-search"></i>Cari</button>
             </form>
             <a href="{{ route('manage.siswa.import.form') }}" class="btn btn-info btn-tiny">
                 <i class="fas fa-file-import"></i> Import
