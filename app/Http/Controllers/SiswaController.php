@@ -19,7 +19,7 @@ class SiswaController extends Controller
         $tahunAjarans = \App\Models\TahunAjaran::all();
 
         // Ambil kelas siswa untuk tahun ajaran yang aktif
-        $kelas = $siswa->kelas()->where('tahun_ajaran_id', $activeTahunAjaranId)->first();
+        $kelas = $siswa->kelas()->where('kelas.tahun_ajaran_id', $activeTahunAjaranId)->first();
 
         if ($kelas) {
             $jadwals = Jadwal::where('kelas_id', $kelas->id)
@@ -43,7 +43,7 @@ class SiswaController extends Controller
         $jadwals = collect();
 
         // Ambil kelas siswa untuk tahun ajaran yang dipilih
-        $kelas = $siswa->kelas()->where('tahun_ajaran_id', $selectedTahunAjaranId)->first();
+        $kelas = $siswa->kelas()->where('kelas.tahun_ajaran_id', $selectedTahunAjaranId)->first();
 
         if ($kelas) {
             $jadwals = Jadwal::where('kelas_id', $kelas->id)
@@ -65,7 +65,7 @@ class SiswaController extends Controller
         $activeTahunAjaranId = session('tahun_ajaran_id');
 
         // Ambil kelas siswa untuk tahun ajaran yang aktif
-        $kelas = $siswa->kelas()->where('tahun_ajaran_id', $activeTahunAjaranId)->first();
+        $kelas = $siswa->kelas()->where('kelas.tahun_ajaran_id', $activeTahunAjaranId)->first();
 
         if ($kelas) {
             $jadwals = Jadwal::where('kelas_id', $kelas->id)
@@ -109,7 +109,7 @@ class SiswaController extends Controller
         $all_kelas = $siswa->kelas;
         Log::info('All kelas for siswa: ' . $all_kelas);
 
-        $kelas = $siswa->kelas->where('pivot.tahun_ajaran_id', $tahun_ajaran_id)->first();
+        $kelas = $siswa->kelas()->where('kelas.tahun_ajaran_id', $tahun_ajaran_id)->first();
         Log::info('Siswa: ' . $siswa->nama . ' - Kelas: ' . ($kelas ? $kelas->nama_kelas : 'Tidak ada kelas'));
 
         if ($kelas) {

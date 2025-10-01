@@ -52,8 +52,9 @@ Route::middleware('auth:web')->group(function () {
     Route::get('/jadwal/kelas/{kelas}/cetak', [JadwalController::class, 'cetakJadwal'])->name('admin.jadwal.cetak');
     Route::post('/jadwal/bulk-store', [JadwalController::class, 'bulkStore'])->name('jadwal.bulkStore');
     Route::delete('/jadwal/{jadwal}', [JadwalController::class, 'destroy'])->name('jadwal.destroy');
-    Route::delete('/jadwal/destroy-all/{kelas}', [JadwalController::class, 'destroyAll'])->name('jadwal.destroyAll');
+    Route::delete('/jadwal/destroy-all/{kelas_id}', [JadwalController::class, 'destroyAll'])->name('jadwal.destroyAll');
     
+    Route::delete('/manage/tabelj/destroy-all', [TabeljController::class, 'destroyAll'])->name('manage.tabelj.destroyAll');
     Route::resource('manage/tabelj', TabeljController::class)->except(['show'])->names([
         'index' => 'manage.tabelj.index',
         'create' => 'manage.tabelj.create',
@@ -62,7 +63,6 @@ Route::middleware('auth:web')->group(function () {
         'update' => 'manage.tabelj.update',
         'destroy' => 'manage.tabelj.destroy',
     ]);
-    Route::post('/manage/tabelj/destroy-all', [TabeljController::class, 'destroyAll'])->name('manage.tabelj.destroyAll');
     Route::get('/manage/tabelj/assign-category', [TabeljController::class, 'assignCategory'])->name('manage.tabelj.assignCategory');
     Route::post('/manage/tabelj/assign-category', [TabeljController::class, 'storeAssignedCategory'])->name('manage.tabelj.storeAssignedCategory');
     Route::post('/manage/tabelj/{tabelj}/add-break', [TabeljController::class, 'addBreak'])->name('manage.tabelj.addBreak');

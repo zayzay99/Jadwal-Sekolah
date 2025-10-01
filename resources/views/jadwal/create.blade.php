@@ -400,6 +400,7 @@
                                 hari: day,
                                 jam: jam,
                                 guru_id: schedule.guru_id,
+                                tabelj_id: schedule.tabelj_id,
                                 mapel: schedule.mapel,
                                 jadwal_kategori_id: schedule.jadwal_kategori_id
                             });

@@ -202,6 +202,7 @@ class JadwalController extends Controller
             'schedules.*.mapel' => 'nullable|string',
             'schedules.*.jadwal_kategori_id' => 'nullable|exists:jadwal_kategoris,id',
             'schedules.*.hari' => 'required|string',
+            'schedules.*.tabelj_id' => 'nullable|exists:tabeljs,id',
             'schedules.*.jam' => 'required|string',
         ]);
 
@@ -250,8 +251,8 @@ class JadwalController extends Controller
                 try {
                     $parts = explode(' - ', $jam);
                     if (count($parts) !== 2) return 0;
-                    $start = new \DateTime($parts[0]);
-                    $end = new \DateTime($parts[1]);
+                    $start = \Carbon\Carbon::parse($parts[0]);
+                    $end = \Carbon\Carbon::parse($parts[1]);
                     return ($end->getTimestamp() - $start->getTimestamp()) / 60;
                 } catch (\Exception $e) { return 0; }
             };
@@ -305,6 +306,7 @@ class JadwalController extends Controller
                         'mapel' => $scheduleData['mapel'],
                         'jadwal_kategori_id' => $scheduleData['jadwal_kategori_id'] ?: null,
                         'hari' => $scheduleData['hari'],
+                        'tabelj_id' => $scheduleData['tabelj_id'] ?: null,
                         'jam' => $scheduleData['jam'],
                         'tahun_ajaran_id' => $activeTahunAjaranId,
                         'created_at' => $now,
@@ -403,14 +405,24 @@ class JadwalController extends Controller
     public function destroy($id)
     {
         $jadwal = Jadwal::findOrFail($id);
-        $jamPelajaranMenit = 35;
 
         DB::beginTransaction();
         try {
             if ($jadwal->guru_id) {
                 $guru = Guru::find($jadwal->guru_id);
                 if ($guru) {
-                    $guru->sisa_jam_mengajar += $jamPelajaranMenit;
+                    $durasiMenit = 0;
+                    try {
+                        $jamParts = explode(' - ', $jadwal->jam);
+                        if (count($jamParts) == 2) {
+                            $jamMulai = \Carbon\Carbon::parse($jamParts[0]);
+                            $jamSelesai = \Carbon\Carbon::parse($jamParts[1]);
+                            $durasiMenit = $jamSelesai->diffInMinutes($jamMulai);
+                        }
+                    } catch (\Exception $e) {
+                        // Abaikan jika format jam salah, durasi akan tetap 0
+                    }
+                    $guru->sisa_jam_mengajar += $durasiMenit;
                     $guru->save();
                 }
             }
@@ -426,7 +438,7 @@ class JadwalController extends Controller
         }
     }
 
-    public function destroyAll($kelas_id)
+    public function destroyAll(Request $request, $kelas_id)
     {
         $activeTahunAjaranId = session('tahun_ajaran_id');
         if (!$activeTahunAjaranId) {
@@ -436,29 +448,18 @@ class JadwalController extends Controller
         DB::beginTransaction();
         try {
             $jadwals = Jadwal::where('kelas_id', $kelas_id)
-                ->where('tahun_ajaran_id', $activeTahunAjaranId)
-                ->get();
+                ->where('tahun_ajaran_id', $activeTahunAjaranId)->get();
 
-            // Kelompokkan jadwal berdasarkan guru untuk efisiensi
+            if ($jadwals->isEmpty()) {
+                // Jika memang sudah kosong, anggap berhasil dan redirect kembali.
+                return redirect()->route('jadwal.perKelas', ['kelas' => $kelas_id])->with('success', 'Jadwal sudah kosong.');
+            }
+
             $guruHoursToRestore = [];
             foreach ($jadwals as $jadwal) {
                 if ($jadwal->guru_id) {
-                    // Hitung durasi dari string 'jam' (contoh: '07:00 - 07:35')
-                    $jamParts = explode(' - ', $jadwal->jam);
-                    if (count($jamParts) == 2) {
-                        try {
-                            $jamMulai = new \DateTime($jamParts[0]);
-                            $jamSelesai = new \DateTime($jamParts[1]);
-                            $durasiMenit = ($jamSelesai->getTimestamp() - $jamMulai->getTimestamp()) / 60;
-
-                            if (!isset($guruHoursToRestore[$jadwal->guru_id])) {
-                                $guruHoursToRestore[$jadwal->guru_id] = 0;
-                            }
-                            $guruHoursToRestore[$jadwal->guru_id] += $durasiMenit;
-                        } catch (\Exception $e) {
-                            // Abaikan jika format jam salah
-                        }
-                    }
+                    $duration = $this->calculateDuration($jadwal->jam);
+                    $guruHoursToRestore[$jadwal->guru_id] = ($guruHoursToRestore[$jadwal->guru_id] ?? 0) + $duration;
                 }
             }
 
@@ -471,13 +472,24 @@ class JadwalController extends Controller
             Jadwal::where('kelas_id', $kelas_id)
                 ->where('tahun_ajaran_id', $activeTahunAjaranId)
                 ->delete();
-
+            
             DB::commit();
-            return redirect()->route('jadwal.pilihKelas')->with('success', 'Semua jadwal untuk kelas ini pada tahun ajaran aktif telah berhasil dihapus.');
+            return redirect()->route('jadwal.perKelas', ['kelas' => $kelas_id])->with('success', 'Semua jadwal telah berhasil dihapus.');
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Error deleting all schedules: ' . $e->getMessage());
             return back()->with('error', 'Gagal menghapus semua jadwal.');
         }
+    }
+
+    private function calculateDuration($jamString)
+    {
+        try {
+            $parts = explode(' - ', $jamString);
+            if (count($parts) !== 2) return 0;
+            $start = \Carbon\Carbon::parse($parts[0]);
+            $end = \Carbon\Carbon::parse($parts[1]);
+            return $end->diffInMinutes($start);
+        } catch (\Exception $e) { return 0; }
     }
 }

@@ -71,7 +71,7 @@ class TahunAjaranController extends Controller
 
                 // 2. Clone kelas_siswa pivot data if checkbox is not checked
                 if (!$request->has('skip_kelas_assignments')) {
-                    $sourceKelasSiswa = DB::table('kelas_siswa')->where('tahun_ajaran_id', $sourceYearId)->whereIn('kelas_id', array_keys($oldToNewKelasIdMap))->get();
+                    $sourceKelasSiswa = DB::table('kelas_siswa')->whereIn('kelas_id', array_keys($oldToNewKelasIdMap))->get();
                     $newKelasSiswaData = [];
 
                     foreach ($sourceKelasSiswa as $pivot) {
@@ -79,7 +79,7 @@ class TahunAjaranController extends Controller
                             $newKelasSiswaData[] = [
                                 'siswa_id' => $pivot->siswa_id,
                                 'kelas_id' => $oldToNewKelasIdMap[$pivot->kelas_id],
-                                'tahun_ajaran_id' => $newYearId,
+                                'tahun_ajaran_id' => $newYearId, // Ini yang kurang
                                 'created_at' => now(),
                                 'updated_at' => now(),
                             ];
@@ -102,6 +102,7 @@ class TahunAjaranController extends Controller
                         if (isset($oldToNewKelasIdMap[$jadwal->kelas_id])) {
                             $newJadwalsData[] = [
                                 'hari' => $jadwal->hari,
+                                'jam' => $jadwal->jam, // Tambahkan kolom jam
                                 'tabelj_id' => $jadwal->tabelj_id,
                                 'guru_id' => $jadwal->guru_id,
                                 'mapel' => $jadwal->mapel,

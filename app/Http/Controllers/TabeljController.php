@@ -56,8 +56,19 @@ class TabeljController extends Controller
         $generatedCount = 0;
 
         if ($request->has('replace_existing')) {
-            // Clear existing slots before generating new ones
-            Tabelj::truncate();
+            // Gunakan logika yang aman dari destroyAll, bukan truncate()
+            $activeTahunAjaranId = session('tahun_ajaran_id');
+            if ($activeTahunAjaranId) {
+                \Illuminate\Support\Facades\DB::transaction(function () use ($activeTahunAjaranId) {
+                    Tabelj::truncate();
+                    \App\Models\Jadwal::where('tahun_ajaran_id', $activeTahunAjaranId)->delete();
+                    \App\Models\Guru::where('tahun_ajaran_id', $activeTahunAjaranId)
+                        ->update(['sisa_jam_mengajar' => \Illuminate\Support\Facades\DB::raw('total_jam_mengajar')]);
+                });
+            } else {
+                // Jika tidak ada tahun ajaran aktif, cukup truncate tabelj
+                Tabelj::truncate();
+            }
         }
 
         for ($i = 1; $i <= $lessonCount; $i++) {
@@ -123,17 +134,45 @@ class TabeljController extends Controller
 
     public function destroy(Tabelj $tabelj)
     {
-        // Optional: Add validation to check if this timeslot is currently in use in any schedule.
-        // For now, we will just delete it.
-        $tabelj->delete();
+        $activeTahunAjaranId = session('tahun_ajaran_id');
+        if (!$activeTahunAjaranId) {
+            return back()->with('error', 'Tidak ada tahun ajaran yang aktif.');
+        }
+
+        // Validasi: Cek apakah slot waktu ini sedang digunakan di jadwal pada tahun ajaran aktif.
+        $usedJadwal = \App\Models\Jadwal::with('kelas')->where('tahun_ajaran_id', $activeTahunAjaranId)->where('jam', $tabelj->jam)->first();
+
+        if ($usedJadwal) {
+            $kelas = $usedJadwal->kelas;
+            $hari = $usedJadwal->hari;
+            $message = "Slot waktu tidak dapat dihapus karena sedang digunakan di kelas {$kelas->nama_kelas} pada hari {$hari}.";
+            return redirect()->route('manage.tabelj.index')->with('error', $message);
+        }
+        $tabelj->delete(); // Hapus hanya jika tidak digunakan
 
         return redirect()->route('manage.tabelj.index')->with('success', 'Slot waktu berhasil dihapus.');
     }
 
     public function destroyAll()
     {
-        Tabelj::truncate();
-        return redirect()->route('manage.tabelj.index')->with('success', 'Semua slot waktu berhasil dihapus.');
+        $activeTahunAjaranId = session('tahun_ajaran_id');
+        if (!$activeTahunAjaranId) {
+            return back()->with('error', 'Tidak ada tahun ajaran yang aktif.');
+        }
+
+        \Illuminate\Support\Facades\DB::transaction(function () use ($activeTahunAjaranId) {
+            // 1. Hapus semua slot waktu
+            Tabelj::truncate();
+
+            // 2. Hapus semua jadwal pelajaran untuk tahun ajaran aktif
+            \App\Models\Jadwal::where('tahun_ajaran_id', $activeTahunAjaranId)->delete();
+
+            // 3. Reset sisa jam mengajar semua guru untuk tahun ajaran aktif
+            \App\Models\Guru::where('tahun_ajaran_id', $activeTahunAjaranId)
+                ->update(['sisa_jam_mengajar' => \Illuminate\Support\Facades\DB::raw('total_jam_mengajar')]);
+        });
+
+        return redirect()->route('manage.tabelj.index')->with('success', 'Semua slot waktu dan data jadwal terkait telah berhasil dihapus.');
     }
 
     public function assignCategory()
@@ -163,6 +202,13 @@ class TabeljController extends Controller
         $request->validate([
             'durasi_istirahat' => 'required|integer|min:1',
         ]);
+
+        // Validasi: Jangan izinkan menambah istirahat jika sudah ada jadwal yang dibuat
+        $activeTahunAjaranId = session('tahun_ajaran_id');
+        if ($activeTahunAjaranId && \App\Models\Jadwal::where('tahun_ajaran_id', $activeTahunAjaranId)->exists()) {
+            return redirect()->route('manage.tabelj.index')->with('error', 'Tidak dapat menambah istirahat. Hapus semua jadwal pelajaran terlebih dahulu untuk mengubah struktur slot waktu.');
+        }
+
 
         $breakDuration = (int)$request->input('durasi_istirahat');
         

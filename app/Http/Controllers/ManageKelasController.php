@@ -164,6 +164,16 @@ class ManageKelasController extends Controller
     public function destroy($id)
     {
         $kelas = Kelas::findOrFail($id);
+        $activeTahunAjaranId = session('tahun_ajaran_id');
+
+        // Validasi: Cek apakah kelas masih memiliki siswa atau jadwal di tahun ajaran aktif
+        $hasSiswa = $kelas->siswas()->wherePivot('tahun_ajaran_id', $activeTahunAjaranId)->exists();
+        $hasJadwal = $kelas->jadwals()->where('tahun_ajaran_id', $activeTahunAjaranId)->exists();
+
+        if ($hasSiswa || $hasJadwal) {
+            return redirect()->route('manage.kelas.index')->with('error', 'Kelas "' . $kelas->nama_kelas . '" tidak dapat dihapus karena masih memiliki siswa atau jadwal pelajaran.');
+        }
+
         $kelas->delete();
         return redirect()->route('manage.kelas.index')->with('success', 'Kelas berhasil dihapus');
     }

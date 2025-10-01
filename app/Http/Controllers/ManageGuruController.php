@@ -51,8 +51,7 @@ class ManageGuruController extends Controller
     {
         $search = $request->input('search');
         
-        $activeTahunAjaranId = session('tahun_ajaran_id');
-        $query = Guru::query()->where('tahun_ajaran_id', $activeTahunAjaranId);
+        $query = Guru::query();
 
         if ($search) {
             $query->where(function($q) use ($search) {
@@ -94,6 +93,7 @@ class ManageGuruController extends Controller
         ]);
 
         $data = $request->all();
+        $data['tahun_ajaran_id'] = session('tahun_ajaran_id'); // Tetap set tahun ajaran saat dibuat
 
         if ($request->hasFile('profile_picture')) {
             $image = $request->file('profile_picture');
@@ -147,8 +147,13 @@ class ManageGuruController extends Controller
             unset($data['password']);
         }
 
-        // When total_jam_mengajar is updated, sisa_jam_mengajar should reset to the new total_jam_mengajar
-        $data['sisa_jam_mengajar'] = $data['total_jam_mengajar'];
+        // Hitung ulang sisa jam mengajar berdasarkan jadwal yang sudah ada
+        $activeTahunAjaranId = session('tahun_ajaran_id');
+        $usedMinutes = 0;
+        if ($activeTahunAjaranId) {
+            $usedMinutes = $this->calculateUsedMinutesForYear($guru->id, $activeTahunAjaranId);
+        }
+        $data['sisa_jam_mengajar'] = $data['total_jam_mengajar'] - $usedMinutes;
 
         $guru->update($data);
 
@@ -157,6 +162,11 @@ class ManageGuruController extends Controller
 
     public function destroy($id)
     {
+        // Validasi: Jangan hapus guru jika masih punya jadwal di tahun ajaran aktif
+        $activeTahunAjaranId = session('tahun_ajaran_id');
+        if ($activeTahunAjaranId && Jadwal::where('guru_id', $id)->where('tahun_ajaran_id', $activeTahunAjaranId)->exists()) {
+            return redirect()->route('manage.guru.index')->with('error', 'Guru tidak dapat dihapus karena masih memiliki jadwal mengajar.');
+        }
         Guru::destroy($id);
         return redirect()->route('manage.guru.index')->with('success', 'Guru berhasil dihapus!');
     }
@@ -214,15 +224,26 @@ class ManageGuruController extends Controller
         $newAvailabilities = GuruAvailability::where('guru_id', $id)->get();
         $newAvailabilityMinutes = $this->calculateAvailabilityMinutes($newAvailabilities);
 
-        // Calculate the change in availability minutes
-        $changeInAvailabilityMinutes = $newAvailabilityMinutes - $oldAvailabilityMinutes;
-
-        // Update sisa_jam_mengajar
-        // If new availability is more, sisa_jam_mengajar decreases (more hours are "reserved")
-        // If new availability is less, sisa_jam_mengajar increases (fewer hours are "reserved")
-        $guru->sisa_jam_mengajar -= $changeInAvailabilityMinutes;
-        $guru->save();
-
         return redirect()->route('manage.guru.index')->with('success', 'Ketersediaan guru berhasil diperbarui!');
+    }
+
+    private function calculateUsedMinutesForYear($guruId, $tahunAjaranId)
+    {
+        $jadwals = Jadwal::where('guru_id', $guruId)
+            ->where('tahun_ajaran_id', $tahunAjaranId)
+            ->whereNull('jadwal_kategori_id')->get();
+        $totalMenit = 0;
+
+        foreach ($jadwals as $jadwal) {
+            $jamParts = explode(' - ', $jadwal->jam);
+            if (count($jamParts) == 2) {
+                try {
+                    $jamMulai = Carbon::parse($jamParts[0]);
+                    $jamSelesai = Carbon::parse($jamParts[1]);
+                    $totalMenit += $jamSelesai->diffInMinutes($jamMulai);
+                } catch (\Exception $e) {}
+            }
+        }
+        return $totalMenit;
     }
 }

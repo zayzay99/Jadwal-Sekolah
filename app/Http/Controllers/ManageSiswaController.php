@@ -59,8 +59,11 @@ public function store(Request $request)
 
     $siswa = Siswa::create($data);
 
+    $activeTahunAjaranId = session('tahun_ajaran_id');
     // Simpan ke pivot
-    $siswa->kelas()->attach($request->kelas_id);
+    if ($activeTahunAjaranId) {
+        $siswa->kelas()->attach([$request->kelas_id => ['tahun_ajaran_id' => $activeTahunAjaranId]]);
+    }
 
     return redirect()->route('manage.siswa.index')->with('success', 'Siswa berhasil ditambahkan!');
 }
@@ -98,8 +101,13 @@ public function store(Request $request)
 
         $siswa->update($data);
 
+        $activeTahunAjaranId = session('tahun_ajaran_id');
         // Update relasi pivot
-        $siswa->kelas()->sync([$request->kelas_id]);
+        // Hanya sync untuk tahun ajaran yang aktif
+        if ($activeTahunAjaranId) {
+            $siswa->kelas()->wherePivot('tahun_ajaran_id', $activeTahunAjaranId)->detach();
+            $siswa->kelas()->attach([$request->kelas_id => ['tahun_ajaran_id' => $activeTahunAjaranId]]);
+        }
 
         return redirect()->route('manage.siswa.index')->with('success', 'Siswa berhasil diupdate!');
     }

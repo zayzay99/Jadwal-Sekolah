@@ -128,6 +128,12 @@ document.addEventListener('DOMContentLoaded', function () {
                     csrfInput.value = csrfToken;
                     form.appendChild(csrfInput);
 
+                    const methodInput = document.createElement('input');
+                    methodInput.type = 'hidden';
+                    methodInput.name = '_method';
+                    methodInput.value = 'DELETE';
+                    form.appendChild(methodInput);
+
                     
 
                     document.body.appendChild(form);

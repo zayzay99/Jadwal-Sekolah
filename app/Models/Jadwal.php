@@ -10,7 +10,7 @@ class Jadwal extends Model
     use HasFactory;
 
     protected $fillable = [
-        'mapel', 'kelas', 'guru_id', 'hari', 'jam', 'kelas_id', 'jadwal_kategori_id',
+        'mapel', 'kelas', 'guru_id', 'hari', 'jam', 'kelas_id', 'jadwal_kategori_id', 'tahun_ajaran_id',
     ];
 
     public function kelas()
