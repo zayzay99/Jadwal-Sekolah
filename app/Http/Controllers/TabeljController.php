@@ -56,19 +56,18 @@ class TabeljController extends Controller
         $generatedCount = 0;
 
         if ($request->has('replace_existing')) {
-            // Gunakan logika yang aman dari destroyAll, bukan truncate()
             $activeTahunAjaranId = session('tahun_ajaran_id');
-            if ($activeTahunAjaranId) {
-                \Illuminate\Support\Facades\DB::transaction(function () use ($activeTahunAjaranId) {
-                    Tabelj::truncate();
+            
+            \Illuminate\Support\Facades\DB::transaction(function () use ($activeTahunAjaranId) {
+                // Selalu hapus slot waktu yang ada
+                Tabelj::query()->delete();
+
+                // Jika tahun ajaran aktif, hapus juga jadwal dan reset jam guru
+                if ($activeTahunAjaranId) {
                     \App\Models\Jadwal::where('tahun_ajaran_id', $activeTahunAjaranId)->delete();
-                    \App\Models\Guru::where('tahun_ajaran_id', $activeTahunAjaranId)
-                        ->update(['sisa_jam_mengajar' => \Illuminate\Support\Facades\DB::raw('total_jam_mengajar')]);
-                });
-            } else {
-                // Jika tidak ada tahun ajaran aktif, cukup truncate tabelj
-                Tabelj::truncate();
-            }
+                    \App\Models\Guru::whereNotNull('tahun_ajaran_id')->update(['sisa_jam_mengajar' => \Illuminate\Support\Facades\DB::raw('total_jam_mengajar')]);
+                }
+            });
         }
 
         for ($i = 1; $i <= $lessonCount; $i++) {
@@ -162,7 +161,7 @@ class TabeljController extends Controller
 
         \Illuminate\Support\Facades\DB::transaction(function () use ($activeTahunAjaranId) {
             // 1. Hapus semua slot waktu
-            Tabelj::truncate();
+            Tabelj::query()->delete(); // Use DELETE instead of TRUNCATE for transaction safety
 
             // 2. Hapus semua jadwal pelajaran untuk tahun ajaran aktif
             \App\Models\Jadwal::where('tahun_ajaran_id', $activeTahunAjaranId)->delete();

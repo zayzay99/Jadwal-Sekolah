@@ -41,12 +41,13 @@ class KelasKategoriController extends Controller
         ->withCount('siswas');
 
         if ($search) {
-            $subkelasQuery->where(function($query) use ($search) {
+            // Group all search conditions, including the one for the aliased 'siswas_count'
+            $subkelasQuery->where(function ($query) use ($search) {
                 $query->where('nama_kelas', 'like', '%' . $search . '%')
-                      ->orWhereHas('guru', function ($q) use ($search) { // Search by teacher name
+                      ->orWhereHas('guru', function ($q) use ($search) {
                           $q->where('nama', 'like', '%' . $search . '%');
                       })
-                      ->orWhereRaw('CAST(siswas_count AS CHAR) LIKE ?', ["%{$search}%"]);
+                      ->orHaving('siswas_count', 'LIKE', '%' . $search . '%');
             });
         }
 
