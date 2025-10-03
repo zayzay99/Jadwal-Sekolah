@@ -244,66 +244,70 @@ class JadwalController extends Controller
         DB::beginTransaction();
         try {
             // --- Teacher Hour Calculation ---
-            $oldSchedules = Jadwal::where('kelas_id', $kelasId)
-                ->where('tahun_ajaran_id', $activeTahunAjaranId)->get();
-
             $calculateDuration = function($jam) {
                 try {
                     $parts = explode(' - ', $jam);
                     if (count($parts) !== 2) return 0;
                     $start = \Carbon\Carbon::parse($parts[0]);
                     $end = \Carbon\Carbon::parse($parts[1]);
-                    return ($end->getTimestamp() - $start->getTimestamp()) / 60;
+                    return $end->diffInMinutes($start);
                 } catch (\Exception $e) { return 0; }
             };
 
-            $oldGuruMinutes = [];
+            $oldSchedules = Jadwal::where('kelas_id', $kelasId)
+                ->where('tahun_ajaran_id', $activeTahunAjaranId)->get();
+
+            $guruMinutesChange = [];
+
+            // Subtract old minutes
             foreach ($oldSchedules as $schedule) {
                 if ($schedule->guru_id) {
                     $duration = $calculateDuration($schedule->jam);
-                    $oldGuruMinutes[$schedule->guru_id] = ($oldGuruMinutes[$schedule->guru_id] ?? 0) + $duration;
+                    $guruMinutesChange[$schedule->guru_id] = ($guruMinutesChange[$schedule->guru_id] ?? 0) - $duration;
                 }
             }
 
-            $newGuruMinutes = [];
+            // Add new minutes
             foreach ($schedules as $scheduleData) {
                 if (!empty($scheduleData['guru_id'])) {
                     $duration = $calculateDuration($scheduleData['jam']);
-                    $newGuruMinutes[$scheduleData['guru_id']] = ($newGuruMinutes[$scheduleData['guru_id']] ?? 0) + $duration;
+                    $guruMinutesChange[$scheduleData['guru_id']] = ($guruMinutesChange[$scheduleData['guru_id']] ?? 0) + $duration;
                 }
             }
 
-            $allGuruIds = array_unique(array_merge(array_keys($oldGuruMinutes), array_keys($newGuruMinutes)));
-            $gurus = !empty($allGuruIds) ? Guru::whereIn('id', $allGuruIds)->get()->keyBy('id') : collect();
+            $involvedGuruIds = array_keys($guruMinutesChange);
+            $gurus = !empty($involvedGuruIds) ? Guru::whereIn('id', $involvedGuruIds)->get() : collect();
+            $gurusById = $gurus->keyBy('id');
 
-            foreach ($gurus as $guruId => $guru) {
-                $oldMinutes = $oldGuruMinutes[$guruId] ?? 0;
-                $newMinutes = $newGuruMinutes[$guruId] ?? 0;
-                $change = $newMinutes - $oldMinutes;
-                if (($guru->sisa_jam_mengajar - $change) < 0) {
-                    DB::rollBack();
-                    return response()->json(['success' => false, 'message' => 'Guru ' . $guru->nama . ' akan melebihi total jam mengajar.'], 422);
+            if (!empty($involvedGuruIds)) {
+                foreach ($gurusById as $guruId => $guru) {
+                    $change = $guruMinutesChange[$guruId];
+                    if (($guru->sisa_jam_mengajar - $change) < 0) {
+                        DB::rollBack();
+                        return response()->json(['success' => false, 'message' => 'Guru ' . $guru->nama . ' akan melebihi total jam mengajar.'], 422);
+                    }
                 }
             }
 
             // --- Save Schedule ---
-            // Delete old schedule for this class and academic year
             Jadwal::where('kelas_id', $kelasId)
                 ->where('tahun_ajaran_id', $activeTahunAjaranId)
                 ->delete();
 
             $dataToInsert = [];
             $now = now();
-
-            // Prepare lesson and break schedules for insertion from the single request array.
-            // The frontend is responsible for sending the complete schedule, including breaks.
+            
             foreach ($schedules as $scheduleData) {
-                // We only insert if there is a guru or a category. Empty slots are just empty.
                 if (!empty($scheduleData['guru_id']) || !empty($scheduleData['jadwal_kategori_id'])) {
+                    $mapel = null;
+                    if (!empty($scheduleData['guru_id']) && isset($gurusById[$scheduleData['guru_id']])) {
+                        $mapel = $gurusById[$scheduleData['guru_id']]->pengampu;
+                    }
+
                     $dataToInsert[] = [
                         'kelas_id' => $kelasId,
                         'guru_id' => $scheduleData['guru_id'] ?: null,
-                        'mapel' => $scheduleData['mapel'],
+                        'mapel' => $mapel,
                         'jadwal_kategori_id' => $scheduleData['jadwal_kategori_id'] ?: null,
                         'hari' => $scheduleData['hari'],
                         'tabelj_id' => $scheduleData['tabelj_id'] ?: null,
@@ -315,19 +319,18 @@ class JadwalController extends Controller
                 }
             }
 
-            // Bulk insert all data
             if (!empty($dataToInsert)) {
                 Jadwal::insert($dataToInsert);
             }
 
             // --- Update Teacher Hours ---
-            foreach ($gurus as $guruId => $guru) {
-                $oldMinutes = $oldGuruMinutes[$guruId] ?? 0;
-                $newMinutes = $newGuruMinutes[$guruId] ?? 0;
-                $change = $newMinutes - $oldMinutes;
-                if ($change !== 0) {
-                    $guru->sisa_jam_mengajar -= $change;
-                    $guru->save();
+            if (!empty($involvedGuruIds)) {
+                foreach ($gurus as $guru) {
+                    $change = $guruMinutesChange[$guru->id] ?? 0;
+                    if ($change !== 0) {
+                        $guru->sisa_jam_mengajar -= $change;
+                        $guru->save();
+                    }
                 }
             }
 
