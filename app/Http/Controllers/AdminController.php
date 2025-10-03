@@ -14,26 +14,33 @@ class AdminController extends Controller
      */
     public function index()
     {
-        $activeTahunAjaranId = session('tahun_ajaran_id');
+        // Ambil semua tahun ajaran untuk dropdown
+        $tahunAjarans = TahunAjaran::orderBy('tahun_ajaran', 'desc')->get();
         
-        // Hitung data berdasarkan tahun ajaran yang aktif                       
-        $guruCount = \App\Models\Guru::count(); // Guru dianggap global, tidak terikat tahun ajaran
-        $kelasCount = 0;
-        $siswaCount = 0;
-        $jadwalCount = 0;
-        if ($activeTahunAjaranId) {
-            $kelasCount = \App\Models\Kelas::where('tahun_ajaran_id', $activeTahunAjaranId)->count();
-            
-            // Menghitung siswa unik yang terdaftar di kelas pada tahun ajaran aktif menggunakan relasi Eloquent.
-            $siswaCount = \App\Models\Siswa::whereHas('kelas', function ($query) use ($activeTahunAjaranId) {
-                $query->where('kelas.tahun_ajaran_id', $activeTahunAjaranId);
-            })->count();
-            
-            $jadwalCount = \App\Models\Jadwal::where('tahun_ajaran_id', $activeTahunAjaranId)->count();
+        // Cari tahun ajaran yang aktif
+        $activeTahunAjaran = $tahunAjarans->firstWhere('is_active', true);
+        $activeTahunAjaranId = session('tahun_ajaran_id');
+
+        // Jika ada tahun ajaran aktif, pastikan sesi sinkron
+        if ($activeTahunAjaran && $activeTahunAjaran->id !== $activeTahunAjaranId) {
+            session(['tahun_ajaran_id' => $activeTahunAjaran->id]);
+            $activeTahunAjaranId = $activeTahunAjaran->id;
         }
+
+        // Hitung data berdasarkan tahun ajaran yang aktif
+        $guruCount = \App\Models\Guru::count(); // Guru dianggap global, tidak terikat tahun ajaran
+        
+        // Jika tidak ada tahun ajaran aktif, semua count terkait adalah 0
+        $kelasCount = $activeTahunAjaranId ? \App\Models\Kelas::where('tahun_ajaran_id', $activeTahunAjaranId)->count() : 0;
+        $siswaCount = $activeTahunAjaranId ? \App\Models\Siswa::whereHas('kelas', function ($query) use ($activeTahunAjaranId) {
+            $query->where('kelas_siswa.tahun_ajaran_id', $activeTahunAjaranId);
+        })->count() : 0;
+        $jadwalCount = $activeTahunAjaranId ? \App\Models\Jadwal::where('tahun_ajaran_id', $activeTahunAjaranId)->count() : 0;
 
         // Kirim semua data yang diperlukan ke view
         return view('dashboard.admin', compact(
+            'tahunAjarans',
+            'activeTahunAjaran',
             'guruCount', 
             'siswaCount', 
             'kelasCount', 

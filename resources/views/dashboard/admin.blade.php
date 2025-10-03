@@ -66,7 +66,7 @@
 <body>
     <div id="admin-backdrop" class="backdrop"></div>
     <!-- Navbar -->
-    <nav class="navbar">
+    <nav class="navbar" style="overflow: visible; z-index: 1001;">
         <div class="nav-brand">
             <button id="admin-menu-toggle" class="menu-toggle-btn">
                 <i class="fas fa-bars"></i>
@@ -75,9 +75,10 @@
         </div>
         <div class="nav-user">
             <div style="display: flex; align-items: center; margin-right: 20px;">
-                @if(isset($activeTahunAjaran))
-                    <form method="GET" id="tahunAjaranSwitchForm" style="margin-right: 5px;">
-                        <select name="tahun_ajaran" class="form-control" onchange="this.form.action = '{{ url('manage/tahun-ajaran') }}/' + this.value + '/switch'; this.form.submit();" style="height: 38px; min-width: 180px;" title="Ganti Tahun Ajaran Aktif">
+                @if($tahunAjarans->isNotEmpty())
+                    <form action="" method="POST" id="tahunAjaranSwitchForm" style="margin-right: 5px;">
+                        @csrf
+                        <select name="tahun_ajaran" class="form-control" onchange="this.form.action = '{{ url('manage/tahun-ajaran') }}/' + this.value + '/switch-active'; this.form.submit();" style="height: 38px; min-width: 220px;" title="Ganti Tahun Ajaran Aktif">
                             @foreach($tahunAjarans as $tahun)
                                 <option value="{{ $tahun->id }}" {{ $tahun->is_active ? 'selected' : '' }}>
                                     {{ $tahun->tahun_ajaran }} {{ $tahun->semester }}
@@ -86,7 +87,7 @@
                         </select>
                     </form>
                 @else
-                    <span style="color: white; margin-right: 10px; display: flex; align-items: center; height: 38px;">T.A. - Belum diatur</span>
+                    <span style="color: white; margin-right: 10px; display: flex; align-items: center; height: 38px; background-color: #dc3545; padding: 0 10px; border-radius: 4px;">T.A. Belum Diatur</span>
                 @endif
                 <button type="button" class="btn" id="openTahunAjaranModal" title="Kelola Tahun Ajaran" style="height: 38px; width: 38px; display: flex; align-items: center; justify-content: center; border: 1px solid #ced4da;">
                     <i class="fas fa-plus"></i>
@@ -416,7 +417,7 @@
                     
                     <div class="form-group">
                         <label for="tahun_ajaran">Tahun Ajaran (format: YYYY/YYYY)</label>
-                        <input type="text" class="form-control" id="tahun_ajaran" name="tahun_ajaran" placeholder="Contoh: 2025/2026" required>
+                        <input type="text" class="form-control" id="tahun_ajaran" name="tahun_ajaran" placeholder="Contoh: 2025/2026" required pattern="^\d{4}\/\d{4}$">
                     </div>
                     
                     <div class="form-group">
@@ -452,18 +453,13 @@
                         <div class="form-check" style="margin-bottom: 10px;">
                             <input class="form-check-input" type="checkbox" id="skip_kelas_assignments" name="skip_kelas_assignments" value="1">
                             <label class="form-check-label" for="skip_kelas_assignments">
-                                <strong>Jangan Salin Penempatan Kelas Siswa</strong><br>
-                                <small class="text-muted">(Siswa di tahun ajaran BARU ini tidak akan dimasukkan ke kelas. Data di tahun ajaran LAMA tetap aman).</small>
                                 <strong>Kosongkan Penempatan Siswa di Kelas</strong><br>
                                 <small class="text-muted">(Siswa di tahun ajaran BARU ini tidak akan dimasukkan ke kelas. Data di tahun ajaran LAMA tetap aman sebagai arsip).</small>
                             </label>
                         </div>
-                        <div class="form-check mt-2">
                         <div class="form-check">
                             <input class="form-check-input" type="checkbox" id="skip_jadwal" name="skip_jadwal" value="1">
                             <label class="form-check-label" for="skip_jadwal">
-                                <strong>Jangan Salin Jadwal Pelajaran</strong><br>
-                                <small class="text-muted">(Jadwal pelajaran di tahun ajaran BARU akan kosong. Data jadwal di tahun ajaran LAMA tetap aman).</small>
                                 <strong>Kosongkan Jadwal Pelajaran</strong><br>
                                 <small class="text-muted">(Jadwal pelajaran di tahun ajaran BARU akan kosong. Data jadwal di tahun ajaran LAMA tetap aman sebagai arsip).</small>
                             </label>
@@ -492,7 +488,7 @@
                     @method('PUT')
                     <div class="form-group">
                         <label for="edit_tahun_ajaran">Tahun Ajaran</label>
-                        <input type="text" name="tahun_ajaran" id="edit_tahun_ajaran" class="form-control" required>
+                        <input type="text" name="tahun_ajaran" id="edit_tahun_ajaran" class="form-control" required pattern="^\d{4}\/\d{4}$">
                     </div>
                     <div class="form-group">
                         <label for="edit_semester">Semester</label>

@@ -16,8 +16,8 @@ class DatabaseSeeder extends Seeder
     $this->call([
         GuruSeeder::class,
         AdminSeeder::class,
-        SiswaSeeder::class,
-        
+        SiswaSeeder::class, // Pastikan seeder ini juga menggunakan firstOrCreate jika perlu
+        TahunAjaranDefaultSeeder::class, // Menambahkan seeder tahun ajaran default
     ]);
 }
 }

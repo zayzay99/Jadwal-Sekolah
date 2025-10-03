@@ -148,7 +148,7 @@ class TahunAjaranController extends Controller
     public function update(Request $request, TahunAjaran $tahunAjaran)
     {
         $request->validate([
-            'tahun_ajaran' => 'required|regex:/^\d{4}\/\d{4}$/|unique:tahun_ajarans,tahun_ajaran,' . $tahunAjaran->id,
+            'tahun_ajaran' => 'required|regex:/^\d{4}\/\d{4}$/|unique:tahun_ajarans,tahun_ajaran,'.$tahunAjaran->id,
             'semester' => 'required|in:Ganjil,Genap',
             'is_active' => 'nullable|boolean',
         ]);

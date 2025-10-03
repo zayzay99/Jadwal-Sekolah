@@ -16,11 +16,17 @@ class ManageKelasController extends Controller
 
         $activeTahunAjaranId = session('tahun_ajaran_id');
 
-        // Eager load students specifically for the active school year
-        $query = Kelas::with(['guru', 'siswas' => function ($query) use ($activeTahunAjaranId) {
-            $query->where('kelas_siswa.tahun_ajaran_id', $activeTahunAjaranId);
-        }])->where('tahun_ajaran_id', $activeTahunAjaranId);
+        $query = Kelas::with('guru');
 
+        if ($activeTahunAjaranId) {
+            // Jika ada tahun ajaran aktif, tampilkan kelas untuk tahun ajaran itu
+            // dan eager load siswa khusus untuk tahun ajaran itu.
+            $query->where('tahun_ajaran_id', $activeTahunAjaranId)
+                  ->with(['siswas' => function ($q) use ($activeTahunAjaranId) {
+                      $q->where('kelas_siswa.tahun_ajaran_id', $activeTahunAjaranId);
+                  }]);
+        }
+        
         if ($selectedKategori && in_array($selectedKategori, $kategoriList)) {
             $query->where('nama_kelas', 'like', $selectedKategori . '\-%');
         }

@@ -10,14 +10,17 @@ class AdminSeeder extends Seeder
 {
     public function run()
     {
-        User::where('email', 'admin@example.com')->delete();
-
-        User::create([
-            'name' => 'Kesya Apri Pujiatmoko',
-            'email' => 'kesya@admin.com',
-            'password' => Hash::make('admin123'),
-            'nip' => 'ADM000',
-            'pelajaran' => 'Critical Thinking', // Bisa di isi sesuai kebutuhan dengan 'Mapel' atau null jika kosong
-        ]);
+        // Gunakan updateOrCreate untuk membuat seeder idempotent (aman dijalankan berkali-kali).
+        // Metode ini akan mencari user berdasarkan email, dan akan mengupdate datanya jika sudah ada,
+        // atau membuatnya jika belum ada.
+        User::updateOrCreate(
+            ['email' => 'kesya@admin.com'], // Kunci unik untuk mencari user
+            [
+                'name' => 'Kesya Apri Pujiatmoko',
+                'password' => Hash::make('admin123'),
+                'nip' => 'ADM000',
+                'pelajaran' => 'Critical Thinking',
+            ]
+        );
     }
 }
