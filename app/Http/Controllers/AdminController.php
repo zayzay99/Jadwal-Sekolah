@@ -30,10 +30,8 @@ class AdminController extends Controller
         $guruCount = \App\Models\Guru::count(); // Guru dianggap global, tidak terikat tahun ajaran
         
         // Jika tidak ada tahun ajaran aktif, semua count terkait adalah 0
+        $siswaCount = \App\Models\Siswa::count(); // Hitung semua siswa terlepas dari tahun ajaran
         $kelasCount = $activeTahunAjaranId ? \App\Models\Kelas::where('tahun_ajaran_id', $activeTahunAjaranId)->count() : 0;
-        $siswaCount = $activeTahunAjaranId ? \App\Models\Siswa::whereHas('kelas', function ($query) use ($activeTahunAjaranId) {
-            $query->where('kelas_siswa.tahun_ajaran_id', $activeTahunAjaranId);
-        })->count() : 0;
         $jadwalCount = $activeTahunAjaranId ? \App\Models\Jadwal::where('tahun_ajaran_id', $activeTahunAjaranId)->count() : 0;
 
         // Kirim semua data yang diperlukan ke view

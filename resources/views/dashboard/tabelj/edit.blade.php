@@ -21,16 +21,16 @@
         @method('PUT')
         <div class="form-group">
             <label for="jam_mulai">Jam Mulai</label>
-            <input type="time" name="jam_mulai" id="jam_mulai" required class="form-control" value="{{ old('jam_mulai', $tabelj->jam_mulai) }}">
+            <input type="time" name="jam_mulai" id="jam_mulai" required class="form-control" value="{{ old('jam_mulai', \Carbon\Carbon::parse($tabelj->jam_mulai)->format('H:i')) }}">
         </div>
         <div class="form-group">
             <label for="jam_selesai">Jam Selesai</label>
-            <input type="time" name="jam_selesai" id="jam_selesai" required class="form-control" value="{{ old('jam_selesai', $tabelj->jam_selesai) }}">
+            <input type="time" name="jam_selesai" id="jam_selesai" required class="form-control" value="{{ old('jam_selesai', \Carbon\Carbon::parse($tabelj->jam_selesai)->format('H:i')) }}">
         </div>
         <div class="form-group">
             <label for="jadwal_kategori_id">Kategori Jadwal</label>
-            <select name="jadwal_kategori_id" id="jadwal_kategori_id" class="form-control" required>
-                <option value="">Pilih Kategori</option>
+            <select name="jadwal_kategori_id" id="jadwal_kategori_id" class="form-control">
+                <option value="">-- Tidak Ada Kategori --</option>
                 @foreach ($kategoris as $kategori)
                     <option value="{{ $kategori->id }}" {{ old('jadwal_kategori_id', $tabelj->jadwal_kategori_id) == $kategori->id ? 'selected' : '' }}>
                         {{ $kategori->nama_kategori }}

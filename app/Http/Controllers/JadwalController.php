@@ -324,14 +324,14 @@ class JadwalController extends Controller
             }
 
             // --- Update Teacher Hours ---
-            if (!empty($involvedGuruIds)) {
-                foreach ($gurus as $guru) {
-                    $change = $guruMinutesChange[$guru->id] ?? 0;
-                    if ($change !== 0) {
-                        $guru->sisa_jam_mengajar -= $change;
-                        $guru->save();
-                    }
-                }
+            // Update sisa jam mengajar untuk semua guru yang terlibat
+            foreach ($guruMinutesChange as $guruId => $menitPerubahan) {
+                // Gunakan query update untuk menghindari masalah race condition
+                // dan lebih efisien. `sisa_jam_mengajar = sisa_jam_mengajar - (perubahan)`
+                // Jika menitPerubahan positif (jam bertambah), sisa jam berkurang.
+                // Jika menitPerubahan negatif (jam berkurang), sisa jam bertambah.
+                Guru::where('id', $guruId)
+                    ->decrement('sisa_jam_mengajar', $menitPerubahan);
             }
 
             DB::commit();
@@ -349,8 +349,15 @@ class JadwalController extends Controller
         $kategoriList = ['VII', 'VIII', 'IX', 'X', 'XI', 'XII'];
         $kategoriData = [];
 
+        $activeTahunAjaranId = session('tahun_ajaran_id');
+
         foreach ($kategoriList as $kategori) {
-            $kelasCount = Kelas::where('nama_kelas', 'like', $kategori . '-%')->count();
+            $query = Kelas::where('nama_kelas', 'like', $kategori . '-%');
+
+            if ($activeTahunAjaranId) {
+                $query->where('tahun_ajaran_id', $activeTahunAjaranId);
+            }
+            $kelasCount = $query->count();
 
             $kategoriData[] = (object)[
                 'nama' => $kategori,
@@ -362,7 +369,9 @@ class JadwalController extends Controller
 
     public function pilihSubKelas($kategori)
     {
+        $activeTahunAjaranId = session('tahun_ajaran_id');
         $subkelas = Kelas::where('nama_kelas', 'like', $kategori . '-%')
+                         ->where('tahun_ajaran_id', $activeTahunAjaranId) // FIX: Filter by active year
                          ->orderBy('nama_kelas')
                          ->get();
         return view('jadwal.pilih_subkelas', compact('kategori', 'subkelas'));
@@ -370,7 +379,12 @@ class JadwalController extends Controller
 
     public function pilihKelasLihat()
     {
-        $kelas = Kelas::all();
+        $activeTahunAjaranId = session('tahun_ajaran_id');
+        $query = Kelas::query();
+        if ($activeTahunAjaranId) {
+            $query->where('tahun_ajaran_id', $activeTahunAjaranId);
+        }
+        $kelas = $query->orderBy('nama_kelas')->get();
         return view('jadwal.pilih_kelas_lihat', compact('kelas'));
     }
 

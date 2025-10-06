@@ -448,7 +448,6 @@
                     <div class="form-group">
                         <label>Opsi untuk Tahun Ajaran Baru:</label>
                         <p class="text-muted small" style="font-size: 0.85rem; margin-bottom: 10px;">Opsi berikut hanya berlaku untuk <strong>Tahun Ajaran Baru</strong> yang sedang dibuat. Data dari tahun ajaran yang Anda salin akan tetap utuh dan tidak akan berubah (tersimpan sebagai arsip).</p>
-                        <div class="form-check">
                         <div class="form-check" style="margin-bottom: 10px;">
                             <input class="form-check-input" type="checkbox" id="skip_kelas_assignments" name="skip_kelas_assignments" value="1">
                             <label class="form-check-label" for="skip_kelas_assignments">
@@ -558,7 +557,7 @@
                 button.addEventListener('click', function () {
                     const id = this.dataset.id;
                     const form = modals.edit.querySelector('form');
-                    form.action = `/manage/tahun-ajaran/${id}`;
+                    form.action = `/manage/tahun-ajaran/${id}`; // Pastikan URL ini benar
                     form.querySelector('#edit_tahun_ajaran').value = this.dataset.tahun_ajaran;
                     form.querySelector('#edit_semester').value = this.dataset.semester;
                     form.querySelector('#edit_is_active').checked = this.dataset.is_active == 1;

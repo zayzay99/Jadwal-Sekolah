@@ -13,14 +13,18 @@ class ManageSiswaController extends Controller
     public function index(Request $request)
     {
         $search = $request->input('search');
+        $activeTahunAjaranId = session('tahun_ajaran_id');
 
-        $siswas = Siswa::with('kelas')
+        $siswas = Siswa::with(['kelas' => function ($query) use ($activeTahunAjaranId) {
+                // Hanya load kelas yang sesuai dengan tahun ajaran aktif
+                $query->where('kelas_siswa.tahun_ajaran_id', $activeTahunAjaranId);
+            }])
             ->when($search, function ($query, $search) {
                 return $query->where('nama', 'like', "%{$search}%")
                              ->orWhere('nis', 'like', "%{$search}%")
                              ->orWhere('email', 'like', "%{$search}%")
                              ->orWhereHas('kelas', function ($q) use ($search) {
-                                 $q->where('nama_kelas', 'like', "%{$search}%");
+                                 $q->where('nama_kelas', 'like', "%{$search}%"); // Pencarian ini mungkin perlu disesuaikan jika ingin mencari di tahun ajaran aktif saja
                              });
             })
             ->orderBy('nama', 'asc')->paginate(10);
@@ -30,7 +34,9 @@ class ManageSiswaController extends Controller
 
     public function create()
     {
-        $kelas = \App\Models\Kelas::all();
+        // FIX: Hanya ambil kelas dari tahun ajaran yang aktif
+        $activeTahunAjaranId = session('tahun_ajaran_id');
+        $kelas = \App\Models\Kelas::where('tahun_ajaran_id', $activeTahunAjaranId)->orderBy('nama_kelas')->get();
         return view('dashboard.siswa_manage.create', compact('kelas'));
     }
 
@@ -70,8 +76,10 @@ public function store(Request $request)
 
     public function edit($id)
     {
-        $siswa = Siswa::with('kelas')->findOrFail($id);
-        $kelas = \App\Models\Kelas::all();
+        $activeTahunAjaranId = session('tahun_ajaran_id');
+        $siswa = Siswa::with(['kelas' => fn($q) => $q->where('kelas_siswa.tahun_ajaran_id', $activeTahunAjaranId)])->findOrFail($id);
+        // FIX: Hanya ambil kelas dari tahun ajaran yang aktif
+        $kelas = \App\Models\Kelas::where('tahun_ajaran_id', $activeTahunAjaranId)->orderBy('nama_kelas')->get();
         return view('dashboard.siswa_manage.edit', compact('siswa', 'kelas'));
     }
 

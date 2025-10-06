@@ -63,12 +63,7 @@ class ManageGuruController extends Controller
         }
         
         $gurus = $query->paginate(10);
-
-        foreach ($gurus as $guru) {
-            $usedMinutes = $this->calculateUsedMinutes($guru->id);
-            $guru->used_minutes = $usedMinutes; // Tambahkan properti baru
-        }
-
+ 
         return view('dashboard.guru_manage.index', compact('gurus', 'search'));
     }
 
@@ -148,12 +143,14 @@ class ManageGuruController extends Controller
         }
 
         // Hitung ulang sisa jam mengajar berdasarkan jadwal yang sudah ada
-        $activeTahunAjaranId = session('tahun_ajaran_id');
-        $usedMinutes = 0;
-        if ($activeTahunAjaranId) {
-            $usedMinutes = $this->calculateUsedMinutesForYear($guru->id, $activeTahunAjaranId);
+        $totalJamBaru = (int)$data['total_jam_mengajar'];
+        $usedMinutes = 0; // Default
+        
+        // Hanya hitung jam terpakai jika ada tahun ajaran aktif
+        if ($guru->tahun_ajaran_id) {
+            $usedMinutes = $this->calculateUsedMinutesForYear($guru->id, $guru->tahun_ajaran_id);
         }
-        $data['sisa_jam_mengajar'] = $data['total_jam_mengajar'] - $usedMinutes;
+        $data['sisa_jam_mengajar'] = $totalJamBaru - $usedMinutes;
 
         $guru->update($data);
 
@@ -227,7 +224,10 @@ class ManageGuruController extends Controller
         return redirect()->route('manage.guru.index')->with('success', 'Ketersediaan guru berhasil diperbarui!');
     }
 
-    private function calculateUsedMinutesForYear($guruId, $tahunAjaranId)
+
+    
+
+        private function calculateUsedMinutesForYear($guruId, $tahunAjaranId)
     {
         $jadwals = Jadwal::where('guru_id', $guruId)
             ->where('tahun_ajaran_id', $tahunAjaranId)
@@ -246,4 +246,5 @@ class ManageGuruController extends Controller
         }
         return $totalMenit;
     }
+
 }

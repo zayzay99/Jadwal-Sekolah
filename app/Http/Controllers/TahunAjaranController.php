@@ -67,15 +67,20 @@ class TahunAjaranController extends Controller
                 $oldToNewKelasIdMap = [];
                 $sourceClasses = Kelas::where('tahun_ajaran_id', $sourceYearId)->get();
 
+
                 foreach ($sourceClasses as $sourceClass) {
-                    $newClass = $sourceClass->replicate();
-                    $newClass->tahun_ajaran_id = $newYearId;
-                    $newClass->save();
-                    $oldToNewKelasIdMap[$sourceClass->id] = $newClass->id;
+                   // Check if a class with the same name already exists in the new academic year
+                    $existingClass = Kelas::where('nama_kelas', $sourceClass->nama_kelas)->where('tahun_ajaran_id', $newYearId)->first();
+                    if (!$existingClass) {
+                        $newClass = $sourceClass->replicate();
+                        $newClass->tahun_ajaran_id = $newYearId;
+                        $newClass->save();
+                        $oldToNewKelasIdMap[$sourceClass->id] = $newClass->id;}
                 }
 
+
                 // 2. Clone kelas_siswa pivot data if checkbox is not checked
-                if (!$request->has('skip_kelas_assignments')) {
+                if (!$request->boolean('skip_kelas_assignments')) {
                     // FIX: Filter pivot data by source year ID as well
                     $sourceKelasSiswa = DB::table('kelas_siswa')
                         ->where('tahun_ajaran_id', $sourceYearId)
@@ -100,7 +105,7 @@ class TahunAjaranController extends Controller
                 }
                 
                 // 3. Clone Jadwal data if checkbox is not checked
-                if (!$request->has('skip_jadwal')) {
+                if (!$request->boolean('skip_jadwal')) {
                     // We need to find schedules associated with the original classes
                     $sourceJadwals = \App\Models\Jadwal::where('tahun_ajaran_id', $sourceYearId)->whereIn('kelas_id', array_keys($oldToNewKelasIdMap))->get();
                     $newJadwalsData = [];
