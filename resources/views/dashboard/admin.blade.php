@@ -371,7 +371,7 @@
                     <tbody>
                         @foreach($tahunAjarans as $tahunAjaran)
                             <tr>
-                                <td>{{ $tahunAjaran->id }}</td>
+                                <td>{{ $loop->iteration }}</td>
                                 <td>{{ $tahunAjaran->tahun_ajaran }}</td>
                                 <td>{{ $tahunAjaran->semester }}</td>
                                 <td>
