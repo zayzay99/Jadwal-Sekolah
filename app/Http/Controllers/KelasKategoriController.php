@@ -21,13 +21,7 @@ class KelasKategoriController extends Controller
                       ->orWhere('nama_kelas', 'like', $kategori . ' %');
             });
 
-            $kelasCount = $query->when($activeTahunAjaranId, fn($q) => $q->where('tahun_ajaran_id', $activeTahunAjaranId))->count();
-            if ($activeTahunAjaranId) {
-                $query->where('tahun_ajaran_id', $activeTahunAjaranId);
-            } else {
-                $query->whereNull('tahun_ajaran_id');
-            }
-            $kelasCount = $query->count();
+            $kelasCount = $query->where('tahun_ajaran_id', $activeTahunAjaranId)->count();
 
             $kategoriData[] = (object)[
                 'nama' => $kategori,
@@ -51,13 +45,7 @@ class KelasKategoriController extends Controller
         ->with(['guru']) // Eager load guru
         ->withCount('siswas')
         ->when($activeTahunAjaranId, fn($q) => $q->where('tahun_ajaran_id', $activeTahunAjaranId));
-
-        if ($activeTahunAjaranId) {
-            $subkelasQuery->where('tahun_ajaran_id', $activeTahunAjaranId);
-        } else {
-            $subkelasQuery->whereNull('tahun_ajaran_id');
-        }
-
+        
         if ($search) {
             // Group all search conditions, including the one for the aliased 'siswas_count'
             $subkelasQuery->where(function ($query) use ($search) {

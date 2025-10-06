@@ -112,7 +112,7 @@ Route::middleware('auth:web')->group(function () {
         'destroy' => 'manage.tahun-ajaran.destroy',
     ]);
     Route::post('manage/tahun-ajaran/{tahun_ajaran}/set-active', [TahunAjaranController::class, 'setActive'])->name('manage.tahun-ajaran.setActive');
-    Route::get('manage/tahun-ajaran/{tahun_ajaran}/switch', [TahunAjaranController::class, 'switchActive'])->name('manage.tahun-ajaran.switch');
+    Route::get('manage/tahun-ajaran/{tahun_ajaran}/switch-active', [TahunAjaranController::class, 'switchActive'])->name('manage.tahun-ajaran.switch');
 
     Route::get('/kelas', [KelasKategoriController::class, 'index'])->name('kelas.kategori');
     Route::get('/kelas/{kategori}', [KelasKategoriController::class, 'show'])->name('kelas.show');
