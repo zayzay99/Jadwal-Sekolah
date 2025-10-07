@@ -111,7 +111,7 @@ class SiswaController extends Controller
         }
 
         // Menggunakan view yang benar untuk cetak PDF siswa, pastikan view 'prints.jadwal-siswa' ada.
-        $pdf = Pdf::loadView('prints.jadwal-siswa', compact('jadwals', 'user', 'kelasSiswa'));
+        $pdf = Pdf::loadView('dashboard.jadwal-siswa', compact('jadwals', 'user', 'kelasSiswa'));
         return $pdf->stream('jadwal-'.$user->nis.'.pdf');
     }
 
