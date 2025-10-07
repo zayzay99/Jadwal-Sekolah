@@ -28,6 +28,7 @@ Route::middleware('auth:siswa')->group(function () {
     Route::get('/dashboard/siswa/jadwal/cetak', [SiswaController::class, 'cetakJadwal'])->name('siswa.jadwal.cetak');
     Route::post('/dashboard/siswa/profile/update', [SiswaController::class, 'updateProfile'])
     ->name('siswa.profile.update');
+    Route::post('/dashboard/siswa/switch-tahun-ajaran', [SiswaController::class, 'switchTahunAjaran'])->name('siswa.switch-tahun-ajaran');
     Route::get('/dashboard/siswa/jadwal/arsip/{tahun_ajaran_id}', [SiswaController::class, 'getArsipJadwal'])->name('siswa.jadwal.arsip');
 });
 
@@ -36,6 +37,7 @@ Route::middleware('auth:guru')->group(function () {
     Route::get('/dashboard/guru/jadwal', [GuruController::class, 'jadwal'])->name('guru.jadwal');
     Route::get('/dashboard/guru/jadwal/cetak', [GuruController::class, 'cetakJadwal'])->name('guru.jadwal.cetak');
     Route::post('/dashboard/guru/profile/update', [GuruController::class, 'updateProfilePicture'])->name('guru.profile.update');
+    Route::post('/dashboard/guru/switch-tahun-ajaran', [GuruController::class, 'switchTahunAjaran'])->name('guru.switch-tahun-ajaran');
     Route::get('/dashboard/guru/jadwal/arsip/{tahun_ajaran_id}', [GuruController::class, 'getArsipJadwal'])->name('guru.jadwal.arsip');
 });
 

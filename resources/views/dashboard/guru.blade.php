@@ -98,6 +98,24 @@
                             <p><strong>NIP guru</strong>: {{ Auth::guard('guru')->user()->nip }}</p>
                             <p><strong>Pengampu Pelajaran</strong>: {{ Auth::guard('guru')->user()->pengampu }}</p>
                             <p><strong>E-Mail</strong>: {{ Auth::guard('guru')->user()->email }}</p>
+                            <div class="mt-2">
+                                <form action="{{ route('guru.switch-tahun-ajaran') }}" method="POST" id="tahunAjaranForm" class="flex items-center">
+                                    @csrf
+                                    <label for="tahun_ajaran_id" class="mr-2 text-sm font-medium">Tahun Ajaran:</label>
+                                    <select name="tahun_ajaran_id" id="tahun_ajaran_id" onchange="document.getElementById('tahunAjaranForm').submit()" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-1.5">
+                                        @foreach($allTahunAjarans as $tahun)
+                                            <option value="{{ $tahun->id }}" {{ $selectedTahunAjaranId == $tahun->id ? 'selected' : '' }}>
+                                                {{ $tahun->tahun_ajaran }} {{ $tahun->semester }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </form>
+                                @if($isViewingActiveYear)
+                                    <span class="text-xs text-green-600 font-semibold">(Tahun Ajaran Aktif)</span>
+                                @else
+                                    <span class="text-xs text-yellow-600 font-semibold">(Melihat Arsip)</span>
+                                @endif
+                            </div>
                         </div>
                     </div>
 
@@ -106,7 +124,7 @@
                         <div class="jadwal-section">
                             <div class="flex justify-between items-center mb-4">
                                 <h2 class="jadwal-title text-xl font-bold">Jadwal Mengajar</h2>
-                                <div>
+                                <div class="flex items-center space-x-2">
                                     <button id="openArsipModal" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded transition duration-300">
                                         Lihat Arsip
                                     </button>

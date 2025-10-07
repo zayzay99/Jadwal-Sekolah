@@ -54,8 +54,26 @@
                 <div class="profile-info">
                     <p><strong>Nama</strong>: {{ $user?->nama ?? '-' }}</p>
                     <p><strong>NIS</strong>: {{ $user?->nis ?? '-' }}</p>
-                    <p><strong>Kelas</strong>: {{ $user?->kelas->first()?->nama_kelas ?? '-' }}</p>
+                    <p><strong>Kelas</strong>: {{ $kelasSiswa?->nama_kelas ?? 'Tidak terdaftar di kelas' }}</p>
                     <p><strong>Email</strong>: {{ $user?->email ?? '-' }}</p>
+                    <div class="mt-2">
+                        <form action="{{ route('siswa.switch-tahun-ajaran') }}" method="POST" id="tahunAjaranForm" class="flex items-center">
+                            @csrf
+                            <label for="tahun_ajaran_id" class="mr-2 text-sm font-medium">Tahun Ajaran:</label>
+                            <select name="tahun_ajaran_id" id="tahun_ajaran_id" onchange="document.getElementById('tahunAjaranForm').submit()" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-1.5">
+                                @foreach($allTahunAjarans as $tahun)
+                                    <option value="{{ $tahun->id }}" {{ $selectedTahunAjaranId == $tahun->id ? 'selected' : '' }}>
+                                        {{ $tahun->tahun_ajaran }} {{ $tahun->semester }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </form>
+                        @if($isViewingActiveYear)
+                            <span class="text-xs text-green-600 font-semibold">(Tahun Ajaran Aktif)</span>
+                        @else
+                            <span class="text-xs text-yellow-600 font-semibold">(Melihat Arsip)</span>
+                        @endif
+                    </div>
                 </div>
             </section>
 
@@ -66,7 +84,7 @@
 
             <section class="jadwal-section">
                 <div class="jadwal-header">
-                    <h4>Jadwal Pelajaran Untuk Kelas {{ $user?->kelas?->first()?->nama_kelas ?? '-' }}</h4>
+                    <h4>Jadwal Pelajaran Untuk Kelas {{ $kelasSiswa?->nama_kelas ?? '-' }}</h4>
                     <a href="{{ route('siswa.jadwal.cetak') }}" class="print-btn" target="_blank">Cetak Jadwal</a>
                     <button id="arsipBtn" class="print-btn">Lihat Arsip</button>
                 </div>
