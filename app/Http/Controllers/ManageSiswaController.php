@@ -1,10 +1,12 @@
 <?php
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Siswa;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\SiswaExport;
+use App\Imports\SiswaImport;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 
 
@@ -139,10 +141,10 @@ public function store(Request $request)
             'file' => 'required|mimes:xlsx,xls,csv'
         ]);
     
-        $import = new \App\Imports\SiswaImport;
+        $import = new SiswaImport();
 
         try {
-            \Maatwebsite\Excel\Facades\Excel::import($import, $request->file('file'));
+            Excel::import($import, $request->file('file'));
         } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
             $failures = $e->failures();
             $errorMessages = [];
@@ -159,8 +161,6 @@ public function store(Request $request)
 
     public function export()
     {
-        // Logika untuk mengekspor data ke Excel akan ditambahkan di sini.
-        // Contoh: return Excel::download(new SiswasExport, 'siswa.xlsx');
-        return redirect()->route('manage.siswa.index')->with('info', 'Fitur export sedang dalam pengembangan.');
+        return Excel::download(new SiswaExport, 'daftar-siswa.xlsx');
     }
 }

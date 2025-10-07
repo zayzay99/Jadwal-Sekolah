@@ -4,6 +4,7 @@ namespace App\Imports;
 
 use App\Models\Siswa;
 use App\Models\Kelas;
+use App\Models\TahunAjaran;
 use Illuminate\Support\Facades\Hash;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\Importable;
@@ -12,22 +13,28 @@ use Maatwebsite\Excel\Concerns\WithValidation;
 use Maatwebsite\Excel\Concerns\SkipsOnFailure;
 use Maatwebsite\Excel\Validators\Failure;
 use Maatwebsite\Excel\Concerns\SkipsFailures;
+use Maatwebsite\Excel\Concerns\WithBatchInserts;
+use Maatwebsite\Excel\Concerns\WithChunkReading;
 
-class SiswaImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnFailure
+class SiswaImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnFailure, WithBatchInserts, WithChunkReading
 {
     use Importable, SkipsFailures;
 
     private int $importedCount = 0;
+    private $activeTahunAjaranId;
 
-    /**
-     * @param array $row
-     *
-     * @return \Illuminate\Database\Eloquent\Model|null
-     */
+    public function __construct()
+    {
+        // Ambil tahun ajaran aktif saat objek dibuat agar tidak query berulang kali
+        $this->activeTahunAjaranId = TahunAjaran::where('is_active', true)->value('id');
+    }
+
     public function model(array $row)
     {
-        // Cari kelas berdasarkan 'kelas' dari file Excel
-        $kelas = Kelas::where('nama_kelas', $row['kelas'])->first();
+        // Cari kelas berdasarkan 'nama_kelas' DAN tahun ajaran yang aktif
+        $kelas = Kelas::where('nama_kelas', $row['kelas'])
+                      ->where('tahun_ajaran_id', $this->activeTahunAjaranId)
+                      ->first();
 
         // Jika kelas tidak ditemukan, lewati baris ini
         if (!$kelas) {
@@ -42,8 +49,8 @@ class SiswaImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnFai
             'profile_picture' => 'Default-Profile.png',
         ]);
 
-        // Lampirkan siswa ke kelas
-        $siswa->kelas()->attach($kelas->id);
+        // Lampirkan siswa ke kelas DENGAN tahun ajaran yang benar
+        $siswa->kelas()->attach($kelas->id, ['tahun_ajaran_id' => $this->activeTahunAjaranId]);
 
         $this->importedCount++;
 
@@ -56,7 +63,7 @@ class SiswaImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnFai
             'nis'   => 'required|unique:siswas,nis',
             'nama'  => 'required|string',
             'email' => 'nullable|email|unique:siswas,email',
-            'kelas' => 'required|exists:kelas,nama_kelas',
+            'kelas' => 'required|string', // Validasi 'exists' kita lakukan manual di dalam method model() agar lebih akurat
         ];
     }
 
@@ -67,13 +74,13 @@ class SiswaImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnFai
         ];
     }
 
-    /**
-     * @param Failure[] $failures
-     */
     public function onFailure(Failure ...$failures)
     {
-        // Bisa log atau handle error di sini
+        // Method ini akan dipanggil jika ada baris yang gagal validasi
     }
+
+    public function batchSize(): int { return 100; }
+    public function chunkSize(): int { return 100; }
 
     public function getImportedCount(): int
     {
