@@ -80,10 +80,11 @@ Route::middleware('auth:web')->group(function () {
     ]]);
     Route::get('manage/guru/{guru}/availability', [ManageGuruController::class, 'editAvailability'])->name('manage.guru.availability.edit');
     Route::post('manage/guru/{guru}/availability', [ManageGuruController::class, 'updateAvailability'])->name('manage.guru.availability.update');
-    // Rute 'show' untuk siswa tidak digunakan, jadi dihapus untuk menghindari error.
+    
+    // FIX: Pindahkan rute spesifik ke ATAS resource controller
     Route::get('manage/siswa/export', [ManageSiswaController::class, 'export'])->name('manage.siswa.export');
     Route::get('manage/siswa/import', [ManageSiswaController::class, 'showImportForm'])->name('manage.siswa.import.form');
-    Route::post('manage/siswa/import', [ManageSiswaController::class, 'import'])->name('manage.siswa.import.process');
+    Route::post('manage/siswa/import', [ManageSiswaController::class, 'import'])->name('manage.siswa.import'); // Ubah nama rute agar konsisten
     Route::resource('manage/siswa', ManageSiswaController::class)->except(['show'])->names([
         'index' => 'manage.siswa.index',
         'create' => 'manage.siswa.create',

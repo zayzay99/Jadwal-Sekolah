@@ -141,22 +141,25 @@ public function store(Request $request)
             'file' => 'required|mimes:xlsx,xls,csv'
         ]);
     
-        $import = new SiswaImport();
-
         try {
+            // Pindahkan pembuatan objek ke dalam blok try
+            $import = new SiswaImport();
             Excel::import($import, $request->file('file'));
+
+            $successMessage = 'Data siswa berhasil diimpor. ' . $import->getImportedCount() . ' baris ditambahkan.';
+            return redirect()->route('manage.siswa.index')->with('success', $successMessage);
+
         } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
             $failures = $e->failures();
             $errorMessages = [];
             foreach ($failures as $failure) {
                 $errorMessages[] = 'Baris ' . $failure->row() . ': ' . implode(', ', $failure->errors());
             }
-            return back()->with('import_errors', $errorMessages);
+            return back()->with('import_errors', $errorMessages)->withInput();
+        } catch (\Exception $e) {
+            // Tangkap semua jenis exception lain, termasuk dari constructor
+            return back()->with('import_errors', [$e->getMessage()])->withInput();
         }
-    
-        $successMessage = 'Data siswa berhasil diimpor. ' . $import->getImportedCount() . ' baris ditambahkan.';
-    
-        return redirect()->route('manage.siswa.index')->with('success', $successMessage);
     }
 
     public function export()
