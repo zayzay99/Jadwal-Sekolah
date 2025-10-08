@@ -8,7 +8,6 @@ use App\Models\TahunAjaran;
 use Illuminate\Support\Facades\Log;
 use App\Models\Guru;
 use Illuminate\Support\Facades\Hash;
-use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Row;
 use Maatwebsite\Excel\Concerns\OnEachRow;
 use Maatwebsite\Excel\Concerns\Importable;
@@ -31,17 +30,14 @@ class SiswaImport implements OnEachRow, WithHeadingRow, WithValidation, SkipsOnF
     {
         // Ambil tahun ajaran aktif saat objek dibuat agar tidak query berulang kali
         $this->activeTahunAjaranId = TahunAjaran::where('is_active', true)->value('id');
-
-        // Ambil ID guru pertama sebagai fallback jika kelas baru perlu dibuat
         $this->defaultGuruId = Guru::value('id');
 
-        // Hentikan proses impor dari awal jika tidak ada prasyarat yang terpenuhi.
-        // Ini akan memberikan pesan error yang jelas daripada gagal di tengah jalan.
         if (!$this->activeTahunAjaranId) {
             throw new \Exception('Impor Gagal: Tidak ada Tahun Ajaran yang aktif. Silakan aktifkan satu tahun ajaran di menu "Tahun Ajaran".');
         }
+
         if (!$this->defaultGuruId) {
-            throw new \Exception('Impor Gagal: Tidak ada data Guru di sistem. Silakan tambahkan minimal satu guru untuk dijadikan Wali Kelas default.');
+            throw new \Exception('Impor Gagal: Tidak ada data Guru di sistem. Sistem memerlukan minimal satu guru untuk dijadikan Wali Kelas default saat membuat kelas baru.');
         }
     }
 
@@ -61,7 +57,8 @@ class SiswaImport implements OnEachRow, WithHeadingRow, WithValidation, SkipsOnF
                 'tahun_ajaran_id' => $this->activeTahunAjaranId,
             ],
             [
-                'guru_id' => $this->defaultGuruId, // Hanya digunakan jika kelas baru dibuat
+                // Ambil ID guru pertama sebagai fallback JIKA kelas baru dibuat.
+                'guru_id' => $this->defaultGuruId,
             ]
         );
 
@@ -85,9 +82,12 @@ class SiswaImport implements OnEachRow, WithHeadingRow, WithValidation, SkipsOnF
     public function rules(): array
     {
         return [
-            'nis'   => 'required|string',
+            'nis'   => 'required|integer',
             'nama'  => 'required|string',
-            'email' => 'nullable|string', // Hanya validasi bahwa email adalah string (jika ada), bukan format email.
+            // Hapus validasi format 'email' pada tahap ini untuk menghindari konflik
+            // dengan data yang sudah ada. Logika updateOrCreate sudah cukup untuk menanganinya.
+            // Cukup pastikan itu adalah string jika ada.
+            'email' => 'nullable|string',
             'kelas' => 'required|string',
         ];
     }

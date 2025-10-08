@@ -33,13 +33,13 @@
         <div class="form-group">
             <label for="file">Pilih File (Excel/CSV)</label>
             <input type="file" id="file" name="file" required class="form-control-file">
-            <small class="form-text">Pastikan file Anda memiliki kolom header: `Nama`, `NIS`, `Kelas`, dan `Email` (opsional).</small>
+            <small class="form-text">Pastikan file Anda memiliki kolom header: `nis`, `nama`, `email`, dan `kelas` (semua huruf kecil).</small>
         </div>
 
         <div class="form-group">
             <p><strong>Catatan:</strong></p>
             <ul>
-                <li>Kolom `Kelas` harus berisi nama kelas yang sudah terdaftar di sistem (contoh: X-A atau XII-RPL).</li>
+                <li>Jika nama kelas di kolom `Kelas` belum ada, sistem akan membuatnya secara otomatis.</li>
                 <li>Kolom `nis` dan `email` harus unik untuk setiap siswa.</li>
                 <li>Password akan dibuat secara otomatis menggunakan `nis` sebagai password default.</li>
             </ul>

@@ -146,8 +146,13 @@ public function store(Request $request)
             $import = new SiswaImport();
             Excel::import($import, $request->file('file'));
 
-            $successMessage = 'Data siswa berhasil diimpor. ' . $import->getImportedCount() . ' baris ditambahkan.';
-            return redirect()->route('manage.siswa.index')->with('success', $successMessage);
+            $importedCount = $import->getImportedCount();
+            if ($importedCount > 0) {
+                $successMessage = 'Data siswa berhasil diimpor. ' . $importedCount . ' baris ditambahkan.';
+                return redirect()->route('manage.siswa.index')->with('success', $successMessage);
+            } else {
+                return back()->with('import_errors', ['Tidak ada baris data yang berhasil diimpor. Pastikan file tidak kosong, format benar, dan ada Tahun Ajaran yang aktif.']);
+            }
 
         } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
             $failures = $e->failures();
@@ -164,6 +169,6 @@ public function store(Request $request)
 
     public function export()
     {
-        return Excel::download(new SiswaExport, 'daftar-siswa.xlsx');
+        // return Excel::download(new SiswaExport, 'daftar-siswa.xlsx');
     }
 }
