@@ -32,13 +32,10 @@ Route::middleware('auth:siswa')->group(function () {
     Route::get('/dashboard/siswa', [SiswaController::class, 'index'])->name('siswa.dashboard');
     Route::get('/dashboard/siswa/jadwal', [SiswaController::class, 'jadwal'])->name('siswa.jadwal');
     Route::get('/dashboard/siswa/jadwal/cetak', [SiswaController::class, 'cetakJadwal'])->name('siswa.jadwal.cetak');
-<<<<<<< HEAD
     Route::post('/dashboard/siswa/profile/update', [GuruController::class, 'updateProfilePicture'])->name('siswa.profile.update');
-=======
     Route::post('/dashboard/siswa/profile/update', [SiswaController::class, 'updateProfile'])
     ->name('siswa.profile.update');
     Route::post('/dashboard/siswa/switch-tahun-ajaran', [SiswaController::class, 'switchTahunAjaran'])->name('siswa.switch-tahun-ajaran');
->>>>>>> c993933c604b2457a3fed0356510e1a526ac4def
     Route::get('/dashboard/siswa/jadwal/arsip/{tahun_ajaran_id}', [SiswaController::class, 'getArsipJadwal'])->name('siswa.jadwal.arsip');
 });
 
@@ -88,36 +85,23 @@ Route::middleware('auth:web')->group(function () {
     Route::post('/manage/tabelj/assign-category', [TabeljController::class, 'storeAssignedCategory'])->name('manage.tabelj.storeAssignedCategory');
     Route::post('/manage/tabelj/{tabelj}/add-break', [TabeljController::class, 'addBreak'])->name('manage.tabelj.addBreak');
 
-<<<<<<< HEAD
     // Manajemen Guru
-    Route::resource('manage/guru', ManageGuruController::class)->names([
-=======
+    // Rute spesifik harus di atas resource controller
+    Route::get('manage/guru/import', [ManageGuruController::class, 'showImportForm'])->name('manage.guru.import.show');
+    Route::post('manage/guru/import', [ManageGuruController::class, 'import'])->name('manage.guru.import.store');
+    Route::get('manage/guru/{guru}/availability', [ManageGuruController::class, 'editAvailability'])->name('manage.guru.availability.edit');
+    Route::post('manage/guru/{guru}/availability', [ManageGuruController::class, 'updateAvailability'])->name('manage.guru.availability.update');
     Route::resource('manage/guru', ManageGuruController::class, ['except' => ['show'], 'names' => [
->>>>>>> c993933c604b2457a3fed0356510e1a526ac4def
         'index' => 'manage.guru.index',
         'create' => 'manage.guru.create',
         'store' => 'manage.guru.store',
         'edit' => 'manage.guru.edit',
         'update' => 'manage.guru.update',
         'destroy' => 'manage.guru.destroy',
-<<<<<<< HEAD
-        'show' => 'manage.guru.show',
-    ]);
-    Route::get('manage/guru/{guru}/availability', [ManageGuruController::class, 'editAvailability'])->name('manage.guru.availability.edit');
-    Route::post('manage/guru/{guru}/availability', [ManageGuruController::class, 'updateAvailability'])->name('manage.guru.availability.update');
-
-    // Manajemen Siswa
-=======
     ]]);
-    Route::get('manage/guru/{guru}/availability', [ManageGuruController::class, 'editAvailability'])->name('manage.guru.availability.edit');
-    Route::post('manage/guru/{guru}/availability', [ManageGuruController::class, 'updateAvailability'])->name('manage.guru.availability.update');
-    
-    // Rute untuk import guru
-    Route::get('manage/guru/import', [ManageGuruController::class, 'showImportForm'])->name('manage.guru.import.show');
-    Route::post('manage/guru/import', [ManageGuruController::class, 'import'])->name('manage.guru.import.store');
 
     // FIX: Pindahkan rute spesifik ke ATAS resource controller
->>>>>>> c993933c604b2457a3fed0356510e1a526ac4def
+
     Route::get('manage/siswa/export', [ManageSiswaController::class, 'export'])->name('manage.siswa.export');
     Route::get('manage/siswa/import', [ManageSiswaController::class, 'showImportForm'])->name('manage.siswa.import.form');
     Route::post('manage/siswa/import', [ManageSiswaController::class, 'import'])->name('manage.siswa.import'); // Ubah nama rute agar konsisten
