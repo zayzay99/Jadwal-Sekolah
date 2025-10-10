@@ -116,9 +116,9 @@ class TabeljController extends Controller
     public function update(Request $request, Tabelj $tabelj)
     {
         $request->validate([
-            'jam_mulai' => 'required|date_format:H:i',
-            'jam_selesai' => 'required|date_format:H:i|after:jam_mulai',
-            'jadwal_kategori_id' => 'required|exists:jadwal_kategoris,id',
+            'jam_mulai' => 'required|string|date_format:H:i',
+            'jam_selesai' => 'required|string|date_format:H:i|after:jam_mulai',
+            'jadwal_kategori_id' => 'nullable|exists:jadwal_kategoris,id',
         ]);
 
         $tabelj->update([

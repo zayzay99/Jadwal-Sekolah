@@ -8,12 +8,14 @@ use App\Models\TahunAjaran;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use App\Models\TahunAjaran;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Log;
 
 class SiswaController extends Controller
 {
     /**
+<<<<<<< HEAD
      * Dashboard utama siswa
      */
     public function index()
@@ -34,9 +36,74 @@ class SiswaController extends Controller
                 ->orderBy('jam')
                 ->get()
                 ->groupBy('hari');
+=======
+     * Mendapatkan ID tahun ajaran yang sedang dilihat oleh siswa.
+     * Prioritas: Sesi siswa -> Tahun ajaran aktif global.
+     */
+    private function getSelectedTahunAjaranId()
+    {
+        // Coba dapatkan dari sesi siswa terlebih dahulu
+        $selectedId = session('siswa_tahun_ajaran_id');
+
+        if ($selectedId && TahunAjaran::find($selectedId)) {
+            return $selectedId;
+>>>>>>> c993933c604b2457a3fed0356510e1a526ac4def
         }
 
-        return view('dashboard.siswa', compact('siswa', 'jadwals', 'tahunAjarans'));
+        // Jika tidak ada di sesi, gunakan tahun ajaran aktif global
+        $activeTahunAjaran = TahunAjaran::where('is_active', true)->first();
+        return $activeTahunAjaran ? $activeTahunAjaran->id : null;
+    }
+
+    public function index()
+    {
+        $user = Auth::guard('siswa')->user();
+        $allTahunAjarans = TahunAjaran::orderBy('tahun_ajaran', 'desc')->orderBy('semester', 'desc')->get();
+        
+        $selectedTahunAjaranId = $this->getSelectedTahunAjaranId();
+        
+        // Simpan ID terpilih ke sesi jika belum ada
+        if (!session()->has('siswa_tahun_ajaran_id')) {
+            session(['siswa_tahun_ajaran_id' => $selectedTahunAjaranId]);
+        }
+
+        $kelasSiswa = null;
+        $jadwals = collect();
+
+        if ($selectedTahunAjaranId) {
+            // Ambil kelas siswa untuk tahun ajaran yang dipilih
+            $kelasSiswa = $user->kelas()
+                               ->where('kelas_siswa.tahun_ajaran_id', $selectedTahunAjaranId)
+                               ->first();
+
+            if ($kelasSiswa) {
+                // Ambil jadwal berdasarkan kelas dan tahun ajaran yang dipilih
+                $jadwals = Jadwal::where('kelas_id', $kelasSiswa->id)
+                                ->where('tahun_ajaran_id', $selectedTahunAjaranId)
+                                ->with('guru', 'kategori')
+                                ->get()
+                                ->sortBy(function ($jadwal) {
+                                    $hariOrder = ['Senin' => 1, 'Selasa' => 2, 'Rabu' => 3, 'Kamis' => 4, 'Jumat' => 5, 'Sabtu' => 6, 'Minggu' => 7];
+                                    return $hariOrder[$jadwal->hari] ?? 99;
+                                })
+                                ->groupBy('hari');
+            }
+        }
+        
+        $activeGlobalTahunAjaran = TahunAjaran::where('is_active', true)->first();
+        $isViewingActiveYear = $selectedTahunAjaranId == ($activeGlobalTahunAjaran?->id);
+
+        // Untuk modal arsip
+        $tahunAjarans = $allTahunAjarans;
+
+        return view('dashboard.siswa', compact(
+            'jadwals', 
+            'kelasSiswa',
+            'tahunAjarans', // Untuk modal arsip
+            'allTahunAjarans', // Untuk dropdown utama
+            'selectedTahunAjaranId',
+            'isViewingActiveYear'
+        ));
     }
 
     /**
@@ -44,6 +111,7 @@ class SiswaController extends Controller
      */
     public function jadwal(Request $request)
     {
+<<<<<<< HEAD
         $siswa = Auth::guard('siswa')->user();
         $tahunAjarans = TahunAjaran::all();
         $selectedTahunAjaranId = $request->input('tahun_ajaran_id', session('tahun_ajaran_id'));
@@ -63,6 +131,10 @@ class SiswaController extends Controller
         }
 
         return view('dashboard.siswa_jadwal', compact('siswa', 'jadwals', 'tahunAjarans', 'selectedTahunAjaranId'));
+=======
+        // Logika ini sekarang ditangani oleh index(), jadi kita bisa redirect ke sana.
+        return redirect()->route('siswa.dashboard');
+>>>>>>> c993933c604b2457a3fed0356510e1a526ac4def
     }
 
     /**
@@ -70,10 +142,13 @@ class SiswaController extends Controller
      */
     public function cetakJadwal()
     {
-        $siswa = Auth::guard('siswa')->user();
-        $jadwals = collect();
-        $activeTahunAjaranId = session('tahun_ajaran_id');
+        $user = Auth::guard('siswa')->user();
+        $selectedTahunAjaranId = $this->getSelectedTahunAjaranId();
+        $kelasSiswa = null;
 
+        $jadwals = collect();
+
+<<<<<<< HEAD
         $kelas = $siswa->kelas()->where('kelas.tahun_ajaran_id', $activeTahunAjaranId)->first();
 
         if ($kelas) {
@@ -84,10 +159,36 @@ class SiswaController extends Controller
                 ->orderBy('jam')
                 ->get()
                 ->groupBy('hari');
+=======
+        // Ambil kelas siswa untuk tahun ajaran yang dipilih
+        $kelasSiswa = $user->kelas()->where('kelas_siswa.tahun_ajaran_id', $selectedTahunAjaranId)->first();
+
+        if ($kelasSiswa) {
+            $jadwals = Jadwal::where('kelas_id', $kelasSiswa->id)
+                                ->where('tahun_ajaran_id', $selectedTahunAjaranId)
+                                ->with('guru', 'kategori')
+                                ->get()
+                                ->sortBy(function ($jadwal) {
+                                    $hariOrder = ['Senin' => 1, 'Selasa' => 2, 'Rabu' => 3, 'Kamis' => 4, 'Jumat' => 5, 'Sabtu' => 6, 'Minggu' => 7];
+                                    return ($hariOrder[$jadwal->hari] ?? 99) . '-' . $jadwal->jam_mulai;
+                                })
+                                ->groupBy('hari');
+>>>>>>> c993933c604b2457a3fed0356510e1a526ac4def
         }
 
-        $pdf = Pdf::loadView('jadwal.pdf', compact('jadwals', 'siswa'));
-        return $pdf->download('jadwal-siswa.pdf');
+        // Menggunakan view yang benar untuk cetak PDF siswa, pastikan view 'prints.jadwal-siswa' ada.
+        $pdf = Pdf::loadView('dashboard.jadwal-siswa', compact('jadwals', 'user', 'kelasSiswa'));
+        return $pdf->stream('jadwal-'.$user->nis.'.pdf');
+    }
+
+    /**
+     * Mengganti tahun ajaran di sesi siswa.
+     */
+    public function switchTahunAjaran(Request $request)
+    {
+        $request->validate(['tahun_ajaran_id' => 'required|exists:tahun_ajarans,id']);
+        session(['siswa_tahun_ajaran_id' => $request->tahun_ajaran_id]);
+        return redirect()->route('siswa.dashboard')->with('success', 'Tampilan tahun ajaran berhasil diganti.');
     }
 
     /**
@@ -141,7 +242,12 @@ class SiswaController extends Controller
         $siswa = Auth::guard('siswa')->user();
         $jadwals = collect();
 
+<<<<<<< HEAD
         $kelas = $siswa->kelas()->where('kelas.tahun_ajaran_id', $tahun_ajaran_id)->first();
+=======
+        $kelas = $siswa->kelas()->wherePivot('tahun_ajaran_id', $tahun_ajaran_id)->first();
+        Log::info('Siswa: ' . $siswa->nama . ' - Kelas: ' . ($kelas ? $kelas->nama_kelas : 'Tidak ada kelas'));
+>>>>>>> c993933c604b2457a3fed0356510e1a526ac4def
 
         if ($kelas) {
             $jadwals = Jadwal::where('kelas_id', $kelas->id)

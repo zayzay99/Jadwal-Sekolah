@@ -33,7 +33,12 @@ class TahunAjaranController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'tahun_ajaran' => 'required|unique:tahun_ajarans,tahun_ajaran|regex:/^\d{4}\/\d{4}$/',
+            'tahun_ajaran' => [
+                'required',
+                'regex:/^\d{4}\/\d{4}$/',
+                // Validasi unik berdasarkan kombinasi tahun_ajaran dan semester
+                \Illuminate\Validation\Rule::unique('tahun_ajarans')->where(fn ($query) => $query->where('semester', $request->semester)),
+            ],
             'semester' => 'required|in:Ganjil,Genap',
             'is_active' => 'nullable|boolean',
             'source_tahun_ajaran_id' => 'nullable|exists:tahun_ajarans,id',
@@ -62,16 +67,24 @@ class TahunAjaranController extends Controller
                 $oldToNewKelasIdMap = [];
                 $sourceClasses = Kelas::where('tahun_ajaran_id', $sourceYearId)->get();
 
+
                 foreach ($sourceClasses as $sourceClass) {
-                    $newClass = $sourceClass->replicate();
-                    $newClass->tahun_ajaran_id = $newYearId;
-                    $newClass->save();
-                    $oldToNewKelasIdMap[$sourceClass->id] = $newClass->id;
+                   // Check if a class with the same name already exists in the new academic year
+                    $existingClass = Kelas::where('nama_kelas', $sourceClass->nama_kelas)->where('tahun_ajaran_id', $newYearId)->first();
+                    if (!$existingClass) {
+                        $newClass = $sourceClass->replicate();
+                        $newClass->tahun_ajaran_id = $newYearId;
+                        $newClass->save();
+                        $oldToNewKelasIdMap[$sourceClass->id] = $newClass->id;}
                 }
 
+
                 // 2. Clone kelas_siswa pivot data if checkbox is not checked
-                if (!$request->has('skip_kelas_assignments')) {
-                    $sourceKelasSiswa = DB::table('kelas_siswa')->whereIn('kelas_id', array_keys($oldToNewKelasIdMap))->get();
+                if (!$request->boolean('skip_kelas_assignments')) {
+                    // FIX: Filter pivot data by source year ID as well
+                    $sourceKelasSiswa = DB::table('kelas_siswa')
+                        ->where('tahun_ajaran_id', $sourceYearId)
+                        ->get();
                     $newKelasSiswaData = [];
 
                     foreach ($sourceKelasSiswa as $pivot) {
@@ -92,7 +105,7 @@ class TahunAjaranController extends Controller
                 }
                 
                 // 3. Clone Jadwal data if checkbox is not checked
-                if (!$request->has('skip_jadwal')) {
+                if (!$request->boolean('skip_jadwal')) {
                     // We need to find schedules associated with the original classes
                     $sourceJadwals = \App\Models\Jadwal::where('tahun_ajaran_id', $sourceYearId)->whereIn('kelas_id', array_keys($oldToNewKelasIdMap))->get();
                     $newJadwalsData = [];
@@ -102,7 +115,7 @@ class TahunAjaranController extends Controller
                         if (isset($oldToNewKelasIdMap[$jadwal->kelas_id])) {
                             $newJadwalsData[] = [
                                 'hari' => $jadwal->hari,
-                                'jam' => $jadwal->jam, // Tambahkan kolom jam
+                                'jam' => $jadwal->jam,
                                 'tabelj_id' => $jadwal->tabelj_id,
                                 'guru_id' => $jadwal->guru_id,
                                 'mapel' => $jadwal->mapel,
@@ -124,6 +137,11 @@ class TahunAjaranController extends Controller
 
         return redirect()->route('admin.dashboard')
             ->with('success', 'Tahun Ajaran berhasil dibuat.');
+    }
+
+    public function validationMessages()
+    {
+        return ['tahun_ajaran.unique' => 'Kombinasi Tahun Ajaran dan Semester ini sudah ada.'];
     }
 
     /**
@@ -148,7 +166,12 @@ class TahunAjaranController extends Controller
     public function update(Request $request, TahunAjaran $tahunAjaran)
     {
         $request->validate([
-            'tahun_ajaran' => 'required|regex:/^\d{4}\/\d{4}$/|unique:tahun_ajarans,tahun_ajaran,'.$tahunAjaran->id,
+            'tahun_ajaran' => [
+                'required',
+                'regex:/^\d{4}\/\d{4}$/',
+                // FIX: Validate uniqueness based on the combination of tahun_ajaran and semester, ignoring the current record
+                \Illuminate\Validation\Rule::unique('tahun_ajarans')->where(fn ($query) => $query->where('semester', $request->semester))->ignore($tahunAjaran->id),
+            ],
             'semester' => 'required|in:Ganjil,Genap',
             'is_active' => 'nullable|boolean',
         ]);

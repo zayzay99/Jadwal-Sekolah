@@ -48,17 +48,94 @@
       <i class="fa-solid fa-right-from-bracket mr-2"></i> Keluar
     </button>
 
+<<<<<<< HEAD
     <form id="logoutForm" action="{{ route('logout') }}" method="GET" class="hidden">@csrf</form>
   </div>
 </div>
+=======
+            <section class="profile-section flex-col sm:flex-row items-center text-center sm:text-left">
+                <div class="profile-pic-container mb-4 sm:mb-0" onclick="document.getElementById('profile_picture_input').click();" title="Klik untuk ganti foto">
+                    <img src="{{ $user->profile_picture ? asset('storage/' . $user->profile_picture) : asset('storage/Default-Profile.png') }}" alt="Foto Profil" class="profile-pic-image">
+                </div>
+                <div class="profile-info">
+                    <p><strong>Nama</strong>: {{ $user?->nama ?? '-' }}</p>
+                    <p><strong>NIS</strong>: {{ $user?->nis ?? '-' }}</p>
+                    <p><strong>Kelas</strong>: {{ $kelasSiswa?->nama_kelas ?? 'Tidak terdaftar di kelas' }}</p>
+                    <p><strong>Email</strong>: {{ $user?->email ?? '-' }}</p>
+                    <div class="mt-2">
+                        <form action="{{ route('siswa.switch-tahun-ajaran') }}" method="POST" id="tahunAjaranForm" class="flex items-center">
+                            @csrf
+                            <label for="tahun_ajaran_id" class="mr-2 text-sm font-medium">Tahun Ajaran:</label>
+                            <select name="tahun_ajaran_id" id="tahun_ajaran_id" onchange="document.getElementById('tahunAjaranForm').submit()" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-1.5">
+                                @foreach($allTahunAjarans as $tahun)
+                                    <option value="{{ $tahun->id }}" {{ $selectedTahunAjaranId == $tahun->id ? 'selected' : '' }}>
+                                        {{ $tahun->tahun_ajaran }} {{ $tahun->semester }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </form>
+                        @if($isViewingActiveYear)
+                            <span class="text-xs text-green-600 font-semibold">(Tahun Ajaran Aktif)</span>
+                        @else
+                            <span class="text-xs text-yellow-600 font-semibold">(Melihat Arsip)</span>
+                        @endif
+                    </div>
+                </div>
+            </section>
+>>>>>>> c993933c604b2457a3fed0356510e1a526ac4def
 
 <!-- 🌟 KONTEN UTAMA -->
 <main class="p-6 md:p-8 space-y-8">
 
+<<<<<<< HEAD
   <!-- 🏫 INSTANSI -->
   <section class="bg-white rounded-2xl shadow p-6 text-center max-w-3xl mx-auto border border-gray-100">
     <div class="flex justify-center mb-3">
       <img src="{{ asset('img/Klipaa Original.png') }}" alt="Logo Sekolah" class="w-14 h-14 object-contain">
+=======
+            <section class="jadwal-section">
+                <div class="jadwal-header">
+                    <h4>Jadwal Pelajaran Untuk Kelas {{ $kelasSiswa?->nama_kelas ?? '-' }}</h4>
+                    <a href="{{ route('siswa.jadwal.cetak') }}" class="print-btn" target="_blank">Cetak Jadwal</a>
+                    <button id="arsipBtn" class="print-btn">Lihat Arsip</button>
+                </div>
+                @if(isset($jadwals) && count($jadwals) > 0)
+                    <div class="overflow-x-auto">
+                        <table>
+                            <thead>
+                                <tr class="bg-[#8cb4d4] text-gray-700">
+                                    <th class="py-3 px-4 text-center border">Hari</th>
+                                    <th class="py-3 px-4 text-center border">Jam</th>
+                                    <th class="py-3 px-4 text-center border">Mata Pelajaran</th>
+                                    <th class="py-3 px-4 text-center border">Guru</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($jadwals as $hari => $jadwalHarian)
+                                    @foreach($jadwalHarian as $index => $jadwal)
+                                        <tr>
+                                            @if($index === 0)
+                                                <td rowspan="{{ count($jadwalHarian) }}">{{ $hari }}</td>
+                                            @endif
+                                            <td>{{ $jadwal->jam }}</td>
+                                            @if($jadwal->kategori)
+                                                <td colspan="2" style="text-align: center; font-weight: bold;">{{ $jadwal->kategori->nama_kategori }}</td>
+                                                @else
+                                                <td>{{ $jadwal->mapel }}</td>
+                                                <td>{{ $jadwal->guru ? $jadwal->guru->nama : '-' }}</td>
+                                            @endif
+                                        </tr>
+                                    @endforeach
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                @else
+                    <p>Belum ada jadwal untuk kelas ini.</p>
+                @endif
+            </section>
+        </main>
+>>>>>>> c993933c604b2457a3fed0356510e1a526ac4def
     </div>
     <h1 class="text-2xl font-bold text-[#3b3b7c]">Klipaa Students</h1>
     <p class="text-sm font-semibold text-gray-700 mt-1">

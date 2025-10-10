@@ -17,24 +17,21 @@ class AdminController extends Controller
         // Ambil semua tahun ajaran untuk dropdown
         $tahunAjarans = TahunAjaran::orderBy('tahun_ajaran', 'desc')->get();
         
-        // Cari tahun ajaran yang aktif
+        // 1. Cari tahun ajaran yang aktif dari database sebagai sumber kebenaran utama.
         $activeTahunAjaran = $tahunAjarans->firstWhere('is_active', true);
-        $activeTahunAjaranId = session('tahun_ajaran_id');
+        $activeTahunAjaranId = $activeTahunAjaran ? $activeTahunAjaran->id : null;
 
-        // Jika ada tahun ajaran aktif, pastikan sesi sinkron
-        if ($activeTahunAjaran && $activeTahunAjaran->id !== $activeTahunAjaranId) {
+        // 2. Pastikan sesi selalu sinkron dengan data dari database.
+        if ($activeTahunAjaran && session('tahun_ajaran_id') !== $activeTahunAjaran->id) {
             session(['tahun_ajaran_id' => $activeTahunAjaran->id]);
-            $activeTahunAjaranId = $activeTahunAjaran->id;
         }
 
-        // Hitung data berdasarkan tahun ajaran yang aktif
+        // 3. Hitung data berdasarkan ID tahun ajaran aktif yang sudah kita dapatkan.
         $guruCount = \App\Models\Guru::count(); // Guru dianggap global, tidak terikat tahun ajaran
         
         // Jika tidak ada tahun ajaran aktif, semua count terkait adalah 0
+        $siswaCount = \App\Models\Siswa::count(); // Hitung semua siswa terlepas dari tahun ajaran
         $kelasCount = $activeTahunAjaranId ? \App\Models\Kelas::where('tahun_ajaran_id', $activeTahunAjaranId)->count() : 0;
-        $siswaCount = $activeTahunAjaranId ? \App\Models\Siswa::whereHas('kelas', function ($query) use ($activeTahunAjaranId) {
-            $query->where('kelas_siswa.tahun_ajaran_id', $activeTahunAjaranId);
-        })->count() : 0;
         $jadwalCount = $activeTahunAjaranId ? \App\Models\Jadwal::where('tahun_ajaran_id', $activeTahunAjaranId)->count() : 0;
 
         // Kirim semua data yang diperlukan ke view

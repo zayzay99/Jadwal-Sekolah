@@ -74,25 +74,7 @@
             <h2>Admin Dashboard</h2>
         </div>
         <div class="nav-user">
-            <div style="display: flex; align-items: center; margin-right: 20px;">
-                @if($tahunAjarans->isNotEmpty())
-                    <form action="" method="POST" id="tahunAjaranSwitchForm" style="margin-right: 5px;">
-                        @csrf
-                        <select name="tahun_ajaran" class="form-control" onchange="this.form.action = '{{ url('manage/tahun-ajaran') }}/' + this.value + '/switch-active'; this.form.submit();" style="height: 38px; min-width: 220px;" title="Ganti Tahun Ajaran Aktif">
-                            @foreach($tahunAjarans as $tahun)
-                                <option value="{{ $tahun->id }}" {{ $tahun->is_active ? 'selected' : '' }}>
-                                    {{ $tahun->tahun_ajaran }} {{ $tahun->semester }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </form>
-                @else
-                    <span style="color: white; margin-right: 10px; display: flex; align-items: center; height: 38px; background-color: #dc3545; padding: 0 10px; border-radius: 4px;">T.A. Belum Diatur</span>
-                @endif
-                <button type="button" class="btn" id="openTahunAjaranModal" title="Kelola Tahun Ajaran" style="height: 38px; width: 38px; display: flex; align-items: center; justify-content: center; border: 1px solid #ced4da;">
-                    <i class="fas fa-plus"></i>
-                </button>
-            </div>
+            <!-- User info moved to the right for better alignment -->
             <span>Welcome,  {{ Auth::guard('web')->user()->name }}</span>
             <div class="user-avatar">
                 <i class="fas fa-user"></i>
@@ -174,7 +156,24 @@
 
             <div class="content-header">
                 <h1>Dashboard Overview</h1>
-                <p>Kelola data guru, siswa, kelas, dan jadwal dengan mudah</p>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    @if($tahunAjarans->isNotEmpty())
+                        <select name="tahun_ajaran" class="form-control" onchange="window.location.href = '{{ url('manage/tahun-ajaran') }}/' + this.value + '/switch-active';" style="height: 38px; min-width: 220px;" title="Ganti Tahun Ajaran Aktif">
+                            @foreach($tahunAjarans as $tahun)
+                                <option value="{{ $tahun->id }}" {{ $tahun->is_active ? 'selected' : '' }}>
+                                    {{ $tahun->tahun_ajaran }} {{ $tahun->semester }}
+                                </option>
+                            @endforeach
+                        </select>
+                    @else
+                        <span style="color: #721c24; background-color: #f8d7da; border-color: #f5c6cb; padding: .375rem .75rem; border-radius: .25rem;">
+                            Tahun Ajaran Belum Diatur
+                        </span>
+                    @endif
+                    <button type="button" class="btn btn-primary btn-tiny" id="openTahunAjaranModal" title="Kelola Tahun Ajaran">
+                        <i class="fas fa-cog"></i> Kelola T.A
+                    </button>
+                </div>
             </div>
             <!--
 <div class="profile-card">
@@ -372,7 +371,7 @@
                     <tbody>
                         @foreach($tahunAjarans as $tahunAjaran)
                             <tr>
-                                <td>{{ $tahunAjaran->id }}</td>
+                                <td>{{ $loop->iteration }}</td>
                                 <td>{{ $tahunAjaran->tahun_ajaran }}</td>
                                 <td>{{ $tahunAjaran->semester }}</td>
                                 <td>
@@ -449,7 +448,6 @@
                     <div class="form-group">
                         <label>Opsi untuk Tahun Ajaran Baru:</label>
                         <p class="text-muted small" style="font-size: 0.85rem; margin-bottom: 10px;">Opsi berikut hanya berlaku untuk <strong>Tahun Ajaran Baru</strong> yang sedang dibuat. Data dari tahun ajaran yang Anda salin akan tetap utuh dan tidak akan berubah (tersimpan sebagai arsip).</p>
-                        <div class="form-check">
                         <div class="form-check" style="margin-bottom: 10px;">
                             <input class="form-check-input" type="checkbox" id="skip_kelas_assignments" name="skip_kelas_assignments" value="1">
                             <label class="form-check-label" for="skip_kelas_assignments">
@@ -509,133 +507,113 @@
     </div>
 
     <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const modals = {
-            main: document.getElementById('tahunAjaranModal'),
-            create: document.getElementById('createTahunAjaranModal'),
-            edit: document.getElementById('editTahunAjaranModal')
-        };
-
-        function openModal(modal) {
-            if (modal) {
-                modal.style.display = 'block';
-                setTimeout(() => modal.classList.add('show'), 10);
-            }
-        }
-
-        function closeModal(modal) {
-            if (modal) {
-                modal.classList.remove('show');
-                setTimeout(() => modal.style.display = 'none', 300);
-            }
-        }
-
-        // Open main modal
-        document.getElementById('openTahunAjaranModal').addEventListener('click', () => openModal(modals.main));
-
-        // Open create modal
-        document.getElementById('openCreateTahunAjaranModal').addEventListener('click', () => {
-            closeModal(modals.main);
-            openModal(modals.create);
-        });
-
-        // Close buttons inside modals
-        document.querySelectorAll('.modal-close-button').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const modal = this.closest('.modal');
-                closeModal(modal);
-                if (modal !== modals.main) {
-                    openModal(modals.main);
+        document.addEventListener('DOMContentLoaded', function () {
+            const modals = {
+                main: document.getElementById('tahunAjaranModal'),
+                create: document.getElementById('createTahunAjaranModal'),
+                edit: document.getElementById('editTahunAjaranModal')
+            };
+    
+            function openModal(modal) {
+                if (modal) {
+                    modal.style.display = 'block';
+                    setTimeout(() => modal.classList.add('show'), 10);
                 }
-            });
-        });
-        
-        // Cancel buttons
-        document.querySelectorAll('[data-close-modal]').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const modalToClose = document.getElementById(this.dataset.closeModal);
-                closeModal(modalToClose);
-                openModal(modals.main);
-                if (this.dataset.closeModal !== 'tahunAjaranModal') {
-                    openModal(modals.main);
+            }
+    
+            function closeModal(modal) {
+                if (modal) {
+                    modal.classList.remove('show');
+                    setTimeout(() => modal.style.display = 'none', 300);
                 }
-            });
-        });
-
-        // Edit button listeners
-        document.querySelectorAll('.edit-tahun-ajaran').forEach(button => {
-            button.addEventListener('click', function () {
-                const id = this.dataset.id;
-                const form = modals.edit.querySelector('form');
-                form.action = `/manage/tahun-ajaran/${id}`;
-                form.querySelector('#edit_tahun_ajaran').value = this.dataset.tahun_ajaran;
-                form.querySelector('#edit_semester').value = this.dataset.semester;
-                form.querySelector('#edit_is_active').checked = this.dataset.is_active == 1;
+            }
+    
+            // Open main modal
+            document.getElementById('openTahunAjaranModal').addEventListener('click', () => openModal(modals.main));
+    
+            // Open create modal from main modal
+            document.getElementById('openCreateTahunAjaranModal').addEventListener('click', () => {
                 closeModal(modals.main);
-                openModal(modals.edit);
+                openModal(modals.create);
             });
-        });
-
-        // Delete button listeners
-        document.querySelectorAll('.delete-tahun-ajaran').forEach(button => {
-            button.addEventListener('click', function () {
-                const id = this.dataset.id;
-                Swal.fire({
-                    title: 'Yakin ingin menghapus?',
-                    text: "Data yang terhapus tidak dapat dikembalikan!",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#d33',
-                    cancelButtonColor: '#3085d6',
-                    confirmButtonText: 'Ya, hapus!',
-                    cancelButtonText: 'Batal'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        fetch(`/manage/tahun-ajaran/${id}`, {
-                            method: 'DELETE',
-                            headers: {
-                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                                'Accept': 'application/json'
-                            }
-                        })
-                        .then(response => response.json().then(data => ({ status: response.status, body: data })))
-                        .then(({ status, body }) => {
-                            const message = body.message || 'Tidak ada pesan dari server.';
-                            if (status >= 200 && status < 300) {
-                                Swal.fire({
-                                    title: 'Berhasil!',
-                                    text: message,
-                                    icon: 'success'
-                                }).then(() => {
-                                    window.location.reload();
-                                });
-                            } else {
-                                Swal.fire({
-                                    title: 'Gagal!',
-                                    text: message,
-                                    icon: 'error'
-                                });
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
-                            Swal.fire('Gagal!', 'Tidak dapat terhubung ke server atau terjadi kesalahan.', 'error');
-                        });
-                    }
+    
+            // Generic close buttons (X)
+            document.querySelectorAll('.modal-close-button').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    closeModal(this.closest('.modal'));
                 });
             });
-        });
-
-        // Close modal by clicking on the background
-        window.addEventListener('click', function (event) {
-            if (event.target.classList.contains('modal')) {
-                closeModal(event.target);
-                if (event.target !== modals.main) {
-                   openModal(modals.main);
+    
+            // Generic cancel buttons
+            document.querySelectorAll('[data-close-modal]').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const modalToClose = document.getElementById(this.dataset.closeModal);
+                    closeModal(modalToClose);
+                });
+            });
+    
+            // Edit button listeners
+            document.querySelectorAll('.edit-tahun-ajaran').forEach(button => {
+                button.addEventListener('click', function () {
+                    const id = this.dataset.id;
+                    const form = modals.edit.querySelector('form');
+                    form.action = `/manage/tahun-ajaran/${id}`; // Pastikan URL ini benar
+                    form.querySelector('#edit_tahun_ajaran').value = this.dataset.tahun_ajaran;
+                    form.querySelector('#edit_semester').value = this.dataset.semester;
+                    form.querySelector('#edit_is_active').checked = this.dataset.is_active == 1;
+                    closeModal(modals.main);
+                    openModal(modals.edit);
+                });
+            });
+    
+            // Delete button listeners
+            document.querySelectorAll('.delete-tahun-ajaran').forEach(button => {
+                button.addEventListener('click', function () {
+                    const id = this.dataset.id;
+                    Swal.fire({
+                        title: 'Yakin ingin menghapus?',
+                        text: "Data yang terhapus tidak dapat dikembalikan!",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#3085d6',
+                        confirmButtonText: 'Ya, hapus!',
+                        cancelButtonText: 'Batal'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            fetch(`/manage/tahun-ajaran/${id}`, {
+                                method: 'DELETE',
+                                headers: {
+                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                                    'Accept': 'application/json'
+                                }
+                            })
+                            .then(response => response.json().then(data => ({ status: response.status, body: data })))
+                            .then(({ status, body }) => {
+                                const message = body.message || 'Tidak ada pesan dari server.';
+                                if (status >= 200 && status < 300) {
+                                    Swal.fire({ title: 'Berhasil!', text: message, icon: 'success' })
+                                    .then(() => window.location.reload());
+                                } else {
+                                    Swal.fire({ title: 'Gagal!', text: message, icon: 'error' });
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                                Swal.fire('Gagal!', 'Tidak dapat terhubung ke server atau terjadi kesalahan.', 'error');
+                            });
+                        }
+                    });
+                });
+            });
+    
+            // Close modal by clicking on the background
+            window.addEventListener('click', function (event) {
+                if (event.target.classList.contains('modal')) {
+                    closeModal(event.target);
                 }
-            }
+            });
         });
-    });
     </script>
 </body>
 </html>

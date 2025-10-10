@@ -391,6 +391,12 @@
                 this.disabled = true;
                 this.textContent = 'Menyimpan...';
 
+                const jamToTabeljId = timeSlots.reduce((acc, slot) => {
+                    const jam = `${slot.jam_mulai} - ${slot.jam_selesai}`;
+                    acc[jam] = slot.id;
+                    return acc;
+                }, {});
+
                 const schedules = [];
                 for (const jam in scheduleData) {
                     for (const day in scheduleData[jam]) {
@@ -400,7 +406,7 @@
                                 hari: day,
                                 jam: jam,
                                 guru_id: schedule.guru_id,
-                                tabelj_id: schedule.tabelj_id,
+                                tabelj_id: jamToTabeljId[jam] || null,
                                 mapel: schedule.mapel,
                                 jadwal_kategori_id: schedule.jadwal_kategori_id
                             });

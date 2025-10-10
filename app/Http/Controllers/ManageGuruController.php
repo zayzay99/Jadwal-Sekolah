@@ -5,10 +5,13 @@ namespace App\Http\Controllers;
 use App\Models\Guru;
 use App\Models\Jadwal;
 use Illuminate\Http\Request;
+use App\Imports\GuruImport;
 use App\Models\GuruAvailability;
 use App\Models\Tabelj;
 use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
+use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Log;
 
 class ManageGuruController extends Controller
 {
@@ -53,6 +56,11 @@ class ManageGuruController extends Controller
         
         $query = Guru::query();
 
+        $activeTahunAjaranId = session('tahun_ajaran_id');
+        if ($activeTahunAjaranId) {
+            $query->where('tahun_ajaran_id', $activeTahunAjaranId);
+        }
+
         if ($search) {
             $query->where(function($q) use ($search) {
                 $q->where('nama', 'like', "%{$search}%")
@@ -63,12 +71,7 @@ class ManageGuruController extends Controller
         }
         
         $gurus = $query->paginate(10);
-
-        foreach ($gurus as $guru) {
-            $usedMinutes = $this->calculateUsedMinutes($guru->id);
-            $guru->used_minutes = $usedMinutes; // Tambahkan properti baru
-        }
-
+ 
         return view('dashboard.guru_manage.index', compact('gurus', 'search'));
     }
 
@@ -148,12 +151,14 @@ class ManageGuruController extends Controller
         }
 
         // Hitung ulang sisa jam mengajar berdasarkan jadwal yang sudah ada
-        $activeTahunAjaranId = session('tahun_ajaran_id');
-        $usedMinutes = 0;
-        if ($activeTahunAjaranId) {
-            $usedMinutes = $this->calculateUsedMinutesForYear($guru->id, $activeTahunAjaranId);
+        $totalJamBaru = (int)$data['total_jam_mengajar'];
+        $usedMinutes = 0; // Default
+        
+        // Hanya hitung jam terpakai jika ada tahun ajaran aktif
+        if ($guru->tahun_ajaran_id) {
+            $usedMinutes = $this->calculateUsedMinutesForYear($guru->id, $guru->tahun_ajaran_id);
         }
-        $data['sisa_jam_mengajar'] = $data['total_jam_mengajar'] - $usedMinutes;
+        $data['sisa_jam_mengajar'] = $totalJamBaru - $usedMinutes;
 
         $guru->update($data);
 
@@ -227,7 +232,52 @@ class ManageGuruController extends Controller
         return redirect()->route('manage.guru.index')->with('success', 'Ketersediaan guru berhasil diperbarui!');
     }
 
-    private function calculateUsedMinutesForYear($guruId, $tahunAjaranId)
+    /**
+     * Menampilkan form untuk import data guru.
+     */
+    public function showImportForm()
+    {
+        // Path ke file blade yang sudah dibuat sebelumnya
+        return view('dashboard.guru_manage.import');
+    }
+
+    /**
+     * Mengimpor data guru dari file.
+     */
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls'
+        ]);
+
+        // Validasi: Pastikan ada tahun ajaran yang aktif di sesi
+        if (!session()->has('tahun_ajaran_id')) {
+            return back()->withErrors(['file' => 'Tidak ada Tahun Ajaran yang aktif. Silakan pilih atau buat Tahun Ajaran yang aktif terlebih dahulu sebelum mengimpor data.']);
+        }
+
+        try {
+            $import = new GuruImport;
+            Excel::import($import, $request->file('file'));
+
+            // Cek apakah ada baris yang gagal dan tidak ada yang berhasil
+            if ($import->failures()->isNotEmpty() && $import->getImportedCount() === 0) {
+                return back()->withFailures($import->failures());
+            }
+
+            return redirect()->route('manage.guru.index')->with('success', 'Data guru berhasil diimpor!');
+
+        } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
+             return back()->withFailures($e->failures());
+        } catch (\Throwable $th) {
+            // Tangkap semua jenis error lain dan catat ke log
+            Log::error('Error saat impor guru: ' . $th->getMessage());
+            return back()->withErrors(['file' => 'Terjadi error saat proses impor. Silakan cek file log untuk detail. Pesan: ' . $th->getMessage()]);
+        }
+    }
+
+    
+
+        private function calculateUsedMinutesForYear($guruId, $tahunAjaranId)
     {
         $jadwals = Jadwal::where('guru_id', $guruId)
             ->where('tahun_ajaran_id', $tahunAjaranId)
@@ -246,4 +296,5 @@ class ManageGuruController extends Controller
         }
         return $totalMenit;
     }
+
 }

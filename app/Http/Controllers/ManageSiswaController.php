@@ -1,10 +1,12 @@
 <?php
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Siswa;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\SiswaExport;
+use App\Imports\SiswaImport;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 
 
@@ -13,14 +15,18 @@ class ManageSiswaController extends Controller
     public function index(Request $request)
     {
         $search = $request->input('search');
+        $activeTahunAjaranId = session('tahun_ajaran_id');
 
-        $siswas = Siswa::with('kelas')
+        $siswas = Siswa::with(['kelas' => function ($query) use ($activeTahunAjaranId) {
+                // Hanya load kelas yang sesuai dengan tahun ajaran aktif
+                $query->where('kelas_siswa.tahun_ajaran_id', $activeTahunAjaranId);
+            }])
             ->when($search, function ($query, $search) {
                 return $query->where('nama', 'like', "%{$search}%")
                              ->orWhere('nis', 'like', "%{$search}%")
                              ->orWhere('email', 'like', "%{$search}%")
                              ->orWhereHas('kelas', function ($q) use ($search) {
-                                 $q->where('nama_kelas', 'like', "%{$search}%");
+                                 $q->where('nama_kelas', 'like', "%{$search}%"); // Pencarian ini mungkin perlu disesuaikan jika ingin mencari di tahun ajaran aktif saja
                              });
             })
             ->orderBy('nama', 'asc')->paginate(10);
@@ -30,7 +36,9 @@ class ManageSiswaController extends Controller
 
     public function create()
     {
-        $kelas = \App\Models\Kelas::all();
+        // FIX: Hanya ambil kelas dari tahun ajaran yang aktif
+        $activeTahunAjaranId = session('tahun_ajaran_id');
+        $kelas = \App\Models\Kelas::where('tahun_ajaran_id', $activeTahunAjaranId)->orderBy('nama_kelas')->get();
         return view('dashboard.siswa_manage.create', compact('kelas'));
     }
 
@@ -70,8 +78,10 @@ public function store(Request $request)
 
     public function edit($id)
     {
-        $siswa = Siswa::with('kelas')->findOrFail($id);
-        $kelas = \App\Models\Kelas::all();
+        $activeTahunAjaranId = session('tahun_ajaran_id');
+        $siswa = Siswa::with(['kelas' => fn($q) => $q->where('kelas_siswa.tahun_ajaran_id', $activeTahunAjaranId)])->findOrFail($id);
+        // FIX: Hanya ambil kelas dari tahun ajaran yang aktif
+        $kelas = \App\Models\Kelas::where('tahun_ajaran_id', $activeTahunAjaranId)->orderBy('nama_kelas')->get();
         return view('dashboard.siswa_manage.edit', compact('siswa', 'kelas'));
     }
 
@@ -131,28 +141,34 @@ public function store(Request $request)
             'file' => 'required|mimes:xlsx,xls,csv'
         ]);
     
-        $import = new \App\Imports\SiswaImport;
-
         try {
-            \Maatwebsite\Excel\Facades\Excel::import($import, $request->file('file'));
+            // Pindahkan pembuatan objek ke dalam blok try
+            $import = new SiswaImport();
+            Excel::import($import, $request->file('file'));
+
+            $importedCount = $import->getImportedCount();
+            if ($importedCount > 0) {
+                $successMessage = 'Data siswa berhasil diimpor. ' . $importedCount . ' baris ditambahkan.';
+                return redirect()->route('manage.siswa.index')->with('success', $successMessage);
+            } else {
+                return back()->with('import_errors', ['Tidak ada baris data yang berhasil diimpor. Pastikan file tidak kosong, format benar, dan ada Tahun Ajaran yang aktif.']);
+            }
+
         } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
             $failures = $e->failures();
             $errorMessages = [];
             foreach ($failures as $failure) {
                 $errorMessages[] = 'Baris ' . $failure->row() . ': ' . implode(', ', $failure->errors());
             }
-            return back()->with('import_errors', $errorMessages);
+            return back()->with('import_errors', $errorMessages)->withInput();
+        } catch (\Exception $e) {
+            // Tangkap semua jenis exception lain, termasuk dari constructor
+            return back()->with('import_errors', [$e->getMessage()])->withInput();
         }
-    
-        $successMessage = 'Data siswa berhasil diimpor. ' . $import->getImportedCount() . ' baris ditambahkan.';
-    
-        return redirect()->route('manage.siswa.index')->with('success', $successMessage);
     }
 
     public function export()
     {
-        // Logika untuk mengekspor data ke Excel akan ditambahkan di sini.
-        // Contoh: return Excel::download(new SiswasExport, 'siswa.xlsx');
-        return redirect()->route('manage.siswa.index')->with('info', 'Fitur export sedang dalam pengembangan.');
+        // return Excel::download(new SiswaExport, 'daftar-siswa.xlsx');
     }
 }
