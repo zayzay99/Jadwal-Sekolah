@@ -5,10 +5,13 @@ namespace App\Http\Controllers;
 use App\Models\Guru;
 use App\Models\Jadwal;
 use Illuminate\Http\Request;
+use App\Imports\GuruImport;
 use App\Models\GuruAvailability;
 use App\Models\Tabelj;
 use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
+use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Log;
 
 class ManageGuruController extends Controller
 {
@@ -52,6 +55,11 @@ class ManageGuruController extends Controller
         $search = $request->input('search');
         
         $query = Guru::query();
+
+        $activeTahunAjaranId = session('tahun_ajaran_id');
+        if ($activeTahunAjaranId) {
+            $query->where('tahun_ajaran_id', $activeTahunAjaranId);
+        }
 
         if ($search) {
             $query->where(function($q) use ($search) {
@@ -224,6 +232,48 @@ class ManageGuruController extends Controller
         return redirect()->route('manage.guru.index')->with('success', 'Ketersediaan guru berhasil diperbarui!');
     }
 
+    /**
+     * Menampilkan form untuk import data guru.
+     */
+    public function showImportForm()
+    {
+        // Path ke file blade yang sudah dibuat sebelumnya
+        return view('dashboard.guru_manage.import');
+    }
+
+    /**
+     * Mengimpor data guru dari file.
+     */
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls'
+        ]);
+
+        // Validasi: Pastikan ada tahun ajaran yang aktif di sesi
+        if (!session()->has('tahun_ajaran_id')) {
+            return back()->withErrors(['file' => 'Tidak ada Tahun Ajaran yang aktif. Silakan pilih atau buat Tahun Ajaran yang aktif terlebih dahulu sebelum mengimpor data.']);
+        }
+
+        try {
+            $import = new GuruImport;
+            Excel::import($import, $request->file('file'));
+
+            // Cek apakah ada baris yang gagal dan tidak ada yang berhasil
+            if ($import->failures()->isNotEmpty() && $import->getImportedCount() === 0) {
+                return back()->withFailures($import->failures());
+            }
+
+            return redirect()->route('manage.guru.index')->with('success', 'Data guru berhasil diimpor!');
+
+        } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
+             return back()->withFailures($e->failures());
+        } catch (\Throwable $th) {
+            // Tangkap semua jenis error lain dan catat ke log
+            Log::error('Error saat impor guru: ' . $th->getMessage());
+            return back()->withErrors(['file' => 'Terjadi error saat proses impor. Silakan cek file log untuk detail. Pesan: ' . $th->getMessage()]);
+        }
+    }
 
     
 

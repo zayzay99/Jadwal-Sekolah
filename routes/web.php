@@ -69,18 +69,21 @@ Route::middleware('auth:web')->group(function () {
     Route::post('/manage/tabelj/assign-category', [TabeljController::class, 'storeAssignedCategory'])->name('manage.tabelj.storeAssignedCategory');
     Route::post('/manage/tabelj/{tabelj}/add-break', [TabeljController::class, 'addBreak'])->name('manage.tabelj.addBreak');
 
-    Route::resource('manage/guru', ManageGuruController::class, ['names' => [
+    Route::resource('manage/guru', ManageGuruController::class, ['except' => ['show'], 'names' => [
         'index' => 'manage.guru.index',
         'create' => 'manage.guru.create',
         'store' => 'manage.guru.store',
         'edit' => 'manage.guru.edit',
         'update' => 'manage.guru.update',
         'destroy' => 'manage.guru.destroy',
-        'show' => 'manage.guru.show',
     ]]);
     Route::get('manage/guru/{guru}/availability', [ManageGuruController::class, 'editAvailability'])->name('manage.guru.availability.edit');
     Route::post('manage/guru/{guru}/availability', [ManageGuruController::class, 'updateAvailability'])->name('manage.guru.availability.update');
     
+    // Rute untuk import guru
+    Route::get('manage/guru/import', [ManageGuruController::class, 'showImportForm'])->name('manage.guru.import.show');
+    Route::post('manage/guru/import', [ManageGuruController::class, 'import'])->name('manage.guru.import.store');
+
     // FIX: Pindahkan rute spesifik ke ATAS resource controller
     Route::get('manage/siswa/export', [ManageSiswaController::class, 'export'])->name('manage.siswa.export');
     Route::get('manage/siswa/import', [ManageSiswaController::class, 'showImportForm'])->name('manage.siswa.import.form');
