@@ -1,4 +1,5 @@
 <?php
+
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\SiswaController;
@@ -13,24 +14,31 @@ use App\Http\Controllers\TabeljController;
 use App\Http\Controllers\JadwalKategoriController;
 use App\Http\Controllers\TahunAjaranController;
 
+// ============================
+// HALAMAN UTAMA / LOGIN
+// ============================
 Route::get('/', function () {
     return view('welcome');
-});
+})->name('welcome');
 
-
-// Redirect GET /login ke halaman utama (/) agar tidak error method
-Route::get('/login', function() { return redirect('/'); });
+// Redirect GET /login agar tidak error
+Route::get('/login', fn() => redirect('/'));
 Route::post('/login', [AuthController::class, 'login'])->name('login');
 
+// ============================
+// SISWA
+// ============================
 Route::middleware('auth:siswa')->group(function () {
     Route::get('/dashboard/siswa', [SiswaController::class, 'index'])->name('siswa.dashboard');
     Route::get('/dashboard/siswa/jadwal', [SiswaController::class, 'jadwal'])->name('siswa.jadwal');
     Route::get('/dashboard/siswa/jadwal/cetak', [SiswaController::class, 'cetakJadwal'])->name('siswa.jadwal.cetak');
-    Route::post('/dashboard/siswa/profile/update', [SiswaController::class, 'updateProfile'])
-    ->name('siswa.profile.update');
+    Route::post('/dashboard/siswa/profile/update', [GuruController::class, 'updateProfilePicture'])->name('siswa.profile.update');
     Route::get('/dashboard/siswa/jadwal/arsip/{tahun_ajaran_id}', [SiswaController::class, 'getArsipJadwal'])->name('siswa.jadwal.arsip');
 });
 
+// ============================
+// GURU
+// ============================
 Route::middleware('auth:guru')->group(function () {
     Route::get('/dashboard/guru', [GuruController::class, 'index'])->name('guru.dashboard');
     Route::get('/dashboard/guru/jadwal', [GuruController::class, 'jadwal'])->name('guru.jadwal');
@@ -39,9 +47,14 @@ Route::middleware('auth:guru')->group(function () {
     Route::get('/dashboard/guru/jadwal/arsip/{tahun_ajaran_id}', [GuruController::class, 'getArsipJadwal'])->name('guru.jadwal.arsip');
 });
 
-
+// ============================
+// ADMIN
+// ============================
 Route::middleware('auth:web')->group(function () {
+    // Dashboard
     Route::get('/dashboard/admin', [AdminController::class, 'index'])->name('admin.dashboard');
+
+    // Jadwal CRUD
     Route::get('/jadwal/pilih-kelas', [JadwalController::class, 'pilihKelas'])->name('jadwal.pilihKelas');
     Route::get('/jadwal/pilih-subkelas/{kategori}', [JadwalController::class, 'pilihSubKelas'])->name('jadwal.pilihSubKelas');
     Route::get('/jadwal/create/{kelas}', [JadwalController::class, 'create'])->name('jadwal.create');
@@ -53,7 +66,8 @@ Route::middleware('auth:web')->group(function () {
     Route::post('/jadwal/bulk-store', [JadwalController::class, 'bulkStore'])->name('jadwal.bulkStore');
     Route::delete('/jadwal/{jadwal}', [JadwalController::class, 'destroy'])->name('jadwal.destroy');
     Route::delete('/jadwal/destroy-all/{kelas_id}', [JadwalController::class, 'destroyAll'])->name('jadwal.destroyAll');
-    
+
+    // Manajemen tabel jadwal
     Route::delete('/manage/tabelj/destroy-all', [TabeljController::class, 'destroyAll'])->name('manage.tabelj.destroyAll');
     Route::resource('manage/tabelj', TabeljController::class)->except(['show'])->names([
         'index' => 'manage.tabelj.index',
@@ -67,7 +81,8 @@ Route::middleware('auth:web')->group(function () {
     Route::post('/manage/tabelj/assign-category', [TabeljController::class, 'storeAssignedCategory'])->name('manage.tabelj.storeAssignedCategory');
     Route::post('/manage/tabelj/{tabelj}/add-break', [TabeljController::class, 'addBreak'])->name('manage.tabelj.addBreak');
 
-    Route::resource('manage/guru', ManageGuruController::class, ['names' => [
+    // Manajemen Guru
+    Route::resource('manage/guru', ManageGuruController::class)->names([
         'index' => 'manage.guru.index',
         'create' => 'manage.guru.create',
         'store' => 'manage.guru.store',
@@ -75,10 +90,11 @@ Route::middleware('auth:web')->group(function () {
         'update' => 'manage.guru.update',
         'destroy' => 'manage.guru.destroy',
         'show' => 'manage.guru.show',
-    ]]);
+    ]);
     Route::get('manage/guru/{guru}/availability', [ManageGuruController::class, 'editAvailability'])->name('manage.guru.availability.edit');
     Route::post('manage/guru/{guru}/availability', [ManageGuruController::class, 'updateAvailability'])->name('manage.guru.availability.update');
-    // Rute 'show' untuk siswa tidak digunakan, jadi dihapus untuk menghindari error.
+
+    // Manajemen Siswa
     Route::get('manage/siswa/export', [ManageSiswaController::class, 'export'])->name('manage.siswa.export');
     Route::get('manage/siswa/import', [ManageSiswaController::class, 'showImportForm'])->name('manage.siswa.import.form');
     Route::post('manage/siswa/import', [ManageSiswaController::class, 'import'])->name('manage.siswa.import.process');
@@ -90,7 +106,9 @@ Route::middleware('auth:web')->group(function () {
         'update' => 'manage.siswa.update',
         'destroy' => 'manage.siswa.destroy',
     ]);
-    Route::resource('manage/kelas', ManageKelasController::class, ['names' => [
+
+    // Manajemen Kelas
+    Route::resource('manage/kelas', ManageKelasController::class)->names([
         'index' => 'manage.kelas.index',
         'create' => 'manage.kelas.create',
         'store' => 'manage.kelas.store',
@@ -98,10 +116,10 @@ Route::middleware('auth:web')->group(function () {
         'update' => 'manage.kelas.update',
         'destroy' => 'manage.kelas.destroy',
         'show' => 'manage.kelas.show',
-    ]]);
+    ]);
 
+    // Jadwal Kategori & Tahun Ajaran
     Route::resource('jadwal-kategori', JadwalKategoriController::class);
-
     Route::resource('manage/tahun-ajaran', TahunAjaranController::class)->names([
         'index' => 'manage.tahun-ajaran.index',
         'create' => 'manage.tahun-ajaran.create',
@@ -114,10 +132,13 @@ Route::middleware('auth:web')->group(function () {
     Route::post('manage/tahun-ajaran/{tahun_ajaran}/set-active', [TahunAjaranController::class, 'setActive'])->name('manage.tahun-ajaran.setActive');
     Route::get('manage/tahun-ajaran/{tahun_ajaran}/switch', [TahunAjaranController::class, 'switchActive'])->name('manage.tahun-ajaran.switch');
 
+    // Kelas Kategori
     Route::get('/kelas', [KelasKategoriController::class, 'index'])->name('kelas.kategori');
     Route::get('/kelas/{kategori}', [KelasKategoriController::class, 'show'])->name('kelas.show');
     Route::get('/kelas/{kategori}/{kelas}', [KelasKategoriController::class, 'detail'])->name('kelas.detail');
 });
 
-
+// ============================
+// LOGOUT (GET agar tidak error 405)
+// ============================
 Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
