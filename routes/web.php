@@ -33,8 +33,7 @@ Route::middleware('auth:siswa')->group(function () {
     Route::get('/dashboard/siswa/jadwal', [SiswaController::class, 'jadwal'])->name('siswa.jadwal');
     Route::get('/dashboard/siswa/jadwal/cetak', [SiswaController::class, 'cetakJadwal'])->name('siswa.jadwal.cetak');
     Route::post('/dashboard/siswa/profile/update', [GuruController::class, 'updateProfilePicture'])->name('siswa.profile.update');
-    Route::post('/dashboard/siswa/profile/update', [SiswaController::class, 'updateProfile'])
-    ->name('siswa.profile.update');
+    Route::post('/dashboard/siswa/profile/update', [SiswaController::class, 'updateProfile'])->name('siswa.profile.update');
     Route::post('/dashboard/siswa/switch-tahun-ajaran', [SiswaController::class, 'switchTahunAjaran'])->name('siswa.switch-tahun-ajaran');
     Route::get('/dashboard/siswa/jadwal/arsip/{tahun_ajaran_id}', [SiswaController::class, 'getArsipJadwal'])->name('siswa.jadwal.arsip');
 });

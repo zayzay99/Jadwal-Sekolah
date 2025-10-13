@@ -178,3 +178,59 @@ section:hover {
     margin-top: 90px;
   }
 }
+
+/* Tahun Ajaran */
+ .tahun-ajaran-select {
+    height: 42px;
+    min-width: 240px;
+    border: 1px solid #b8c2cc;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #f9fafb, #edf2f7);
+    color: #2d3748;
+    padding: 0 12px;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  }
+
+  .tahun-ajaran-select:hover {
+    border-color: #4a8065;
+    background: linear-gradient(135deg, #f1f9f4, #e7f3ea);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  }
+
+  .tahun-ajaran-select:focus {
+    outline: none;
+    border-color: #2f6f4e;
+    background: #f7fff9;
+    box-shadow: 0 0 0 3px rgba(47, 111, 78, 0.25);
+  }
+
+  .btn-tahun-ajaran {
+    background: linear-gradient(135deg, #285943, #3a7d5d);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 13px;
+    padding: 6px 14px;
+    height: 42px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+  }
+
+  .btn-tahun-ajaran:hover {
+    background: linear-gradient(135deg, #337154, #469d73);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.18);
+    transform: translateY(-1px);
+  }
+
+  .btn-tahun-ajaran:active {
+    transform: scale(0.97);
+    background: #2e6d50;
+  }
+
+/* remove conflicting heavy !important rules & duplicates in your CSS:
+   -> search & delete earlier .pagination-container / .pagination blocks to avoid overrides */

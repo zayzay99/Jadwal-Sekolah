@@ -36,7 +36,8 @@ class AuthController extends Controller
         }
 
         // === Jika gagal ===
-        return back()->with('error', 'NIS/NIP atau password salah.')->withInput(['nis' => $identifier]);
+        return back()->withErrors(['login' => 'NIS/NIP atau password yang kamu masukkan salah.']);
+
     }
 
     public function logout(Request $request)

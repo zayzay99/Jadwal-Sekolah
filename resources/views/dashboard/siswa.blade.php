@@ -57,13 +57,16 @@
       <form action="{{ route('siswa.switch-tahun-ajaran') }}" method="POST" id="tahunAjaranForm" class="flex items-center justify-center">
         @csrf
         <label for="tahun_ajaran_id" class="mr-2 text-sm font-medium">Tahun Ajaran:</label>
-        <select name="tahun_ajaran_id" id="tahun_ajaran_id" onchange="document.getElementById('tahunAjaranForm').submit()" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-1.5">
-          @foreach($allTahunAjarans as $tahun)
-            <option value="{{ $tahun->id }}" {{ $selectedTahunAjaranId == $tahun->id ? 'selected' : '' }}>
-              {{ $tahun->tahun_ajaran }} {{ $tahun->semester }}
-            </option>
-          @endforeach
-        </select>
+          <select name="tahun_ajaran"
+    class="form-control tahun-ajaran-select"
+    onchange="window.location.href = '{{ url('manage/tahun-ajaran') }}/' + this.value + '/switch-active';"
+    title="Ganti Tahun Ajaran Aktif">
+    @foreach($tahunAjarans as $tahun)
+      <option value="{{ $tahun->id }}" {{ $tahun->is_active ? 'selected' : '' }}>
+        {{ $tahun->tahun_ajaran }} {{ $tahun->semester }}
+      </option>
+    @endforeach
+  </select>
       </form>
       @if($isViewingActiveYear)
         <span class="text-xs text-green-600 font-semibold">(Tahun Ajaran Aktif)</span>
@@ -90,22 +93,22 @@
       <h2 class="text-xl font-semibold text-[#3b7ca5] mb-1 mt-4">
         Selamat Datang, {{ $user?->nama ?? 'siswa' }}
       </h2>
-      <p class="text-gray-500 text-sm mb-5">Terima kasih sudah mengajar hari ini 👩‍🏫🌼</p>
+      <p class="text-gray-500 text-sm mb-5">Terima kasih sudah semangat belajar hari ini 👩‍🏫🌼</p>
       <div class="grid sm:grid-cols-2 gap-5 w-full">
         <div class="bg-[#d9eaf5] p-5 rounded-lg text-[#274c77] shadow-sm">
           <h3 class="font-semibold mb-2 flex items-center gap-2">
             <i class="fa-solid fa-user"></i> Profil
           </h3>
           <p><strong>Nama:</strong> {{ $user?->nama ?? '-' }}</p>
-          <p><strong>NIP:</strong> {{ $user?->nip ?? '-' }}</p>
-          <p><strong>Pengampu:</strong> {{ $user?->pengampu ?? '-' }}</p>
+          <p><strong>NIS:</strong> {{ $user?->nis ?? '-' }}</p>
+          <p><strong>Kelas</strong>: {{ $user?->kelas->first()?->nama_kelas ?? '-' }}</p>
           <p><strong>Email:</strong> {{ $user?->email ?? '-' }}</p>
         </div>
         <div class="bg-[#f2f8fc] p-5 rounded-lg shadow-sm">
           <h3 class="font-semibold mb-2 flex items-center gap-2 text-[#3b7ca5]">
             <i class="fa-solid fa-chalkboard-user"></i> Status siswa
           </h3>
-          <p class="text-gray-600">Aktif mengajar semester ini.</p>
+          <p class="text-gray-600">Aktif belajar semester ini.</p>
         </div>
       </div>
     </div>
@@ -115,7 +118,7 @@
   <section class="bg-white rounded-2xl shadow p-6 max-w-3xl mx-auto border border-gray-100">
     <div class="flex justify-between items-center mb-4">
       <h3 class="text-lg font-semibold text-[#3b7ca5] flex items-center gap-2">
-        <i class="fa-solid fa-calendar-days"></i> Jadwal Mengajar Hari Ini
+        <i class="fa-solid fa-calendar-days"></i> Jadwal Pelajaran Hari Ini
       </h3>
       <div class="flex items-center space-x-2">
         <button id="openArsipModal" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded transition duration-300">

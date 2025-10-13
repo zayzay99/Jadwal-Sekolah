@@ -158,20 +158,24 @@
                 <h1>Dashboard Overview</h1>
                 <div style="display: flex; align-items: center; gap: 10px;">
                     @if($tahunAjarans->isNotEmpty())
-                        <select name="tahun_ajaran" class="form-control" onchange="window.location.href = '{{ url('manage/tahun-ajaran') }}/' + this.value + '/switch-active';" style="height: 38px; min-width: 220px;" title="Ganti Tahun Ajaran Aktif">
-                            @foreach($tahunAjarans as $tahun)
-                                <option value="{{ $tahun->id }}" {{ $tahun->is_active ? 'selected' : '' }}>
-                                    {{ $tahun->tahun_ajaran }} {{ $tahun->semester }}
-                                </option>
-                            @endforeach
-                        </select>
+                       <div style="display: flex; align-items: center; gap: 10px;">
+  <select name="tahun_ajaran"
+    class="form-control tahun-ajaran-select"
+    onchange="window.location.href = '{{ url('manage/tahun-ajaran') }}/' + this.value + '/switch-active';"
+    title="Ganti Tahun Ajaran Aktif">
+    @foreach($tahunAjarans as $tahun)
+      <option value="{{ $tahun->id }}" {{ $tahun->is_active ? 'selected' : '' }}>
+        {{ $tahun->tahun_ajaran }} {{ $tahun->semester }}
+      </option>
+    @endforeach
+  </select>
                     @else
                         <span style="color: #721c24; background-color: #f8d7da; border-color: #f5c6cb; padding: .375rem .75rem; border-radius: .25rem;">
                             Tahun Ajaran Belum Diatur
                         </span>
                     @endif
                     <button type="button" class="btn btn-primary btn-tiny" id="openTahunAjaranModal" title="Kelola Tahun Ajaran">
-                        <i class="fas fa-cog"></i> Kelola T.A
+                        <i class=""></i> Kelola T.A
                     </button>
                 </div>
             </div>

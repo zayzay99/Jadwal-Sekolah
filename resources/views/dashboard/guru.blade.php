@@ -57,13 +57,16 @@
       <form action="{{ route('guru.switch-tahun-ajaran') }}" method="POST" id="tahunAjaranForm" class="flex items-center justify-center">
         @csrf
         <label for="tahun_ajaran_id" class="mr-2 text-sm font-medium">Tahun Ajaran:</label>
-        <select name="tahun_ajaran_id" id="tahun_ajaran_id" onchange="document.getElementById('tahunAjaranForm').submit()" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-1.5">
-          @foreach($allTahunAjarans as $tahun)
-            <option value="{{ $tahun->id }}" {{ $selectedTahunAjaranId == $tahun->id ? 'selected' : '' }}>
-              {{ $tahun->tahun_ajaran }} {{ $tahun->semester }}
-            </option>
-          @endforeach
-        </select>
+        <select name="tahun_ajaran"
+    class="form-control tahun-ajaran-select"
+    onchange="window.location.href = '{{ url('manage/tahun-ajaran') }}/' + this.value + '/switch-active';"
+    title="Ganti Tahun Ajaran Aktif">
+    @foreach($tahunAjarans as $tahun)
+      <option value="{{ $tahun->id }}" {{ $tahun->is_active ? 'selected' : '' }}>
+        {{ $tahun->tahun_ajaran }} {{ $tahun->semester }}
+      </option>
+    @endforeach
+  </select>
       </form>
       @if($isViewingActiveYear)
         <span class="text-xs text-green-600 font-semibold">(Tahun Ajaran Aktif)</span>
