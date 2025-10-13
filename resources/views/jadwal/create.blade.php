@@ -3,13 +3,21 @@
 @section('content')
     <div class="content-header">
         <div>
-            <h1>Manajemen Jadwal Untuk Kelas: <strong>{{ $kelas->nama_kelas }}</strong></h1>
-            <p>Klik pada slot waktu untuk mengisi atau mengisi jadwal. Jangan lupa simpan perubahan Anda.</p>
+            <h2 style="font-size: 2rem; font-weight: 700; margin: 0 0 8px 0; color: var(--text-color);">
+                Manajemen Jadwal Kelas: <strong style="background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">{{ $kelas->nama_kelas }}</strong>
+            </h2>
+            <p style="color: var(--text-light); margin: 0; font-size: 0.95rem;">
+                <i class="fas fa-info-circle"></i> Klik pada slot waktu untuk mengisi atau mengedit jadwal. Jangan lupa simpan perubahan Anda.
+            </p>
         </div>
-        <div class="flex gap-4">
-            <button id="bulkSaveBtn" class="btn btn-info btn-tiny">Simpan Semua Jadwal</button>
-            <a href="{{ route('jadwal.perKelas', $kelas->id) }}" class="btn btn-primary btn-tiny">Lihat Jadwal Selesai</a>
-            <a href="{{ route('jadwal.pilihKelas') }}" class="btn btn-secondary btn-tiny">
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <button id="bulkSaveBtn" class="btn btn-success">
+                <i class="fas fa-save"></i> Simpan Semua Jadwal
+            </button>
+            <a href="{{ route('jadwal.perKelas', $kelas->id) }}" class="btn btn-info">
+                <i class="fas fa-eye"></i> Lihat Jadwal
+            </a>
+            <a href="{{ route('jadwal.pilihKelas') }}" class="btn btn-secondary">
                 <i class="fas fa-arrow-left"></i> Kembali
             </a>
         </div>
@@ -17,14 +25,62 @@
 
     <input type="hidden" id="kelas_id" value="{{ $kelas->id }}">
 
-    <div class="table-container">
-        <div class="table-responsive">
-            <table class="custom-table" id="schedule-builder">
+    <!-- Stats Info Cards -->
+    <div class="stats-container" style="margin-bottom: 25px;">
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-calendar-check"></i>
+            </div>
+            <div class="stat-value" id="filled-slots-count">0</div>
+            <div class="stat-label">Slot Terisi</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-calendar-plus"></i>
+            </div>
+            <div class="stat-value" id="empty-slots-count">0</div>
+            <div class="stat-label">Slot Kosong</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-chalkboard-teacher"></i>
+            </div>
+            <div class="stat-value">{{ count($gurus) }}</div>
+            <div class="stat-label">Guru Tersedia</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-clock"></i>
+            </div>
+            <div class="stat-value">{{ count($timeSlots) }}</div>
+            <div class="stat-label">Jam Pelajaran</div>
+        </div>
+    </div>
+
+    <!-- Schedule Table -->
+    <div class="welcome-card" style="flex-direction: column; align-items: stretch; padding: 0; overflow: hidden;">
+        <div style="padding: 25px 30px; border-bottom: 1px solid var(--border-color); background: linear-gradient(to right, rgba(17, 153, 142, 0.05), transparent);">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <div style="font-size: 2rem; background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                    <i class="fas fa-table"></i>
+                </div>
+                <h3 style="margin: 0; font-size: 1.3rem; font-weight: 600; color: var(--text-color);">
+                    Tabel Jadwal Pelajaran
+                </h3>
+            </div>
+        </div>
+
+        <div style="overflow-x: auto;">
+            <table class="table" id="schedule-builder" style="margin: 0;">
                 <thead>
                     <tr>
-                        <th style="width: 150px;">Jam</th>
+                        <th style="width: 150px; min-width: 150px; text-align: center;">
+                            <i class="fas fa-clock"></i> Jam
+                        </th>
                         @foreach ($days as $day)
-                            <th>{{ $day }}</th>
+                            <th style="min-width: 180px;">
+                                <i class="fas fa-calendar-day"></i> {{ $day }}
+                            </th>
                         @endforeach
                     </tr>
                 </thead>
@@ -35,28 +91,78 @@
         </div>
     </div>
 
+    <!-- Legend -->
+    <div style="margin-top: 25px; display: flex; flex-wrap: wrap; gap: 15px; align-items: center; padding: 20px; background: white; border-radius: 15px; border: 1px solid var(--border-color);">
+        <div style="font-weight: 600; color: var(--text-color); margin-right: 10px;">
+            <i class="fas fa-info-circle"></i> Keterangan:
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <div style="width: 20px; height: 20px; background: linear-gradient(135deg, rgba(17, 153, 142, 0.2), rgba(56, 239, 125, 0.2)); border: 2px solid var(--primary-color); border-radius: 6px;"></div>
+            <span style="font-size: 0.9rem; color: var(--text-light);">Slot Terisi</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <div style="width: 20px; height: 20px; border: 2px dashed var(--border-color); border-radius: 6px;"></div>
+            <span style="font-size: 0.9rem; color: var(--text-light);">Slot Kosong</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <div style="width: 20px; height: 20px; background: linear-gradient(135deg, #f8f9fa, #e9ecef); border-radius: 6px;"></div>
+            <span style="font-size: 0.9rem; color: var(--text-light);">Istirahat</span>
+        </div>
+    </div>
+
     <!-- Schedule Edit Modal -->
-    <div id="schedule-modal" class="schedule-modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 id="modal-title">Tambah Jadwal</h3>
-                <p id="modal-subtitle"></p>
+    <div id="schedule-modal" class="modal">
+        <div class="modal-content" style="max-width: 550px;">
+            <span class="modal-close-button" id="modal-close-x">&times;</span>
+            
+            <div class="modal-header" style="padding: 30px 35px 25px;">
+                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
+                    <div style="width: 45px; height: 45px; background: var(--primary-gradient); border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(17, 153, 142, 0.3);">
+                        <i class="fas fa-calendar-plus" style="font-size: 1.3rem; color: white;"></i>
+                    </div>
+                    <div style="flex: 1;">
+                        <h1 id="modal-title" style="font-size: 1.4rem; margin: 0; font-weight: 700;">Tambah Jadwal</h1>
+                    </div>
+                </div>
+                <div id="modal-subtitle" style="margin: 0; padding: 12px 16px; background: linear-gradient(135deg, rgba(17, 153, 142, 0.1), rgba(56, 239, 125, 0.1)); border-radius: 10px; border-left: 3px solid var(--primary-color); font-size: 0.95rem; color: var(--text-color); font-weight: 500;">
+                </div>
             </div>
-            <div class="modal-body">
+            
+            <div class="modal-body" style="padding: 25px 35px;">
                 <form id="modal-form">
                     <input type="hidden" id="modal-day">
                     <input type="hidden" id="modal-jam">
 
-                    <div class="form-group">
-                        <label for="modal-select">Pilih Jadwal</label>
-                        <select id="modal-select" class="form-control"></select>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label for="modal-select" style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px; font-size: 0.95rem;">
+                            <i class="fas fa-list-ul" style="color: var(--primary-color);"></i> 
+                            <span>Pilih Jadwal</span>
+                        </label>
+                        <select id="modal-select" class="form-control" style="font-size: 0.95rem; padding: 13px 15px;">
+                            <option value="">-- Kosong --</option>
+                        </select>
+                        <div style="display: flex; align-items: flex-start; gap: 8px; margin-top: 10px; padding: 10px 12px; background: rgba(0, 180, 219, 0.08); border-radius: 8px; border-left: 3px solid #00b4db;">
+                            <i class="fas fa-info-circle" style="color: #00b4db; margin-top: 2px; font-size: 0.9rem;"></i>
+                            <small style="color: var(--text-light); font-size: 0.85rem; line-height: 1.5;">
+                                Pilih guru dengan mata pelajaran atau kategori khusus untuk slot jadwal ini
+                            </small>
+                        </div>
                     </div>
                 </form>
             </div>
-            <div class="modal-footer">
-                <button type="button" id="modal-cancel" class="btn btn-secondary btn-tiny">Batal</button>
-                <button type="button" id="modal-delete" class="btn btn-danger btn-tiny">Hapus Jadwal</button>
-                <button type="button" id="modal-save" class="btn btn-primary btn-tiny">Simpan</button>
+            
+            <div style="padding: 20px 35px 30px; border-top: 1px solid var(--border-color); background: rgba(17, 153, 142, 0.02);">
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button type="button" id="modal-delete" class="btn btn-danger" style="margin-right: auto;">
+                        <i class="fas fa-trash-alt"></i> Hapus
+                    </button>
+                    <button type="button" id="modal-cancel" class="btn btn-secondary">
+                        <i class="fas fa-times"></i> Batal
+                    </button>
+                    <button type="button" id="modal-save" class="btn btn-success">
+                        <i class="fas fa-check-circle"></i> Simpan
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -65,132 +171,138 @@
 @push('styles')
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <style>
-        /* General Layout */
-        .content-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-        }
-        .custom-table th, .custom-table td {
-            vertical-align: middle;
-            text-align: center;
-            padding: 0.5rem;
-        }
-        .custom-table th:first-child {
-            width: 150px;
-            min-width: 150px;
-        }
+        /* Time Display */
         .time-display {
-            padding: 8px;
+            padding: 12px 8px;
             text-align: center;
             font-weight: 600;
-            color: #2d6a4f;
+            color: var(--primary-color);
+            font-size: 0.9rem;
         }
 
         /* Schedule Cell Styling */
         .schedule-cell {
             cursor: pointer;
-            min-height: 60px;
+            min-height: 70px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 8px;
-            border-radius: 8px;
-            transition: background-color 0.3s;
-            border: 1px dashed transparent;
+            padding: 12px;
+            border-radius: 10px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 2px dashed var(--border-color);
+            background: white;
         }
+        
         .schedule-cell:hover {
-            background-color: #e9ecef;
-            border-color: #2d6a4f;
+            background: linear-gradient(135deg, rgba(17, 153, 142, 0.08), rgba(56, 239, 125, 0.08));
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(17, 153, 142, 0.15);
         }
+        
         .schedule-cell.filled {
-            background-color: #e6f0fa;
-            border: 1px solid #b6d4fe;
+            background: linear-gradient(135deg, rgba(17, 153, 142, 0.1), rgba(56, 239, 125, 0.1));
+            border: 2px solid var(--primary-color);
         }
+        
+        .schedule-cell.filled:hover {
+            background: linear-gradient(135deg, rgba(17, 153, 142, 0.15), rgba(56, 239, 125, 0.15));
+            box-shadow: 0 6px 16px rgba(17, 153, 142, 0.2);
+        }
+        
         .cell-guru {
             font-weight: 600;
-            color: #2d6a4f;
+            color: var(--text-color);
+            margin-bottom: 4px;
+            font-size: 0.95rem;
         }
-        .cell-mapel, .cell-kategori {
-            font-size: 12px;
-            color: #555;
+        
+        .cell-mapel {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            text-align: center;
         }
+        
+        .cell-kategori {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            text-align: center;
+        }
+        
         .cell-placeholder {
-            font-size: 12px;
-            color: #999;
+            font-size: 0.9rem;
+            color: var(--text-muted);
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 6px;
+            font-weight: 500;
         }
+        
         .cell-placeholder i {
-            font-size: 14px;
+            font-size: 1rem;
+            color: var(--primary-color);
         }
 
+        /* Break Row Styling */
         .break-row {
-            background-color: #f8f9fa;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
         }
 
         .break-cell {
             text-align: center;
-            font-weight: bold;
-            color: #6c757d;
-            padding: 0.5rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            padding: 12px;
+            font-size: 0.95rem;
+            letter-spacing: 0.5px;
+        }
+        
+        .break-cell i {
+            margin-right: 6px;
+            color: var(--primary-color);
         }
 
-        /* Modal Styles */
-        .schedule-modal {
-            display: none;
-            position: fixed;
-            z-index: 1060;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0, 0, 0, 0.5);
-            animation: fadeIn 0.3s;
-        }
-        .modal-content {
-            background-color: #fefefe;
-            margin: 10% auto;
-            padding: 25px;
-            border: 1px solid #ddd;
-            width: 90%;
-            max-width: 500px;
-            border-radius: 12px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            animation: slideIn 0.3s;
-        }
-        .modal-header {
-            padding-bottom: 15px;
-            border-bottom: 1px solid #e5e5e5;
-            margin-bottom: 20px;
-        }
-        .modal-header h3 {
-            margin: 0;
-            font-size: 22px;
-            color: #2d6a4f;
-        }
-        .modal-header p {
-            margin: 5px 0 0;
-            color: #666;
-        }
-        .modal-footer {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-            margin-top: 20px;
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .schedule-cell {
+                min-height: 60px;
+                padding: 8px;
+            }
+            
+            .cell-guru {
+                font-size: 0.85rem;
+            }
+            
+            .cell-mapel, .cell-kategori {
+                font-size: 0.75rem;
+            }
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+        /* Custom Scrollbar */
+        .modal-body::-webkit-scrollbar,
+        .welcome-card > div::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
         }
-        @keyframes slideIn {
-            from { transform: translateY(-50px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
+        
+        .modal-body::-webkit-scrollbar-track,
+        .welcome-card > div::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+            border-radius: 10px;
+        }
+        
+        .modal-body::-webkit-scrollbar-thumb,
+        .welcome-card > div::-webkit-scrollbar-thumb {
+            background: var(--primary-color);
+            border-radius: 10px;
+        }
+        
+        .modal-body::-webkit-scrollbar-thumb:hover,
+        .welcome-card > div::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-dark);
         }
     </style>
 @endpush
@@ -224,18 +336,41 @@
             const modalSaveBtn = document.getElementById('modal-save');
             const modalCancelBtn = document.getElementById('modal-cancel');
             const modalDeleteBtn = document.getElementById('modal-delete');
+            const modalCloseX = document.getElementById('modal-close-x');
+
+            // --- STATS UPDATE FUNCTION ---
+            function updateStats() {
+                let filledCount = 0;
+                let emptyCount = 0;
+                
+                timeSlots.forEach(slot => {
+                    if (!slot.jadwal_kategori || slot.jadwal_kategori.nama_kategori !== 'Istirahat') {
+                        const jam = `${slot.jam_mulai} - ${slot.jam_selesai}`;
+                        days.forEach(day => {
+                            if (scheduleData[jam] && scheduleData[jam][day]) {
+                                filledCount++;
+                            } else {
+                                emptyCount++;
+                            }
+                        });
+                    }
+                });
+                
+                document.getElementById('filled-slots-count').textContent = filledCount;
+                document.getElementById('empty-slots-count').textContent = emptyCount;
+            }
 
             // --- TEMPLATE FUNCTIONS ---
             function getModalOptions(day, jam) {
                 let options = '<option value="">-- Kosong --</option>';
-                options += '<optgroup label="Pelajaran">';
+                options += '<optgroup label="📚 Pelajaran">';
                 if (availableGurus[day] && availableGurus[day][jam]) {
                     availableGurus[day][jam].forEach(guru => {
                         options += `<option value="guru-${guru.id}" data-mapel="${guru.pengampu}">${guru.nama} (${guru.pengampu})</option>`;
                     });
                 }
                 options += '</optgroup>';
-                options += '<optgroup label="Kategori Khusus">';
+                options += '<optgroup label="⚡ Kategori Khusus">';
                 kategoris.forEach(kategori => {
                     options += `<option value="kategori-${kategori.id}">${kategori.nama_kategori}</option>`;
                 });
@@ -252,15 +387,16 @@
                 if (schedule) {
                     cell.classList.add('filled');
                     if (schedule.guru) {
-                        content = `<div class="cell-guru">${schedule.guru.nama}</div><div class="cell-mapel">${schedule.guru.pengampu}</div>`;
+                        content = `<div class="cell-guru"><i class="fas fa-user-tie"></i> ${schedule.guru.nama}</div><div class="cell-mapel">${schedule.guru.pengampu}</div>`;
                     } else if (schedule.kategori) {
-                        content = `<div class="cell-kategori">${schedule.kategori.nama_kategori}</div>`;
+                        content = `<div class="cell-kategori"><i class="fas fa-tag"></i> ${schedule.kategori.nama_kategori}</div>`;
                     }
                 } else {
                     cell.classList.remove('filled');
-                    content = '<div class="cell-placeholder"><i class="fas fa-plus-circle"></i> Atur</div>';
+                    content = '<div class="cell-placeholder"><i class="fas fa-plus-circle"></i> Tambah</div>';
                 }
                 cell.innerHTML = content;
+                updateStats();
             }
 
             // --- MODAL LOGIC ---
@@ -278,7 +414,7 @@
                     modalDeleteBtn.style.display = 'none';
                 }
 
-                modalSubtitle.textContent = `${day}, Jam ${jam}`;
+                modalSubtitle.innerHTML = `<i class="fas fa-calendar-day"></i> ${day}, <i class="fas fa-clock"></i> Jam ${jam}`;
                 
                 modalSelect.innerHTML = getModalOptions(day, jam);
 
@@ -293,10 +429,18 @@
                 }
 
                 modal.style.display = 'block';
+                modal.classList.add('show');
+                setTimeout(() => {
+                    modal.style.opacity = '1';
+                }, 10);
             }
 
             function closeModal() {
-                modal.style.display = 'none';
+                modal.style.opacity = '0';
+                setTimeout(() => {
+                    modal.style.display = 'none';
+                    modal.classList.remove('show');
+                }, 300);
             }
 
             function saveModalData() {
@@ -306,7 +450,7 @@
 
                 if (!scheduleData[jam]) scheduleData[jam] = {};
 
-                if (!selectedValue) { // If "-- Kosong --" is selected
+                if (!selectedValue) {
                     scheduleData[jam][day] = null;
                 } else {
                     const [type, id] = selectedValue.split('-');
@@ -342,11 +486,10 @@
                 timeSlots.forEach(slot => {
                     const jam = `${slot.jam_mulai} - ${slot.jam_selesai}`;
                     
-                    // Check if the slot is a break time
                     if (slot.jadwal_kategori && slot.jadwal_kategori.nama_kategori === 'Istirahat') {
                         tableHtml += '<tr class="break-row">';
                         tableHtml += `<td><div class="time-display">${jam}</div></td>`;
-                        tableHtml += `<td colspan="${days.length}" class="break-cell">${slot.jadwal_kategori.nama_kategori}</td>`;
+                        tableHtml += `<td colspan="${days.length}" class="break-cell"><i class="fas fa-mug-hot"></i> ${slot.jadwal_kategori.nama_kategori}</td>`;
                         tableHtml += '</tr>';
                     } else {
                         tableHtml += '<tr>';
@@ -359,7 +502,6 @@
                 });
                 scheduleBody.innerHTML = tableHtml;
 
-                // Initial render of all cells
                 timeSlots.forEach(slot => {
                     if (!slot.jadwal_kategori || slot.jadwal_kategori.nama_kategori !== 'Istirahat') {
                         const jam = `${slot.jam_mulai} - ${slot.jam_selesai}`;
@@ -368,6 +510,8 @@
                         });
                     }
                 });
+                
+                updateStats();
             }
 
             // --- EVENT LISTENERS ---
@@ -381,6 +525,8 @@
             modalSaveBtn.addEventListener('click', saveModalData);
             modalDeleteBtn.addEventListener('click', deleteModalData);
             modalCancelBtn.addEventListener('click', closeModal);
+            modalCloseX.addEventListener('click', closeModal);
+            
             window.addEventListener('click', function(e) {
                 if (e.target == modal) {
                     closeModal();
@@ -389,7 +535,8 @@
 
             bulkSaveBtn.addEventListener('click', async function() {
                 this.disabled = true;
-                this.textContent = 'Menyimpan...';
+                const originalText = this.innerHTML;
+                this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
 
                 const jamToTabeljId = timeSlots.reduce((acc, slot) => {
                     const jam = `${slot.jam_mulai} - ${slot.jam_selesai}`;
@@ -431,17 +578,32 @@
                     const result = await response.json();
 
                     if (response.ok && result.success) {
-                        await Swal.fire('Berhasil!', result.message, 'success');
+                        await Swal.fire({
+                            icon: 'success',
+                            title: 'Berhasil!',
+                            text: result.message,
+                            confirmButtonColor: '#11998e'
+                        });
                         window.location.href = '{{ route('jadwal.perKelas', $kelas->id) }}';
                     } else {
-                        Swal.fire('Gagal!', result.message || 'Terjadi kesalahan saat menyimpan.', 'error');
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Gagal!',
+                            text: result.message || 'Terjadi kesalahan saat menyimpan.',
+                            confirmButtonColor: '#11998e'
+                        });
                     }
                 } catch (error) {
                     console.error('Save error:', error);
-                    Swal.fire('Error!', 'Tidak dapat terhubung ke server.', 'error');
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error!',
+                        text: 'Tidak dapat terhubung ke server.',
+                        confirmButtonColor: '#11998e'
+                    });
                 } finally {
                     this.disabled = false;
-                    this.textContent = 'Simpan Semua Jadwal';
+                    this.innerHTML = originalText;
                 }
             });
 

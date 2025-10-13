@@ -103,8 +103,6 @@ class ManageGuruController extends Controller
             $name = 'profile-pictures/' . time().'.'.$image->getClientOriginalExtension();
             $image->storeAs('public', $name);
             $data['profile_picture'] = $name;
-        } else {
-            $data['profile_picture'] = 'Default-Profile.png';
         }
 
         $data['password'] = Hash::make($request->password);

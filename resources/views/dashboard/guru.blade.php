@@ -41,10 +41,210 @@
 
 <main class="p-6 md:p-8 space-y-8">
 
+<<<<<<< HEAD
   <!-- 🏫 INSTANSI -->
   <section class="bg-white rounded-2xl shadow p-6 text-center max-w-3xl mx-auto border border-gray-100">
     <div class="flex justify-center mb-3">
       <img src="{{ asset('img/Klipaa Original.png') }}" alt="Logo Sekolah" class="w-14 h-14 object-contain">
+=======
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <!-- Logo -->
+            <div class="logo-container">
+                <div class="logo">
+                    <img src="{{ asset('img/Tut Wuri Handayani.png') }}" alt="Tut Wuri Handayani" class="logo-image" />
+                </div>
+            </div>
+
+            <!-- Menu -->
+            <nav class="menu">
+                <div class="menu-box">
+                    <a href="{{ route('guru.dashboard') }}" class="menu-item {{ Request::routeIs('guru.dashboard') ? 'active' : '' }}">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    @php
+                        $guru = Auth::guard('guru')->user();
+                        $mailToBody = "Nama Pengguna: {$guru->nama}\n" .
+                                      "NIP Pengguna: {$guru->nip}\n" .
+                                      "Email Pengguna: {$guru->email}\n\n" .
+                                      "Sebutkan masalah dan lampirkan foto (jika ada):";
+                    @endphp
+                    <a href="mailto:kesyapujiatmoko@gmail.com?subject=Laporan Masalah Pengguna (Guru)&body={{ rawurlencode($mailToBody) }}" class="cs-btn" title="Hubungi Customer Service">
+                        <i class="fas fa-headset"></i>
+                        <span>Bantuan</span>
+                    </a>
+                    <button class="logout-btn" data-url="{{ route('logout') }}" onclick="showLogoutConfirmation(event)">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Keluar</span>
+                    </button>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="header">
+                Selamat datang di Meja guru <span class="user-name">{{ Auth::guard('guru')->user()->nama }}</span> 🎉🎉
+            </header>
+
+            <!-- Content -->
+            <section class="content-section">
+                <div class="content-box">
+                    <!-- Greeting Card -->
+                    <div class="greeting-card">
+                        <p><strong>Bagaimana kabarnya hari ini?</strong></p>
+                        <p>Tetap semangat mengajar anak-anak ya...</p>
+                    </div>
+
+                    <!-- Profile Card -->
+                    <div class="profile-card">
+                        <div class="profile-pic-container" style="cursor: pointer;"
+                            onclick="document.getElementById('profile_picture_input').click();"
+                            title="Klik untuk ganti foto">
+                            <div class="profile-pic" style="padding: 0; border: none; background: transparent;">
+                                <img src="{{ $guru->profile_picture ? asset('storage/' . $guru->profile_picture) : asset('img/Default-Profile.png') }}"
+                                    alt="Foto Profil"
+                                    style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+                            </div>
+                        </div>
+                        <form id="profile-pic-form" action="{{ route('guru.profile.update') }}" method="POST"
+                            enctype="multipart/form-data" style="display: none;">
+                            @csrf
+                            <input type="file" id="profile_picture_input" name="profile_picture" accept="image/*"
+                                onchange="document.getElementById('profile-pic-form').submit();">
+                        </form>
+                        <div class="profile-info">
+                            <p><strong>Nama guru</strong>: {{ Auth::guard('guru')->user()->nama }}</p>
+                            <p><strong>NIP guru</strong>: {{ Auth::guard('guru')->user()->nip }}</p>
+                            <p><strong>Pengampu Pelajaran</strong>: {{ Auth::guard('guru')->user()->pengampu }}</p>
+                            <p><strong>E-Mail</strong>: {{ Auth::guard('guru')->user()->email }}</p>
+                            <div class="mt-2">
+                                <form action="{{ route('guru.switch-tahun-ajaran') }}" method="POST" id="tahunAjaranForm" class="flex items-center">
+                                    @csrf
+                                    <label for="tahun_ajaran_id" class="mr-2 text-sm font-medium">Tahun Ajaran:</label>
+                                    <select name="tahun_ajaran_id" id="tahun_ajaran_id" onchange="document.getElementById('tahunAjaranForm').submit()" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-1.5">
+                                        @foreach($allTahunAjarans as $tahun)
+                                            <option value="{{ $tahun->id }}" {{ $selectedTahunAjaranId == $tahun->id ? 'selected' : '' }}>
+                                                {{ $tahun->tahun_ajaran }} {{ $tahun->semester }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </form>
+                                @if($isViewingActiveYear)
+                                    <span class="text-xs text-green-600 font-semibold">(Tahun Ajaran Aktif)</span>
+                                @else
+                                    <span class="text-xs text-yellow-600 font-semibold">(Melihat Arsip)</span>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Jadwal Mengajar -->
+                    @isset($jadwals)
+                        <div class="jadwal-section">
+                            <div class="flex justify-between items-center mb-4">
+                                <h2 class="jadwal-title text-xl font-bold">Jadwal Mengajar</h2>
+                                <div class="flex items-center space-x-2">
+                                    <button id="openArsipModal" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded transition duration-300">
+                                        Lihat Arsip
+                                    </button>
+                                    <a href="{{ route('guru.jadwal.cetak') }}" target="_blank"
+                                        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-300">
+                                        Cetak Jadwal
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="table-container">
+                                @if ($jadwals && $jadwals->count() > 0)
+                                    <table
+                                        class="jadwal-table w-full rounded-lg overflow-hidden shadow-md bg-white border border-[#a1b9db]">
+                                        <thead>
+                                            <tr class="bg-blue-200 text-gray-700">
+                                                <th class="py-3 px-4 text-center border border-[#a1b9db]">Hari</th>
+                                                <th class="py-3 px-4 text-center border border-[#a1b9db]">Mata Pelajaran</th>
+                                                <th class="py-3 px-4 text-center border border-[#a1b9db]">Kelas</th>
+                                                <th class="py-3 px-4 text-center border border-[#a1b9db]">Jam</th>
+                                                <th class="py-3 px-4 text-center border border-[#a1b9db]">Durasi (JP)</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @php
+                                                $totalJP = 0;
+                                            @endphp
+                                            @foreach ($jadwals->groupBy('hari') as $hari => $jadwalHarian)
+                                                @foreach ($jadwalHarian as $index => $jadwal)
+                                                    <tr class="hover:bg-blue-50 transition">
+                                                        @if ($index === 0)
+                                                            <td rowspan="{{ count($jadwalHarian) }}"
+                                                                class="py-2 px-4 font-semibold align-top border border-[#a1b9db] text-center">
+                                                                {{ $hari }}
+                                                            </td>
+                                                        @endif
+                                                        @if($jadwal->kategori)
+                                                            <td colspan="2" style="text-align: center; font-weight: bold;">{{ $jadwal->kategori->nama_kategori }}</td>
+                                                        @else
+                                                            <td class="py-2 px-4 border border-[#a1b9db]">
+                                                                {{ $jadwal->mapel }}</td>
+                                                                <td class="py-2 px-4 border border-[#a1b9db]">
+                                                                  {{ $jadwal->kelas ? $jadwal->kelas->nama_kelas : '-' }}
+                                                                </td>
+                                                        @endif
+                                                        <td class="py-2 px-4 border border-[#a1b9db]">
+                                                            {{ $jadwal->jam }}
+                                                        </td>
+                                                        <td class="py-2 px-4 border border-[#a1b9db] text-center">
+                                                            @php
+                                                                $jamParts = explode(' - ', $jadwal->jam);
+                                                                if (count($jamParts) == 2) {
+                                                                    $jamMulai = \Carbon\Carbon::parse($jamParts[0]);
+                                                                    $jamSelesai = \Carbon\Carbon::parse($jamParts[1]);
+                                                                    $durasiMenit = $jamSelesai->diffInMinutes($jamMulai);
+                                                                    $jp = floor($durasiMenit / 35); // Asumsi 1 JP = 35 menit
+                                                                    $totalJP += $jp;
+                                                                    echo $jp;
+                                                                } else {
+                                                                    echo '-';
+                                                                }
+                                                            @endphp
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                            @endforeach
+                                            <tr class="bg-gray-100 font-bold">
+                                                <td colspan="4" class="py-2 px-4 text-right border border-[#a1b9db]">Total Jam Pelajaran (JP) per Minggu:</td>
+                                                <td class="py-2 px-4 text-center border border-[#a1b9db]">{{ $totalJP }}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                @else
+                                    <div class="empty-jadwal">
+                                        <i class="fas fa-calendar-times fa-3x"></i>
+                                        <p>Belum ada jadwal mengajar untuk hari ini.</p>
+                                        <p class="small-text">Silakan hubungi administrator jika ada kendala</p>
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+                    @endisset
+
+                    <!-- Tambahkan ini untuk menampilkan alert -->
+                    @if (session('success'))
+                        <script>
+                            Swal.fire({
+                                position: "top-end",
+                                icon: "success",
+                                title: "{{ session('success') }}",
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
+                        </script>
+                    @endif
+                </div>
+            </section>
+        </main>
+>>>>>>> 9e68b55 (tampilan admin, default profil, dll)
     </div>
     <h1 class="text-2xl font-bold text-[#3b3b7c]">Klipaa Students</h1>
     <p class="text-sm font-semibold text-gray-700 mt-1">

@@ -7,66 +7,18 @@
     <title>Beranda Admin - Klipaa Solusi Indonesia</title>
 
     <!-- Styles -->
-    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/newStyle.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="icon" type="image/png" sizes="60x60" href="{{ asset('img/Klipaa Original.png') }}">
 
     @stack('styles')
-    <style>
-        .modal {
-            display: none; /* Hidden by default */
-            position: fixed; /* Stay in place */
-            z-index: 1000; /* Sit on top */
-            left: 0;
-            top: 0;
-            width: 100%; /* Full width */
-            height: 100%; /* Full height */
-            overflow: auto; /* Enable scroll if needed */
-            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
-            opacity: 0; /* Start invisible */
-            transition: opacity 0.3s ease-out; /* Fade in/out */
-        }
-
-        .modal.show {
-            opacity: 1;
-        }
-
-        .modal-content {
-            background-color: #fefefe;
-            margin: 10% auto; /* 10% from the top and centered */
-            padding: 20px;
-            border: 1px solid #888;
-            width: 80%; /* Could be more or less, depending on screen size */
-            border-radius: 8px;
-            position: relative;
-            transform: translateY(-50px); /* Start slightly above */
-            transition: opacity 0.3s ease-out, transform 0.3s ease-out; /* Slide and fade */
-        }
-
-        .modal.show .modal-content {
-            transform: translateY(0); /* Slide to original position */
-        }
-
-        .modal-close-button {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-        }
-
-        .modal-close-button:hover,
-        .modal-close-button:focus {
-            color: black;
-            text-decoration: none;
-            cursor: pointer;
-        }
-    </style>
 </head>
 <body>
     <div id="admin-backdrop" class="backdrop"></div>
+    
     <!-- Navbar -->
-    <nav class="navbar" style="overflow: visible; z-index: 1001;">
+    <nav class="navbar">
         <div class="nav-brand">
             <button id="admin-menu-toggle" class="menu-toggle-btn">
                 <i class="fas fa-bars"></i>
@@ -74,8 +26,7 @@
             <h2>Admin Dashboard</h2>
         </div>
         <div class="nav-user">
-            <!-- User info moved to the right for better alignment -->
-            <span>Welcome,  {{ Auth::guard('web')->user()->name }}</span>
+            <span>Welcome, {{ Auth::guard('web')->user()->name }}</span>
             <div class="user-avatar">
                 <i class="fas fa-user"></i>
             </div>
@@ -83,6 +34,7 @@
     </nav>
 
     <div class="main-layout">
+<<<<<<< HEAD
         <!-- Sidebar -->
         <aside id="admin-sidebar" class="sidebar">
             <div class="sidebar-header">
@@ -223,144 +175,144 @@
                 </div>
             </div>
         </main>
+=======
+        
+<!-- Sidebar with Fixed Active State Logic -->
+<aside id="admin-sidebar" class="sidebar">
+    <div class="sidebar-header">
+        <img src="{{ asset('img/Klipaa Original.png') }}" alt="Logo Klipaa">
+>>>>>>> 9e68b55 (tampilan admin, default profil, dll)
     </div>
 
-    <!-- Scripts -->
-    <script src="{{ asset('js/script.js') }}"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
-        function showLogoutConfirmation(event) {
-            event.preventDefault();
-            let link = event.currentTarget.href;
+    @php
+        use Illuminate\Support\Str;
+        $currentRoute = request()->route()->getName();
+        $currentPath = request()->path();
+    @endphp
+    
+    <ul class="sidebar-menu">
+        <li>
+            <a href="{{ route('admin.dashboard') }}" 
+               class="{{ $currentRoute === 'admin.dashboard' ? 'active' : '' }}">
+                <i class="fas fa-home"></i>
+                <span>Home</span>
+            </a>
+        </li>
+        
+        <li>
+            <a href="{{ route('manage.kelas.index') }}" 
+               class="{{ (Str::startsWith($currentRoute, 'manage.kelas.') || Str::contains($currentPath, 'manage/kelas')) && !Str::contains($currentPath, 'tambah-kelas-baru') ? 'active' : '' }}">
+                <i class="fas fa-building"></i>
+                <span>Manajemen Kelas</span>
+                <span class="menu-badge">3</span>
+            </a>
+        </li>
+        
+        <li>
+            <a href="{{ route('manage.tabelj.index') }}" 
+               class="{{ Str::startsWith($currentRoute, 'manage.tabelj.') || Str::contains($currentPath, 'manage/tabelj') ? 'active' : '' }}">
+                <i class="fas fa-clock"></i>
+                <span>Manajemen Slot Waktu</span>
+            </a>
+        </li>
+        
+        <li>
+            <a href="{{ route('jadwal-kategori.index') }}" 
+               class="{{ Str::startsWith($currentRoute, 'jadwal-kategori.') || Str::contains($currentPath, 'jadwal-kategori') ? 'active' : '' }}">
+                <i class="fas fa-tags"></i>
+                <span>Kategori Jadwal</span>
+                <span class="menu-badge">2</span>
+            </a>
+        </li>
+        <li>
+            <a href="{{ route('manage.guru.index') }}" 
+               class="{{ Str::startsWith($currentRoute, 'manage.guru.') || Str::contains($currentPath, 'manage/guru') ? 'active' : '' }}">
+                <i class="fas fa-chalkboard-teacher"></i>
+                <span>Manajemen Guru</span>
+                <span class="menu-badge">0</span>
+            </a>
+        </li>
+        
+        
+        <li>
+            <a href="{{ route('jadwal.pilihKelas') }}" 
+               class="{{ (in_array($currentRoute, ['jadwal.pilihKelas', 'jadwal.pilihSubKelas', 'jadwal.create', 'jadwal.edit', 'jadwal.store', 'jadwal.update']) || (Str::contains($currentPath, 'jadwal') && !Str::contains($currentPath, 'jadwal-kategori') && !Str::startsWith($currentPath, 'jadwal/kelas'))) ? 'active' : '' }}">
+                <i class="fas fa-calendar-check"></i>
+                <span>Manajemen Jadwal</span>
+            </a>
+        </li>
+        
+        <li>
+            <a href="{{ route('manage.siswa.index') }}" 
+               class="{{ Str::startsWith($currentRoute, 'manage.siswa.') || Str::contains($currentPath, 'manage/siswa') ? 'active' : '' }}">
+                <i class="fas fa-users"></i>
+                <span>Manajemen Siswa</span>
+            </a>
+        </li>
+        
+        <li>
+            <a href="{{ route('kelas.kategori') }}" 
+               class="{{ in_array($currentRoute, ['kelas.kategori', 'kelas.show', 'kelas.detail']) || (Str::startsWith($currentPath, 'kelas/') && !Str::contains($currentPath, 'manage/kelas')) ? 'active' : '' }}">
+                <i class="fa-solid fa-people-roof"></i>
+                <span>Lihat Kelas</span>
+                <span class="menu-badge">1</span>
+            </a>
+        </li>
+        
+        <li>
+            <a href="{{ route('jadwal.pilihKelasLihat') }}" 
+               class="{{ Str::startsWith($currentPath, 'jadwal/kelas') ? 'active' : '' }}">
+                <i class="fas fa-calendar-alt"></i>
+                <span>Lihat Jadwal</span>
+            </a>
+        </li>
+    </ul>
 
-            Swal.fire({
-                title: 'Yakin akan keluar?',
-                text: "Anda akan keluar dari sesi ini.",
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Ya, keluar!',
-                cancelButtonText: 'Batal'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    window.location.href = link;
-                }
-            });
-        }
+    <a href="{{ route('logout') }}" class="logout-btn" onclick="showLogoutConfirmation(event)">
+        <i class="fas fa-sign-out-alt"></i> Logout
+    </a>
+</aside>
 
-        document.addEventListener('DOMContentLoaded', function() {
-            // Notifikasi login sukses
-            @if(session('login_success'))
-                Swal.fire({
-                    toast: true,
-                    position: 'top-end',
-                    icon: 'success',
-                    title: '{{ session('login_success') }}',
-                    showConfirmButton: false,
-                    timer: 3500,
-                    timerProgressBar: true
-                });
+        <!-- Main Content -->
+<main class="content">
+    <!-- Header: Tahun Ajaran + Kelola T.A -->
+    @if ($currentRoute === 'admin.dashboard')
+    <div class="content-header">
+        <div class="tahun-ajaran-selector" id="tahunAjaranSelector">
+            @if($tahunAjarans->isNotEmpty())
+                <span>Tahun Ajaran</span>
+                <select name="tahun_ajaran" onchange="window.location.href = '{{ url('manage/tahun-ajaran') }}/' + this.value + '/switch-active';">
+                    @foreach($tahunAjarans as $tahun)
+                        <option value="{{ $tahun->id }}" {{ $tahun->is_active ? 'selected' : '' }}>
+                            {{ $tahun->tahun_ajaran }} {{ $tahun->semester }}
+                        </option>
+                    @endforeach
+                </select>
+                <i class="fas fa-chevron-down"></i>
+            @else
+                <span>Tahun Ajaran Belum Diatur</span>
             @endif
+        </div>
+        <button type="button" class="btn-kelola-ta" id="openTahunAjaranModal">Kelola T.A</button>
+    </div>
+    @endif
 
-            // Notifikasi aksi sukses
-            @if (session('success'))
-                const Toast = Swal.mixin({
-                    toast: true,
-                    position: 'top-end',
-                    showConfirmButton: false,
-                    timer: 3000,
-                    timerProgressBar: true,
-                });
-                Toast.fire({ icon: 'success', title: '{{ session('success') }}' });
-            @endif
-
-            // Error login
-            @if ($errors->has('login'))
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Login Gagal',
-                    text: '{{ $errors->first('login') }}',
-                    timer: 3000,
-                    timerProgressBar: true,
-                    showConfirmButton: false
-                });
-            @endif
-        });
-    </script>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const menuToggle = document.getElementById('admin-menu-toggle');
-            const sidebar = document.getElementById('admin-sidebar');
-            const backdrop = document.getElementById('admin-backdrop');
-
-            if (menuToggle && sidebar && backdrop) {
-                menuToggle.addEventListener('click', function() {
-                    sidebar.classList.toggle('show');
-                    backdrop.classList.toggle('show');
-                });
-
-                backdrop.addEventListener('click', function() {
-                    sidebar.classList.remove('show');
-                    backdrop.classList.remove('show');
-                });
-            }
-        });
-    </script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            var currentUrl = window.location.href;
-            var sidebarLinks = document.querySelectorAll('.sidebar-menu a.menu-item');
-            var bestMatch = null;
-
-            // Hapus kelas aktif dari semua link terlebih dahulu
-            sidebarLinks.forEach(function(link) {
-                link.classList.remove('active');
-            });
-
-            // Logika baru yang lebih spesifik
-            if (currentUrl.includes('/jadwal/kelas')) {
-                // Case 1: URL untuk "Lihat Jadwal"
-                bestMatch = document.querySelector('a.menu-item[href*="/jadwal/kelas"]');
-            } else if (currentUrl.includes('/jadwal/')) {
-                // Case 2: URL untuk "Manajemen Jadwal" (create, edit, etc.)
-                bestMatch = document.querySelector('a.menu-item[href*="pilih-kelas"]');
-            } else {
-                // Case 3: Fallback untuk halaman lainnya
-                sidebarLinks.forEach(function (link) {
-                    if (link.href.includes('logout')) {
-                        return;
-                    }
-                    if (currentUrl.startsWith(link.href)) {
-                        if (!bestMatch || link.href.length > bestMatch.href.length) {
-                            bestMatch = link;
-                        }
-                    }
-                });
-            }
-
-            // Tambahkan kelas aktif ke link yang cocok
-            if (bestMatch) {
-                bestMatch.classList.add('active');
-            }
-        });
-    </script>
-    @stack('scripts')
+    <!-- CONTENT DARI CHILD VIEW AKAN MUNCUL DI SINI -->
+    @yield('content')
+</main>
+    </div>
 
     <!-- Tahun Ajaran Management Modal -->
     <div id="tahunAjaranModal" class="modal">
         <div class="modal-content">
             <span class="modal-close-button">&times;</span>
-            <div class="content-header">
+            <div class="modal-header">
                 <h1>Manajemen Tahun Ajaran</h1>
                 <button type="button" class="btn btn-success" id="openCreateTahunAjaranModal">Tambah Tahun Ajaran</button>
             </div>
-            <div class="content-body">
+            <div class="modal-body">
                 @if(session('success'))
-                    <div class="alert alert-success">
-                        {{ session('success') }}
-                    </div>
+                    <div class="alert alert-success">{{ session('success') }}</div>
                 @endif
                 <table class="table table-striped">
                     <thead>
@@ -386,8 +338,13 @@
                                     @endif
                                 </td>
                                 <td>
-                                    <button type="button" class="btn btn-info btn-sm edit-tahun-ajaran" data-id="{{ $tahunAjaran->id }}" data-tahun_ajaran="{{ $tahunAjaran->tahun_ajaran }}" data-semester="{{ $tahunAjaran->semester }}" data-is_active="{{ $tahunAjaran->is_active }}">Edit</button>
-                                    <button type="button" class="btn btn-danger btn-sm delete-tahun-ajaran" data-id="{{ $tahunAjaran->id }}">Delete</button>
+                                    <button type="button" class="btn btn-info btn-sm edit-tahun-ajaran" 
+                                        data-id="{{ $tahunAjaran->id }}" 
+                                        data-tahun_ajaran="{{ $tahunAjaran->tahun_ajaran }}" 
+                                        data-semester="{{ $tahunAjaran->semester }}" 
+                                        data-is_active="{{ $tahunAjaran->is_active }}">Edit</button>
+                                    <button type="button" class="btn btn-danger btn-sm delete-tahun-ajaran" 
+                                        data-id="{{ $tahunAjaran->id }}">Delete</button>
                                 </td>
                             </tr>
                         @endforeach
@@ -401,28 +358,26 @@
     <div id="createTahunAjaranModal" class="modal">
         <div class="modal-content">
             <span class="modal-close-button">&times;</span>
-            <div class="content-header">
+            <div class="modal-header">
                 <h1>Tambah Tahun Ajaran Baru</h1>
             </div>
-            <div class="content-body">
+            <div class="modal-body">
                 @if ($errors->any())
                     <div class="alert alert-danger">
                         <ul>
                             @foreach ($errors->all() as $error)
                                 <li>{{ $error }}</li>
-                                <li style="list-style-type: disc; margin-left: 20px;">{{ $error }}</li>
                             @endforeach
                         </ul>
                     </div>
                 @endif
                 <form action="{{ route('manage.tahun-ajaran.store') }}" method="POST">
                     @csrf
-                    
                     <div class="form-group">
                         <label for="tahun_ajaran">Tahun Ajaran (format: YYYY/YYYY)</label>
-                        <input type="text" class="form-control" id="tahun_ajaran" name="tahun_ajaran" placeholder="Contoh: 2025/2026" required pattern="^\d{4}\/\d{4}$">
+                        <input type="text" class="form-control" id="tahun_ajaran" name="tahun_ajaran" 
+                            placeholder="Contoh: 2025/2026" required pattern="^\d{4}\/\d{4}$">
                     </div>
-                    
                     <div class="form-group">
                         <label for="semester">Semester</label>
                         <select class="form-control" id="semester" name="semester" required>
@@ -430,14 +385,11 @@
                             <option value="Genap">Genap</option>
                         </select>
                     </div>
-                
                     <div class="form-group form-check">
                         <input class="form-check-input" type="checkbox" id="is_active" name="is_active" value="1">
                         <label class="form-check-label" for="is_active">Langsung aktifkan tahun ajaran ini</label>
                     </div>
-                
                     <hr>
-                
                     <div class="form-group">
                         <label for="source_tahun_ajaran_id">Salin Data dari Tahun Ajaran:</label>
                         <select class="form-control" id="source_tahun_ajaran_id" name="source_tahun_ajaran_id">
@@ -448,11 +400,10 @@
                         </select>
                         <small class="text-muted">Pilih tahun ajaran untuk menyalin data. Jika tidak dipilih, tahun ajaran baru akan kosong.</small>
                     </div>
-                
                     <div class="form-group">
                         <label>Opsi untuk Tahun Ajaran Baru:</label>
-                        <p class="text-muted small" style="font-size: 0.85rem; margin-bottom: 10px;">Opsi berikut hanya berlaku untuk <strong>Tahun Ajaran Baru</strong> yang sedang dibuat. Data dari tahun ajaran yang Anda salin akan tetap utuh dan tidak akan berubah (tersimpan sebagai arsip).</p>
-                        <div class="form-check" style="margin-bottom: 10px;">
+                        <p class="text-muted small">Opsi berikut hanya berlaku untuk <strong>Tahun Ajaran Baru</strong> yang sedang dibuat. Data dari tahun ajaran yang Anda salin akan tetap utuh dan tidak akan berubah (tersimpan sebagai arsip).</p>
+                        <div class="form-check">
                             <input class="form-check-input" type="checkbox" id="skip_kelas_assignments" name="skip_kelas_assignments" value="1">
                             <label class="form-check-label" for="skip_kelas_assignments">
                                 <strong>Kosongkan Penempatan Siswa di Kelas</strong><br>
@@ -467,8 +418,7 @@
                             </label>
                         </div>
                     </div>
-                
-                    <div style="margin-top: 20px;">
+                    <div class="form-actions">
                         <button type="submit" class="btn btn-primary">Simpan</button>
                         <button type="button" class="btn btn-secondary" data-close-modal="createTahunAjaranModal">Batal</button>
                     </div>
@@ -481,10 +431,10 @@
     <div id="editTahunAjaranModal" class="modal">
         <div class="modal-content">
             <span class="modal-close-button">&times;</span>
-            <div class="content-header">
+            <div class="modal-header">
                 <h1>Edit Tahun Ajaran</h1>
             </div>
-            <div class="content-body">
+            <div class="modal-body">
                 <form action="" method="POST">
                     @csrf
                     @method('PUT')
@@ -503,121 +453,615 @@
                         <input type="checkbox" name="is_active" id="edit_is_active" class="form-check-input" value="1">
                         <label for="edit_is_active" class="form-check-label">Aktifkan Tahun Ajaran ini?</label>
                     </div>
-                    <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
-                    <button type="button" class="btn btn-secondary" data-close-modal="editTahunAjaranModal">Batal</button>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+                        <button type="button" class="btn btn-secondary" data-close-modal="editTahunAjaranModal">Batal</button>
+                    </div>
                 </form>
             </div>
         </div>
     </div>
 
+    <!-- Scripts -->
+    <script src="{{ asset('js/script.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const modals = {
-                main: document.getElementById('tahunAjaranModal'),
-                create: document.getElementById('createTahunAjaranModal'),
-                edit: document.getElementById('editTahunAjaranModal')
-            };
-    
-            function openModal(modal) {
-                if (modal) {
-                    modal.style.display = 'block';
-                    setTimeout(() => modal.classList.add('show'), 10);
+        function showLogoutConfirmation(event) {
+            event.preventDefault();
+            let link = event.currentTarget.href;
+            Swal.fire({
+                title: 'Yakin akan keluar?',
+                text: "Anda akan keluar dari sesi ini.",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Ya, keluar!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = link;
                 }
+            });
+        }
+
+        // ==================== SIDEBAR TOGGLE - MOBILE & TABLET ====================
+document.addEventListener('DOMContentLoaded', function () {
+    const menuToggle = document.getElementById('admin-menu-toggle');
+    const sidebar = document.getElementById('admin-sidebar');
+    const backdrop = document.getElementById('admin-backdrop');
+    const body = document.body;
+
+    // Function to open sidebar
+    function openSidebar() {
+        if (sidebar && backdrop) {
+            sidebar.classList.add('show');
+            backdrop.classList.add('show');
+            body.classList.add('sidebar-open');
+        }
+    }
+
+    // Function to close sidebar
+    function closeSidebar() {
+        if (sidebar && backdrop) {
+            sidebar.classList.remove('show');
+            backdrop.classList.remove('show');
+            body.classList.remove('sidebar-open');
+        }
+    }
+
+    // Toggle sidebar on menu button click
+    if (menuToggle) {
+        menuToggle.addEventListener('click', function(e) {
+            e.stopPropagation();
+            if (sidebar && sidebar.classList.contains('show')) {
+                closeSidebar();
+            } else {
+                openSidebar();
             }
-    
-            function closeModal(modal) {
-                if (modal) {
-                    modal.classList.remove('show');
-                    setTimeout(() => modal.style.display = 'none', 300);
-                }
-            }
-    
-            // Open main modal
-            document.getElementById('openTahunAjaranModal').addEventListener('click', () => openModal(modals.main));
-    
-            // Open create modal from main modal
-            document.getElementById('openCreateTahunAjaranModal').addEventListener('click', () => {
-                closeModal(modals.main);
-                openModal(modals.create);
-            });
-    
-            // Generic close buttons (X)
-            document.querySelectorAll('.modal-close-button').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    closeModal(this.closest('.modal'));
-                });
-            });
-    
-            // Generic cancel buttons
-            document.querySelectorAll('[data-close-modal]').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const modalToClose = document.getElementById(this.dataset.closeModal);
-                    closeModal(modalToClose);
-                });
-            });
-    
-            // Edit button listeners
-            document.querySelectorAll('.edit-tahun-ajaran').forEach(button => {
-                button.addEventListener('click', function () {
-                    const id = this.dataset.id;
-                    const form = modals.edit.querySelector('form');
-                    form.action = `/manage/tahun-ajaran/${id}`; // Pastikan URL ini benar
-                    form.querySelector('#edit_tahun_ajaran').value = this.dataset.tahun_ajaran;
-                    form.querySelector('#edit_semester').value = this.dataset.semester;
-                    form.querySelector('#edit_is_active').checked = this.dataset.is_active == 1;
-                    closeModal(modals.main);
-                    openModal(modals.edit);
-                });
-            });
-    
-            // Delete button listeners
-            document.querySelectorAll('.delete-tahun-ajaran').forEach(button => {
-                button.addEventListener('click', function () {
-                    const id = this.dataset.id;
-                    Swal.fire({
-                        title: 'Yakin ingin menghapus?',
-                        text: "Data yang terhapus tidak dapat dikembalikan!",
-                        icon: 'warning',
-                        showCancelButton: true,
-                        confirmButtonColor: '#d33',
-                        cancelButtonColor: '#3085d6',
-                        confirmButtonText: 'Ya, hapus!',
-                        cancelButtonText: 'Batal'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            fetch(`/manage/tahun-ajaran/${id}`, {
-                                method: 'DELETE',
-                                headers: {
-                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                                    'Accept': 'application/json'
-                                }
-                            })
-                            .then(response => response.json().then(data => ({ status: response.status, body: data })))
-                            .then(({ status, body }) => {
-                                const message = body.message || 'Tidak ada pesan dari server.';
-                                if (status >= 200 && status < 300) {
-                                    Swal.fire({ title: 'Berhasil!', text: message, icon: 'success' })
-                                    .then(() => window.location.reload());
-                                } else {
-                                    Swal.fire({ title: 'Gagal!', text: message, icon: 'error' });
-                                }
-                            })
-                            .catch(error => {
-                                console.error('Error:', error);
-                                Swal.fire('Gagal!', 'Tidak dapat terhubung ke server atau terjadi kesalahan.', 'error');
-                            });
-                        }
-                    });
-                });
-            });
-    
-            // Close modal by clicking on the background
-            window.addEventListener('click', function (event) {
-                if (event.target.classList.contains('modal')) {
-                    closeModal(event.target);
+        });
+    }
+
+    // Close sidebar when clicking backdrop
+    if (backdrop) {
+        backdrop.addEventListener('click', function() {
+            closeSidebar();
+        });
+    }
+
+    // Close sidebar when clicking menu item on mobile/tablet
+    const menuItems = document.querySelectorAll('.sidebar-menu a');
+    if (menuItems.length > 0) {
+        menuItems.forEach(item => {
+            item.addEventListener('click', function() {
+                // Only close on mobile/tablet (screen width <= 1024px)
+                if (window.innerWidth <= 1024) {
+                    setTimeout(closeSidebar, 150); // Small delay for better UX
                 }
             });
         });
+    }
+
+    // Close sidebar on window resize if switching to desktop
+    let resizeTimer;
+    window.addEventListener('resize', function() {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(function() {
+            if (window.innerWidth > 1024) {
+                closeSidebar();
+            }
+        }, 250);
+    });
+
+    // Prevent body scroll when sidebar is open on mobile
+    if (sidebar) {
+        sidebar.addEventListener('touchmove', function(e) {
+            if (sidebar.classList.contains('show')) {
+                e.stopPropagation();
+            }
+        }, { passive: true });
+    }
+
+    // Close sidebar when pressing ESC key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && sidebar && sidebar.classList.contains('show')) {
+            closeSidebar();
+        }
+    });
+});
+
+// ==================== ACTIVE MENU DEBUGGING & FIX ====================
+document.addEventListener('DOMContentLoaded', function () {
+    console.log('=== Active Menu Debug ===');
+    
+    // Get current path information
+    const currentPath = window.location.pathname;
+    const currentRoute = document.querySelector('[data-route]')?.dataset.route || '';
+    
+    console.log('Current Path:', currentPath);
+    console.log('Current Route:', currentRoute);
+    
+    // Get all menu links
+    const menuLinks = document.querySelectorAll('.sidebar-menu a');
+    
+    // Log all menu items and their active state
+    menuLinks.forEach((link, index) => {
+        const isActive = link.classList.contains('active');
+        const href = link.getAttribute('href');
+        const text = link.querySelector('span:not(.menu-badge)')?.textContent.trim();
+        
+        console.log(`Menu ${index + 1}: ${text}`);
+        console.log(`  - Href: ${href}`);
+        console.log(`  - Is Active: ${isActive}`);
+        
+        if (isActive) {
+            console.log('  ✓ ACTIVE MENU FOUND');
+        }
+    });
+    
+    // Count active menus
+    const activeCount = document.querySelectorAll('.sidebar-menu a.active').length;
+    console.log(`\nTotal Active Menus: ${activeCount}`);
+    
+    if (activeCount > 1) {
+        console.warn('⚠️ WARNING: Multiple active menus detected!');
+        console.log('Attempting to fix...');
+        
+        // Keep only the most specific match
+        const activeMenus = document.querySelectorAll('.sidebar-menu a.active');
+        let mostSpecificMatch = null;
+        let longestMatchLength = 0;
+        
+        activeMenus.forEach((menu) => {
+            const href = menu.getAttribute('href');
+            if (href && currentPath.includes(href)) {
+                const matchLength = href.length;
+                if (matchLength > longestMatchLength) {
+                    longestMatchLength = matchLength;
+                    mostSpecificMatch = menu;
+                }
+            }
+        });
+        
+        // Remove active class from all except the most specific match
+        activeMenus.forEach((menu) => {
+            if (menu !== mostSpecificMatch) {
+                menu.classList.remove('active');
+                console.log('Removed active class from:', menu.querySelector('span:not(.menu-badge)')?.textContent);
+            }
+        });
+    } else if (activeCount === 0) {
+        console.warn('⚠️ WARNING: No active menu detected!');
+    } else {
+        console.log('✓ Active menu state is correct');
+    }
+    
+    console.log('=== End Debug ===\n');
+});
+
+// ==================== PREVENT ACCIDENTAL ACTIVE CLASS ADDITIONS ====================
+const observer = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+        if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+            const target = mutation.target;
+            
+            // If this is a sidebar menu link
+            if (target.closest('.sidebar-menu')) {
+                const activeLinks = document.querySelectorAll('.sidebar-menu a.active');
+                
+                // If more than one active link exists, fix it
+                if (activeLinks.length > 1) {
+                    console.warn('Multiple active menus detected by observer, fixing...');
+                    
+                    // Determine which should be active based on current URL
+                    const currentPath = window.location.pathname;
+                    let correctActive = null;
+                    let longestMatch = 0;
+                    
+                    activeLinks.forEach(link => {
+                        const href = link.getAttribute('href');
+                        if (href && currentPath.includes(href)) {
+                            const matchLength = href.length;
+                            if (matchLength > longestMatch) {
+                                longestMatch = matchLength;
+                                correctActive = link;
+                            }
+                        }
+                    });
+                    
+                    // Remove all active classes except the correct one
+                    activeLinks.forEach(link => {
+                        if (link !== correctActive) {
+                            link.classList.remove('active');
+                        }
+                    });
+                }
+            }
+        }
+    });
+});
+
+// Start observing
+document.addEventListener('DOMContentLoaded', function() {
+    const sidebar = document.querySelector('.sidebar-menu');
+    if (sidebar) {
+        observer.observe(sidebar, {
+            attributes: true,
+            attributeFilter: ['class'],
+            subtree: true
+        });
+    }
+});
+
+// ==================== MODAL MANAGEMENT ====================
+document.addEventListener('DOMContentLoaded', function () {
+    // Get all modals
+    const modals = {
+        main: document.getElementById('tahunAjaranModal'),
+        create: document.getElementById('createTahunAjaranModal'),
+        edit: document.getElementById('editTahunAjaranModal')
+    };
+
+    // Function to open modal with animation
+    function openModal(modal) {
+        if (modal) {
+            modal.style.display = 'block';
+            // Force reflow
+            modal.offsetHeight;
+            setTimeout(() => modal.classList.add('show'), 10);
+            document.body.style.overflow = 'hidden'; // Prevent body scroll
+        }
+    }
+
+    // Function to close modal with animation
+    function closeModal(modal) {
+        if (modal) {
+            modal.classList.remove('show');
+            setTimeout(() => {
+                modal.style.display = 'none';
+                document.body.style.overflow = ''; // Restore body scroll
+            }, 300);
+        }
+    }
+
+    // Open main modal (Kelola T.A)
+    const openTahunAjaranBtn = document.getElementById('openTahunAjaranModal');
+    if (openTahunAjaranBtn) {
+        openTahunAjaranBtn.addEventListener('click', () => openModal(modals.main));
+    }
+
+    // Open create modal
+    const createBtn = document.getElementById('openCreateTahunAjaranModal');
+    if (createBtn) {
+        createBtn.addEventListener('click', () => {
+            closeModal(modals.main);
+            setTimeout(() => openModal(modals.create), 350);
+        });
+    }
+
+    // Close modal when clicking X button
+    document.querySelectorAll('.modal-close-button').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const modal = this.closest('.modal');
+            closeModal(modal);
+        });
+    });
+
+    // Close modal when clicking data-close-modal buttons
+    document.querySelectorAll('[data-close-modal]').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const modalId = this.dataset.closeModal;
+            const modalToClose = document.getElementById(modalId);
+            closeModal(modalToClose);
+        });
+    });
+
+    // Edit Tahun Ajaran
+    document.querySelectorAll('.edit-tahun-ajaran').forEach(button => {
+        button.addEventListener('click', function () {
+            const id = this.dataset.id;
+            const form = modals.edit.querySelector('form');
+            
+            form.action = `/manage/tahun-ajaran/${id}`;
+            form.querySelector('#edit_tahun_ajaran').value = this.dataset.tahun_ajaran;
+            form.querySelector('#edit_semester').value = this.dataset.semester;
+            form.querySelector('#edit_is_active').checked = this.dataset.is_active == 1;
+            
+            closeModal(modals.main);
+            setTimeout(() => openModal(modals.edit), 350);
+        });
+    });
+
+    // Delete Tahun Ajaran with SweetAlert
+    document.querySelectorAll('.delete-tahun-ajaran').forEach(button => {
+        button.addEventListener('click', function () {
+            const id = this.dataset.id;
+            
+            Swal.fire({
+                title: 'Yakin ingin menghapus?',
+                text: "Data yang terhapus tidak dapat dikembalikan!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Ya, hapus!',
+                cancelButtonText: 'Batal',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Show loading
+                    Swal.fire({
+                        title: 'Menghapus...',
+                        allowOutsideClick: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+
+                    // Fetch delete request
+                    fetch(`/manage/tahun-ajaran/${id}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                            'Accept': 'application/json'
+                        }
+                    })
+                    .then(response => response.json().then(data => ({ status: response.status, body: data })))
+                    .then(({ status, body }) => {
+                        const message = body.message || 'Tidak ada pesan dari server.';
+                        
+                        if (status >= 200 && status < 300) {
+                            Swal.fire({
+                                title: 'Berhasil!',
+                                text: message,
+                                icon: 'success',
+                                confirmButtonColor: '#11998e'
+                            }).then(() => {
+                                window.location.reload();
+                            });
+                        } else {
+                            Swal.fire({
+                                title: 'Gagal!',
+                                text: message,
+                                icon: 'error',
+                                confirmButtonColor: '#11998e'
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        Swal.fire({
+                            title: 'Error!',
+                            text: 'Tidak dapat terhubung ke server atau terjadi kesalahan.',
+                            icon: 'error',
+                            confirmButtonColor: '#11998e'
+                        });
+                    });
+                }
+            });
+        });
+    });
+
+    // Close modal when clicking outside (backdrop)
+    window.addEventListener('click', function (event) {
+        if (event.target.classList.contains('modal')) {
+            closeModal(event.target);
+        }
+    });
+
+    // Close modal when pressing ESC key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            // Find all open modals and close them
+            Object.values(modals).forEach(modal => {
+                if (modal && modal.classList.contains('show')) {
+                    closeModal(modal);
+                }
+            });
+        }
+    });
+});
+
+// ==================== LOGOUT CONFIRMATION ====================
+function showLogoutConfirmation(event) {
+    event.preventDefault();
+    const link = event.currentTarget.href;
+    
+    Swal.fire({
+        title: 'Yakin akan keluar?',
+        text: "Anda akan keluar dari sesi ini.",
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#11998e',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Ya, keluar!',
+        cancelButtonText: 'Batal',
+        reverseButtons: true
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.href = link;
+        }
+    });
+}
+
+// ==================== UTILITY FUNCTIONS ====================
+
+// Smooth scroll to top
+function scrollToTop() {
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+    });
+}
+
+// Show/Hide scroll to top button (if you want to add one)
+let scrollTopBtn;
+window.addEventListener('scroll', function() {
+    scrollTopBtn = document.getElementById('scrollTopBtn');
+    if (scrollTopBtn) {
+        if (window.pageYOffset > 300) {
+            scrollTopBtn.style.display = 'block';
+        } else {
+            scrollTopBtn.style.display = 'none';
+        }
+    }
+});
+
+// Format currency (if needed)
+function formatCurrency(amount) {
+    return new Intl.NumberFormat('id-ID', {
+        style: 'currency',
+        currency: 'IDR',
+        minimumFractionDigits: 0
+    }).format(amount);
+}
+
+// Format date (if needed)
+function formatDate(dateString) {
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    return new Date(dateString).toLocaleDateString('id-ID', options);
+}
+
+// Debounce function for search inputs
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
+// ==================== FORM VALIDATION HELPERS ====================
+
+// Validate tahun ajaran format (YYYY/YYYY)
+function validateTahunAjaran(input) {
+    const pattern = /^\d{4}\/\d{4}$/;
+    return pattern.test(input);
+}
+
+// Add validation to tahun ajaran inputs
+document.addEventListener('DOMContentLoaded', function() {
+    const tahunAjaranInputs = document.querySelectorAll('input[name="tahun_ajaran"]');
+    
+    tahunAjaranInputs.forEach(input => {
+        input.addEventListener('blur', function() {
+            if (this.value && !validateTahunAjaran(this.value)) {
+                this.setCustomValidity('Format harus YYYY/YYYY (contoh: 2025/2026)');
+                this.reportValidity();
+            } else {
+                this.setCustomValidity('');
+            }
+        });
+
+        input.addEventListener('input', function() {
+            this.setCustomValidity('');
+        });
+    });
+});
+
+// ==================== TABLE HELPERS ====================
+
+// Add search functionality to tables (if needed)
+function filterTable(inputId, tableId) {
+    const input = document.getElementById(inputId);
+    const table = document.getElementById(tableId);
+    
+    if (!input || !table) return;
+    
+    input.addEventListener('keyup', debounce(function() {
+        const filter = this.value.toLowerCase();
+        const rows = table.getElementsByTagName('tr');
+        
+        for (let i = 1; i < rows.length; i++) {
+            const row = rows[i];
+            const cells = row.getElementsByTagName('td');
+            let found = false;
+            
+            for (let j = 0; j < cells.length; j++) {
+                const cell = cells[j];
+                if (cell.textContent.toLowerCase().indexOf(filter) > -1) {
+                    found = true;
+                    break;
+                }
+            }
+            
+            row.style.display = found ? '' : 'none';
+        }
+    }, 300));
+}
+
+// ==================== PERFORMANCE OPTIMIZATION ====================
+
+// Lazy load images (if needed)
+document.addEventListener('DOMContentLoaded', function() {
+    const lazyImages = document.querySelectorAll('img[data-src]');
+    
+    if ('IntersectionObserver' in window) {
+        const imageObserver = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const img = entry.target;
+                    img.src = img.dataset.src;
+                    img.removeAttribute('data-src');
+                    imageObserver.unobserve(img);
+                }
+            });
+        });
+        
+        lazyImages.forEach(img => imageObserver.observe(img));
+    } else {
+        // Fallback for browsers that don't support IntersectionObserver
+        lazyImages.forEach(img => {
+            img.src = img.dataset.src;
+            img.removeAttribute('data-src');
+        });
+    }
+});
+
+// ==================== ACCESSIBILITY ENHANCEMENTS ====================
+
+// Trap focus inside modal when open
+function trapFocus(element) {
+    const focusableElements = element.querySelectorAll(
+        'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'
+    );
+    
+    const firstElement = focusableElements[0];
+    const lastElement = focusableElements[focusableElements.length - 1];
+    
+    element.addEventListener('keydown', function(e) {
+        if (e.key === 'Tab') {
+            if (e.shiftKey && document.activeElement === firstElement) {
+                e.preventDefault();
+                lastElement.focus();
+            } else if (!e.shiftKey && document.activeElement === lastElement) {
+                e.preventDefault();
+                firstElement.focus();
+            }
+        }
+    });
+}
+
+// Apply focus trap to modals
+document.addEventListener('DOMContentLoaded', function() {
+    const modals = document.querySelectorAll('.modal');
+    modals.forEach(modal => {
+        modal.addEventListener('shown', function() {
+            trapFocus(this);
+        });
+    });
+});
+
+// ==================== CONSOLE WELCOME MESSAGE ====================
+console.log('%c🎓 Klipaa Solusi Indonesia - Admin Dashboard', 'font-size: 20px; font-weight: bold; color: #11998e;');
+console.log('%cDashboard System v1.0', 'font-size: 12px; color: #7a9a8a;');
+console.log('%c━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'color: #d1f0e1;');
+console.log('%cDeveloped with ❤️ for Education', 'font-size: 11px; color: #4a6a5a; font-style: italic;');
     </script>
+    @stack('scripts')
 </body>
 </html>

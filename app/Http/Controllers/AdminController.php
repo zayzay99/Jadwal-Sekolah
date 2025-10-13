@@ -35,7 +35,7 @@ class AdminController extends Controller
         $jadwalCount = $activeTahunAjaranId ? \App\Models\Jadwal::where('tahun_ajaran_id', $activeTahunAjaranId)->count() : 0;
 
         // Kirim semua data yang diperlukan ke view
-        return view('dashboard.admin', compact(
+        return view('dashboard.home', compact(
             'tahunAjarans',
             'activeTahunAjaran',
             'guruCount', 

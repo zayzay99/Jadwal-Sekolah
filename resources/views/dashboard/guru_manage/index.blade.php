@@ -2,66 +2,93 @@
 
 @section('content')
 <div class="content-header">
-    <h2>Manajemen Guru</h2>
+    <div>
+        <h2 style="font-size: 1.8rem; font-weight: 700; margin: 0 0 8px 0; color: var(--text-color);">
+            Manajemen Guru
+        </h2>
+        <p style="color: var(--text-light); margin: 0; font-size: 0.95rem;">
+            Kelola data guru dan ketersediaan mengajar
+        </p>
+    </div>
 </div>
 
-<div class="table-container">
-    <div class="table-header">
-        <h2>Daftar Guru</h2>
-        <div class="table-header-actions">
-            <form action="{{ route('manage.guru.index') }}" method="GET" class="search-form">
-                <input type="text" name="search" class="form-control" placeholder="Cari nama, NIP, pengampu..." value="{{ $search ?? '' }}">
-                <button type="submit" class="btn btn-primary btn-tiny">Cari</button>
+<div style="background: white; padding: 30px 35px; border-radius: 20px; box-shadow: var(--card-shadow); border: 1px solid var(--border-color); margin-top: 25px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px;">
+        <h2 style="font-size: 1.3rem; font-weight: 600; margin: 0; color: var(--text-color);">
+            <i class="fas fa-users" style="margin-right: 10px; color: var(--primary-color);"></i>
+            Daftar Guru
+        </h2>
+        <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+            <form action="{{ route('manage.guru.index') }}" method="GET" style="display: flex; gap: 8px;">
+                <input type="text" name="search" class="form-control" placeholder="Cari nama, NIP, pengampu..." value="{{ $search ?? '' }}" style="min-width: 250px;">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-search"></i> Cari
+                </button>
             </form>
+<<<<<<< HEAD
             <a href="{{ route('manage.guru.import.show') }}" class="btn btn-info btn-tiny">
                 <i class="fas fa-file-import"></i> Import Guru
             </a>
             <a href="{{ route('manage.guru.create') }}" class="btn btn-success btn-tiny">
+=======
+            <a href="{{ route('manage.guru.create') }}" class="btn btn-success">
+>>>>>>> 9e68b55 (tampilan admin, default profil, dll)
                 <i class="fas fa-plus"></i> Tambah Guru
             </a>
         </div>
     </div>
     
     <div class="table-responsive">
-        <table class="custom-table">
+        <table class="table">
             <thead>
                 <tr>
-
-                    <th>Foto</th>
-                    <th>Nama</th>
+                    <th style="width: 80px;">FOTO</th>
+                    <th>NAMA</th>
                     <th>NIP</th>
-                    <th>Pengampu</th>
-                    <th>Jam Mengajar</th>
-                    <th>Sisa Jam</th>
-                    <th>Email</th>
-                    <th>Aksi</th>
+                    <th>PENGAMPU</th>
+                    <th style="white-space: nowrap;">JAM MENGAJAR</th>
+                    <th style="white-space: nowrap;">SISA JAM</th>
+                    <th>EMAIL</th>
+                    <th style="text-align: center; width: 150px;">AKSI</th>
                 </tr>
             </thead>
             <tbody>
                 @if(count($gurus) > 0)
                     @foreach($gurus as $guru)
                     <tr>
-                        <td data-label="Foto">
-                            <img src="{{ $guru->profile_picture ? asset('storage/' . $guru->profile_picture) : asset('storage/Default-Profile.png') }}" alt="Foto Profil" class="profile-picture">
+                        <td data-label="Foto" style="text-align: center;">
+                            <img src="{{ $guru->profile_picture ? asset('storage/' . $guru->profile_picture) : asset('img/Default-Profile.png') }}" alt="Foto Profil" style="width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 3px solid var(--border-color);">
                         </td>
-                        <td data-label="Nama">{{ $guru->nama }}</td>
-                        <td data-label="NIP">{{ $guru->nip }}</td>
-                        <td data-label="Pengampu">{{ $guru->pengampu }}</td>
-                        <td data-label="Jam Mengajar">{{ $guru->formatted_total_jam_mengajar }}</td>
-                        <td data-label="Sisa Jam">{{ $guru->formatted_sisa_jam_mengajar }}</td>
-                        <td data-label="Email">{{ $guru->email }}</td>
-                        <td data-label="Aksi">
-                            <div class="action-buttons">
-                                <a href="{{ route('manage.guru.edit', $guru->id) }}" class="btn btn-warning" title="Edit">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                                <a href="{{ route('manage.guru.availability.edit', $guru->id) }}" class="btn-jadwal" title="Atur Ketersediaan">
+                        <td data-label="Nama" style="font-weight: 500; color: var(--text-color);">{{ $guru->nama }}</td>
+                        <td data-label="NIP" style="color: var(--text-light);">{{ $guru->nip }}</td>
+                        <td data-label="Pengampu">
+                            <span class="badge" style="background: var(--primary-gradient); color: white; padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; white-space: nowrap;">
+                                {{ $guru->pengampu }}
+                            </span>
+                        </td>
+                        <td data-label="Jam Mengajar" style="color: var(--text-color); white-space: nowrap;">{{ $guru->formatted_total_jam_mengajar }}</td>
+                        <td data-label="Sisa Jam">
+                            <span class="badge" style="background: var(--success-gradient); color: white; padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; white-space: nowrap;">
+                                {{ $guru->formatted_sisa_jam_mengajar }}
+                            </span>
+                        </td>
+                        <td data-label="Email" style="color: var(--text-light);">{{ $guru->email }}</td>
+                        <td data-label="Aksi" style="text-align: center;">
+                            <div style="display: flex; gap: 6px; justify-content: center; align-items: center;">
+                                <a href="{{ route('manage.guru.edit', $guru->id) }}" 
+                               class="btn btn-info btn-sm" 
+                               title="Edit"
+                               style="display: inline-flex; align-items: center; gap: 6px; text-decoration: none;">
+                                <i class="fas fa-edit"></i>
+                                <span>Edit</span>
+                            </a>
+                                <a href="{{ route('manage.guru.availability.edit', $guru->id) }}" class="btn btn-info btn-sm" title="Atur Ketersediaan" style="padding: 8px 12px;">
                                     <i class="fas fa-clock"></i> 
                                 </a>
-                                <form action="{{ route('manage.guru.destroy', $guru->id) }}" method="POST" class="delete-form">
+                                <form action="{{ route('manage.guru.destroy', $guru->id) }}" method="POST" class="delete-form" style="display: inline; margin: 0;">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="btn btn-danger" title="Hapus">
+                                    <button type="submit" class="btn btn-danger btn-sm" title="Hapus" style="padding: 8px 12px;">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </form>
@@ -71,161 +98,169 @@
                     @endforeach
                 @else
                     <tr>
-                        <td colspan="8" class="no-data-cell">Tidak ada data guru yang ditemukan.</td>
+                        <td colspan="8" style="text-align: center; padding: 50px 20px; color: var(--text-muted);">
+                            <i class="fas fa-user-slash" style="font-size: 3rem; margin-bottom: 15px; opacity: 0.5; display: block;"></i>
+                            <p style="margin: 0; font-size: 0.95rem;">Tidak ada data guru yang ditemukan.</p>
+                        </td>
                     </tr>
                 @endif
-
-                    
-            
-
             </tbody>
         </table>
     </div>
 
-    <div class="pagination-container">
-        {{ $gurus->links() }}
-    </div>
+   <div class="pagination-container" style="margin-top: 25px; padding-top: 20px; border-top: 1px solid var(--border-color); display: flex; justify-content: center;">
+    @if ($gurus->hasPages())
+        <nav>
+            <ul class="pagination" style="display: flex; gap: 8px; list-style: none; padding: 0; margin: 0;">
+                
+                {{-- Tombol Previous --}}
+                @if ($gurus->onFirstPage())
+                    <li style="opacity: 0.5; pointer-events: none;">
+                        <span class="page-link" style="padding: 8px 14px; border-radius: 10px; background: var(--border-color); color: var(--text-light);">
+                            <i class="fas fa-chevron-left"></i>
+                        </span>
+                    </li>
+                @else
+                    <li>
+                        <a href="{{ $gurus->previousPageUrl() }}" class="page-link" style="padding: 8px 14px; border-radius: 10px; background: var(--primary-color); color: white; text-decoration: none;">
+                            <i class="fas fa-chevron-left"></i>
+                        </a>
+                    </li>
+                @endif
+
+                {{-- Nomor Halaman --}}
+                @foreach ($gurus->getUrlRange(1, $gurus->lastPage()) as $page => $url)
+                    @if ($page == $gurus->currentPage())
+                        <li>
+                            <span class="page-link active" style="padding: 8px 14px; border-radius: 10px; background: var(--primary-gradient); color: white; font-weight: bold;">
+                                {{ $page }}
+                            </span>
+                        </li>
+                    @else
+                        <li>
+                            <a href="{{ $url }}" class="page-link" style="padding: 8px 14px; border-radius: 10px; background: var(--border-color); color: var(--text-color); text-decoration: none;">
+                                {{ $page }}
+                            </a>
+                        </li>
+                    @endif
+                @endforeach
+
+                {{-- Tombol Next --}}
+                @if ($gurus->hasMorePages())
+                    <li>
+                        <a href="{{ $gurus->nextPageUrl() }}" class="page-link" style="padding: 8px 14px; border-radius: 10px; background: var(--primary-color); color: white; text-decoration: none;">
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </li>
+                @else
+                    <li style="opacity: 0.5; pointer-events: none;">
+                        <span class="page-link" style="padding: 8px 14px; border-radius: 10px; background: var(--border-color); color: var(--text-light);">
+                            <i class="fas fa-chevron-right"></i>
+                        </span>
+                    </li>
+                @endif
+
+            </ul>
+        </nav>
+    @endif
+</div>
+
 </div>
 @endsection
 
 @push('styles')
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 <style>
-/* General Responsive Styles for Manage Pages */
-.table-header-actions {
-    display: flex;
-    align-items: center;
-    gap: 15px;
+.table {
+    border-collapse: separate;
+    border-spacing: 0;
 }
 
-.search-form {
-    display: flex;
-    gap: 10px;
-    flex-grow: 1;
+.table thead th {
+    font-size: 0.75rem;
+    letter-spacing: 0.5px;
+    padding: 16px 12px;
+    font-weight: 700;
 }
 
-.profile-picture {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 2px solid #ddd;
-    display: inline-block;
+.table tbody td {
+    padding: 18px 12px;
+    vertical-align: middle;
 }
 
-.no-data-cell {
-    text-align: center;
-    padding: 20px;
+.table tbody tr {
+    transition: all 0.2s ease;
 }
 
-/* Responsive Styles for Mobile */
+.table tbody tr:hover {
+    background-color: rgba(17, 153, 142, 0.03);
+    transform: translateX(2px);
+}
+
+.btn-sm {
+    font-size: 0.85rem;
+    transition: all 0.2s ease;
+}
+
+.btn-sm:hover {
+    transform: translateY(-2px);
+}
+
 @media (max-width: 768px) {
-    .table-header {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 15px;
-    }
-    
-    .table-header h2 {
-        font-size: 20px;
-        text-align: center;
-    }
-
-    .table-header-actions {
-        flex-direction: column;
-        align-items: stretch;
-        width: 100%;
-    }
-
-    .search-form {
-        width: 100%;
-    }
-
-    .search-form .form-control {
-        flex-grow: 1;
-        font-size: 14px;
-        padding: 10px 15px;
-    }
-    
-    .table-header-actions .btn {
-        width: 100%;
-        justify-content: center;
-    }
-
-    .custom-table thead {
+    .table thead {
         display: none;
     }
 
-    .custom-table, .custom-table tbody, .custom-table tr, .custom-table td {
+    .table, .table tbody, .table tr, .table td {
         display: block;
         width: 100%;
     }
 
-    .custom-table tr {
-        margin-bottom: 15px;
-        border: 1px solid #eee;
-        border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        padding: 15px;
+    .table tr {
+        margin-bottom: 20px;
+        border: 2px solid var(--border-color);
+        border-radius: 15px;
+        padding: 20px;
+        background: var(--bg-primary);
     }
 
-    .custom-table td {
+    .table td {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 10px 0;
-        border-bottom: 1px solid #f0f0f0;
+        padding: 12px 0;
+        border-bottom: 1px solid var(--border-color);
         text-align: right;
     }
 
-    .custom-table td:last-child {
+    .table td:last-child {
         border-bottom: none;
     }
 
-    .custom-table td::before {
+    .table td::before {
         content: attr(data-label);
-        font-weight: bold;
+        font-weight: 600;
         text-align: left;
         padding-right: 15px;
-        color: #333;
+        color: var(--text-color);
+        font-size: 0.85rem;
     }
 
-    .custom-table td[data-label="Foto"] {
+    .table td[data-label="Foto"] {
         justify-content: center;
     }
     
-    .custom-table td[data-label="Aksi"] .action-buttons {
-        display: flex;
-        justify-content: flex-end;
-        align-items: center;
-        gap: 8px;
+    .table td[data-label="Foto"]::before {
+        display: none;
+    }
+    
+    .table td[data-label="Aksi"] > div {
         width: 100%;
+        justify-content: flex-end !important;
     }
 
-    /* Set a consistent size for all action buttons in this context */
-    .custom-table td[data-label="Aksi"] .action-buttons .btn,
-    .custom-table td[data-label="Aksi"] .action-buttons .btn-jadwal,
-    .custom-table td[data-label="Aksi"] .action-buttons .delete-form .btn {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        padding: 0; /* Reset padding */
-        height: 38px;
-        width: 38px;
-        font-size: 14px; /* Keep icon size reasonable */
-        flex-shrink: 0;
-        border-radius: 8px; /* Make it a circle or rounded square */
-    }
-
-    .custom-table td[data-label="Aksi"] .action-buttons .delete-form {
-        margin: 0;
-        padding: 0;
-        line-height: 1;
-    }
-    
-    .pagination-container .pagination {
-        flex-wrap: wrap;
-        justify-content: center;
+    .table td[data-label="Aksi"] .btn-sm {
+        padding: 8px 10px !important;
     }
 }
 </style>
@@ -246,7 +281,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 text: "Data guru ini akan dihapus secara permanen!",
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: '#d33',
+                confirmButtonColor: '#f5576c',
                 cancelButtonColor: '#6c757d',
                 confirmButtonText: 'Ya, hapus!',
                 cancelButtonText: 'Batal'

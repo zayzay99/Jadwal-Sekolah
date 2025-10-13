@@ -41,10 +41,99 @@
 
 <main class="p-6 md:p-8 space-y-8">
 
+<<<<<<< HEAD
   <!-- 🏫 INSTANSI -->
   <section class="bg-white rounded-2xl shadow p-6 text-center max-w-3xl mx-auto border border-gray-100">
     <div class="flex justify-center mb-3">
       <img src="{{ asset('img/Klipaa Original.png') }}" alt="Logo Sekolah" class="w-14 h-14 object-contain">
+=======
+            <button class="logout-btn" data-url="{{ route('logout') }}" onclick="showLogoutConfirmation(event)">Keluar</button>
+        </aside>
+
+        <main class="main-content w-full">
+            <section class="greeting">
+                <h3>Bagaimana kabarnya hari ini?</h3>
+                <p>Tetap semangat ya anak-anak ...</p>
+            </section>
+
+            <section class="profile-section flex-col sm:flex-row items-center text-center sm:text-left">
+                <div class="profile-pic-container mb-4 sm:mb-0" onclick="document.getElementById('profile_picture_input').click();" title="Klik untuk ganti foto">
+                    <img src="{{ $user->profile_picture ? asset('storage/' . $user->profile_picture) : asset('img/Default-Profile.png') }}" alt="Foto Profil" class="profile-pic-image">
+                </div>
+                <div class="profile-info">
+                    <p><strong>Nama</strong>: {{ $user?->nama ?? '-' }}</p>
+                    <p><strong>NIS</strong>: {{ $user?->nis ?? '-' }}</p>
+                    <p><strong>Kelas</strong>: {{ $kelasSiswa?->nama_kelas ?? 'Tidak terdaftar di kelas' }}</p>
+                    <p><strong>Email</strong>: {{ $user?->email ?? '-' }}</p>
+                    <div class="mt-2">
+                        <form action="{{ route('siswa.switch-tahun-ajaran') }}" method="POST" id="tahunAjaranForm" class="flex items-center">
+                            @csrf
+                            <label for="tahun_ajaran_id" class="mr-2 text-sm font-medium">Tahun Ajaran:</label>
+                            <select name="tahun_ajaran_id" id="tahun_ajaran_id" onchange="document.getElementById('tahunAjaranForm').submit()" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-1.5">
+                                @foreach($allTahunAjarans as $tahun)
+                                    <option value="{{ $tahun->id }}" {{ $selectedTahunAjaranId == $tahun->id ? 'selected' : '' }}>
+                                        {{ $tahun->tahun_ajaran }} {{ $tahun->semester }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </form>
+                        @if($isViewingActiveYear)
+                            <span class="text-xs text-green-600 font-semibold">(Tahun Ajaran Aktif)</span>
+                        @else
+                            <span class="text-xs text-yellow-600 font-semibold">(Melihat Arsip)</span>
+                        @endif
+                    </div>
+                </div>
+            </section>
+
+            <form id="profile-pic-form" action="{{ route('siswa.profile.update') }}" method="POST" enctype="multipart/form-data" style="display: none;">
+                @csrf
+                <input type="file" id="profile_picture_input" name="profile_picture" accept="image/*" onchange="document.getElementById('profile-pic-form').submit();">
+            </form>
+
+            <section class="jadwal-section">
+                <div class="jadwal-header">
+                    <h4>Jadwal Pelajaran Untuk Kelas {{ $kelasSiswa?->nama_kelas ?? '-' }}</h4>
+                    <a href="{{ route('siswa.jadwal.cetak') }}" class="print-btn" target="_blank">Cetak Jadwal</a>
+                    <button id="arsipBtn" class="print-btn">Lihat Arsip</button>
+                </div>
+                @if(isset($jadwals) && count($jadwals) > 0)
+                    <div class="overflow-x-auto">
+                        <table>
+                            <thead>
+                                <tr class="bg-[#8cb4d4] text-gray-700">
+                                    <th class="py-3 px-4 text-center border">Hari</th>
+                                    <th class="py-3 px-4 text-center border">Jam</th>
+                                    <th class="py-3 px-4 text-center border">Mata Pelajaran</th>
+                                    <th class="py-3 px-4 text-center border">Guru</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($jadwals as $hari => $jadwalHarian)
+                                    @foreach($jadwalHarian as $index => $jadwal)
+                                        <tr>
+                                            @if($index === 0)
+                                                <td rowspan="{{ count($jadwalHarian) }}">{{ $hari }}</td>
+                                            @endif
+                                            <td>{{ $jadwal->jam }}</td>
+                                            @if($jadwal->kategori)
+                                                <td colspan="2" style="text-align: center; font-weight: bold;">{{ $jadwal->kategori->nama_kategori }}</td>
+                                                @else
+                                                <td>{{ $jadwal->mapel }}</td>
+                                                <td>{{ $jadwal->guru ? $jadwal->guru->nama : '-' }}</td>
+                                            @endif
+                                        </tr>
+                                    @endforeach
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                @else
+                    <p>Belum ada jadwal untuk kelas ini.</p>
+                @endif
+            </section>
+        </main>
+>>>>>>> 9e68b55 (tampilan admin, default profil, dll)
     </div>
     <h1 class="text-2xl font-bold text-[#3b3b7c]">Klipaa Students</h1>
     <p class="text-sm font-semibold text-gray-700 mt-1">
@@ -76,6 +165,7 @@
     </div>
   </section>
 
+<<<<<<< HEAD
   <!-- Profile Card -->
   <section class="bg-white rounded-2xl shadow p-6 max-w-3xl mx-auto border border-gray-100">
     <div class="profile-card flex flex-col items-center">
@@ -84,6 +174,94 @@
           <img src="{{ $user->profile_picture ? asset('storage/' . $user->profile_picture) : asset('storage/Default-Profile.png') }}"
             alt="Foto Profil"
             style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover;">
+=======
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuToggle = document.getElementById('menu-toggle');
+            const sidebar = document.getElementById('sidebar');
+            const backdrop = document.getElementById('backdrop');
+
+            function closeMenu() {
+                sidebar.classList.add('-translate-x-full');
+                backdrop.classList.add('hidden');
+            }
+
+            function openMenu() {
+                sidebar.classList.remove('-translate-x-full');
+                backdrop.classList.remove('hidden');
+            }
+
+            if (menuToggle && sidebar && backdrop) {
+                menuToggle.addEventListener('click', function() {
+                    if (sidebar.classList.contains('-translate-x-full')) {
+                        openMenu();
+                    } else {
+                        closeMenu();
+                    }
+                });
+
+                backdrop.addEventListener('click', function() {
+                    closeMenu();
+                });
+            }
+
+            @if(session('login_success'))
+                Swal.fire({
+                    toast: true,
+                    position: 'top-end',
+                    icon: 'success',
+                    title: '{{ session('login_success') }}',
+                    showConfirmButton: false,
+                    timer: 3500,
+                    timerProgressBar: true
+                });
+            @endif
+
+            @if(session('success'))
+                Swal.fire({
+                    toast: true,
+                    position: 'top-end',
+                    icon: 'success',
+                    title: '{{ session('success') }}',
+                    showConfirmButton: false,
+                    timer: 3500,
+                    timerProgressBar: true
+                });
+            @endif
+
+            @if($errors->any())
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal Mengunggah',
+                    html: '<ul>@foreach ($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul>',
+                    confirmButtonColor: '#d33',
+                    confirmButtonText: 'Tutup'
+                });
+            @endif
+        });
+
+        
+    </script>
+    <div id="arsipModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center" style="display: none;">
+        <div class="bg-white rounded-lg shadow-xl w-11/12 md:w-3/4 lg:w-1/2 max-h-[80vh] flex flex-col">
+            <div class="flex justify-between items-center p-4 border-b">
+                <h3 class="text-xl font-bold">Arsip Jadwal</h3>
+                <button id="closeArsipModal" class="text-black">&times;</button>
+            </div>
+            <div class="p-4 overflow-y-auto">
+                <div class="mb-4">
+                    <label for="arsip_tahun_ajaran" class="block text-sm font-medium text-gray-700">Pilih Tahun Ajaran:</label>
+                    <div class="flex">
+                        <select name="arsip_tahun_ajaran_id" id="arsip_tahun_ajaran" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                            @foreach($tahunAjarans as $tahun)
+                                <option value="{{ $tahun->id }}">{{ $tahun->tahun_ajaran }} {{ $tahun->semester }}</option>
+                            @endforeach
+                        </select>
+                        <button id="fetchJadwalBtn" class="ml-2 px-4 py-2 bg-blue-500 text-white rounded-md">Go</button>
+                    </div>
+                </div>
+                <div id="arsip_jadwal_content" style="margin-top: 20px;"></div>
+            </div>
+>>>>>>> 9e68b55 (tampilan admin, default profil, dll)
         </div>
       </div>
       <form id="profile-pic-form" action="{{ route('siswa.profile.update') }}" method="POST" enctype="multipart/form-data" style="display: none;">
