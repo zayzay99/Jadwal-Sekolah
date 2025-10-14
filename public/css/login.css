@@ -1,0 +1,76 @@
+ * {margin: 0; padding: 0; box-sizing: border-box;}
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: no-repeat center center fixed;
+      background-size: cover;
+      display: flex; flex-direction: column;
+      min-height: 100vh; position: relative;
+      transition: background-image 1s ease-in-out;
+    }
+    .container {
+      background-color: rgba(240, 248, 255, 0.26);
+      padding: 40px; margin: auto;
+      width: 400px; border-radius: 20px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      text-align: center; position: relative;
+      z-index: 1;
+    }
+    .marquee {
+      overflow: hidden; white-space: nowrap;
+      background-color: #73aace; color: black;
+      padding: 12px; border-radius: 15px;
+      margin-bottom: 30px; font-weight: bold;
+    }
+    .marquee span {display: inline-block; padding-left: 100%; animation: marqueeMove 10s linear infinite;}
+    @keyframes marqueeMove {from{transform: translateX(0);} to{transform: translateX(-100%);}}
+
+    input[type="text"], input[type="password"] {
+      width: 100%; padding: 15px;
+      margin-bottom: 20px; border: none;
+      border-radius: 15px; background-color: #a7c2df;
+      font-size: 1em;
+    }
+    button {
+      padding: 10px 20px; background-color: #a7d6f5;
+      color: black; font-weight: bold; border: none;
+      border-radius: 12px; cursor: pointer;
+      font-size: 1em; transition: transform 0.1s ease;
+    }
+    button:active {transform: scale(0.95);}
+    .circle {
+      width: 250px; height: 100px;
+      background-image: url('/img/Klipaa Original No BG.png');
+      background-size: contain; background-repeat: no-repeat;
+      background-position: center; margin: 0 auto 20px;
+    }
+    .footer {
+      text-align: center; padding: 10px;
+      font-size: 0.9em; color: #333;
+      background-color: #cde8f6; border-top: 1px solid #ccc;
+      margin-top: auto;
+    }
+    .footer a {color: #0066cc; text-decoration: none;}
+
+    .info-toggle {
+      position: fixed; bottom: 20px; right: 20px;
+      width: 50px; height: 50px; background-color: #2d6a4f;
+      color: white; border-radius: 50%; display: flex;
+      align-items: center; justify-content: center;
+      font-size: 24px; cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      transition: transform 0.3s ease, background-color 0.3s ease;
+      z-index: 1000;
+    }
+    .info-toggle:hover {transform: scale(1.1); background-color: #3a7d5d;}
+
+    .info-popup {
+      position: fixed; bottom: 80px; right: 20px;
+      width: 320px; background-color: white;
+      border-radius: 15px; box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+      padding: 20px; z-index: 999;
+      opacity: 0; visibility: hidden;
+      transform: translateY(10px);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+    .info-popup.show {opacity: 1; visibility: visible; transform: translateY(0);}
+    .info-popup h4 {margin-bottom: 15px; color: #2d6a4f;}
