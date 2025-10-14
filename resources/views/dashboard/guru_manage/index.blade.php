@@ -25,14 +25,10 @@
                     <i class="fas fa-search"></i> Cari
                 </button>
             </form>
-<<<<<<< HEAD
             <a href="{{ route('manage.guru.import.show') }}" class="btn btn-info btn-tiny">
                 <i class="fas fa-file-import"></i> Import Guru
             </a>
             <a href="{{ route('manage.guru.create') }}" class="btn btn-success btn-tiny">
-=======
-            <a href="{{ route('manage.guru.create') }}" class="btn btn-success">
->>>>>>> 9e68b55 (tampilan admin, default profil, dll)
                 <i class="fas fa-plus"></i> Tambah Guru
             </a>
         </div>

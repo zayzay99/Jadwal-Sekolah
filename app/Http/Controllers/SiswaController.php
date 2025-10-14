@@ -96,7 +96,7 @@ class SiswaController extends Controller
                 ->groupBy('hari');
         }
 
-        $pdf = Pdf::loadView('prints.jadwal-siswa', compact('jadwals', 'user', 'kelas'));
+        $pdf = Pdf::loadView('print.jadwal-siswa', compact('jadwals', 'user', 'kelas'));
         return $pdf->stream('jadwal-' . $user->nis . '.pdf');
     }
 
