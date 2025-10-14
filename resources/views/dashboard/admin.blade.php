@@ -47,23 +47,23 @@
                     </a>
                 </li>
                 <li>
-                    <a href="{{ route('manage.kelas.index') }}" class="menu-item {{ request()->routeIs('manage.kelas.*') ? 'active' : '' }}">
-                        <i class="fas fa-building"></i><span>Manajemen Kelas</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="{{ route('manage.tabelj.index') }}" class="menu-item {{ request()->routeIs('manage.tabelj.*') ? 'active' : '' }}">
-                        <i class="fas fa-clock"></i><span>Manajemen Slot Waktu</span>
-                    </a>
-                </li>
-                <li>
                     <a href="{{ route('manage.guru.index') }}" class="menu-item {{ request()->routeIs('manage.guru.*') ? 'active' : '' }}">
                         <i class="fas fa-chalkboard-teacher"></i><span>Manajemen Guru</span>
                     </a>
                 </li>
                 <li>
+                    <a href="{{ route('manage.kelas.index') }}" class="menu-item {{ request()->routeIs('manage.kelas.*') ? 'active' : '' }}">
+                        <i class="fas fa-building"></i><span>Manajemen Kelas</span>
+                    </a>
+                </li>
+                <li>
                     <a href="{{ route('jadwal-kategori.index') }}" class="menu-item {{ request()->routeIs('jadwal-kategori.*') ? 'active' : '' }}">
                         <i class="fas fa-tags"></i><span>Kategori Jadwal</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ route('manage.tabelj.index') }}" class="menu-item {{ request()->routeIs('manage.tabelj.*') ? 'active' : '' }}">
+                        <i class="fas fa-clock"></i><span>Manajemen Slot Waktu</span>
                     </a>
                 </li>
                 <li>
