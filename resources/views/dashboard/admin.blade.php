@@ -36,8 +36,12 @@
     </nav>
 
     <div class="main-layout">
+<<<<<<< HEAD
 
         <!-- Sidebar -->
+=======
+        <!-- Sidebar with Fixed Active State Logic -->
+>>>>>>> f6c547e48a0f38fdbcd0cf2d6ef28d576b5eaa7a
         <aside id="admin-sidebar" class="sidebar">
             <div class="sidebar-header">
                 <img src="{{ asset('img/Klipaa Original.png') }}" alt="Logo Klipaa">
@@ -48,15 +52,24 @@
                 $currentRoute = request()->route()->getName();
                 $currentPath = request()->path();
             @endphp
+<<<<<<< HEAD
 
             <ul class="sidebar-menu">
                 <li>
                     <a href="{{ route('admin.dashboard') }}"
                         class="{{ $currentRoute === 'admin.dashboard' ? 'active' : '' }}">
+=======
+            
+            <ul class="sidebar-menu">
+                <li>
+                    <a href="{{ route('admin.dashboard') }}" 
+                       class="{{ $currentRoute === 'admin.dashboard' ? 'active' : '' }}">
+>>>>>>> f6c547e48a0f38fdbcd0cf2d6ef28d576b5eaa7a
                         <i class="fas fa-home"></i>
                         <span>Home</span>
                     </a>
                 </li>
+<<<<<<< HEAD
 
                 <li>
                     <a href="{{ route('manage.kelas.index') }}"
@@ -64,10 +77,35 @@
                         <i class="fas fa-building"></i>
                         <span>Manajemen Kelas</span>
                         <span class="menu-badge">3</span>
+=======
+                
+                <li>
+                    <a href="{{ route('manage.kelas.index') }}" 
+                       class="{{ (Str::startsWith($currentRoute, 'manage.kelas.') || Str::contains($currentPath, 'manage/kelas')) && !Str::contains($currentPath, 'tambah-kelas-baru') ? 'active' : '' }}">
+                        <i class="fas fa-building"></i>
+                        <span>Manajemen Kelas</span>
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="{{ route('manage.tabelj.index') }}" 
+                       class="{{ Str::startsWith($currentRoute, 'manage.tabelj.') || Str::contains($currentPath, 'manage/tabelj') ? 'active' : '' }}">
+                        <i class="fas fa-clock"></i>
+                        <span>Manajemen Slot Waktu</span>
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="{{ route('jadwal-kategori.index') }}" 
+                       class="{{ Str::startsWith($currentRoute, 'jadwal-kategori.') || Str::contains($currentPath, 'jadwal-kategori') ? 'active' : '' }}">
+                        <i class="fas fa-tags"></i>
+                        <span>Kategori Jadwal</span>
+>>>>>>> f6c547e48a0f38fdbcd0cf2d6ef28d576b5eaa7a
                     </a>
                 </li>
 
                 <li>
+<<<<<<< HEAD
                     <a href="{{ route('manage.tabelj.index') }}"
                         class="{{ Str::startsWith($currentRoute, 'manage.tabelj.') || Str::contains($currentPath, 'manage/tabelj') ? 'active' : '' }}">
                         <i class="fas fa-clock"></i>
@@ -89,17 +127,28 @@
                         <i class="fas fa-chalkboard-teacher"></i>
                         <span>Manajemen Guru</span>
                         <span class="menu-badge">0</span>
+=======
+                    <a href="{{ route('manage.guru.index') }}" 
+                       class="{{ Str::startsWith($currentRoute, 'manage.guru.') || Str::contains($currentPath, 'manage/guru') ? 'active' : '' }}">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                        <span>Manajemen Guru</span>
+>>>>>>> f6c547e48a0f38fdbcd0cf2d6ef28d576b5eaa7a
                     </a>
                 </li>
-
-
+                
                 <li>
+<<<<<<< HEAD
                     <a href="{{ route('jadwal.pilihKelas') }}"
                         class="{{ (in_array($currentRoute, ['jadwal.pilihKelas', 'jadwal.pilihSubKelas', 'jadwal.create', 'jadwal.edit', 'jadwal.store', 'jadwal.update']) || (Str::contains($currentPath, 'jadwal') && !Str::contains($currentPath, 'jadwal-kategori') && !Str::startsWith($currentPath, 'jadwal/kelas'))) ? 'active' : '' }}">
+=======
+                    <a href="{{ route('jadwal.pilihKelas') }}" 
+                       class="{{ (in_array($currentRoute, ['jadwal.pilihKelas', 'jadwal.pilihSubKelas', 'jadwal.create', 'jadwal.edit', 'jadwal.store', 'jadwal.update']) || (Str::contains($currentPath, 'jadwal') && !Str::contains($currentPath, 'jadwal-kategori') && !Str::startsWith($currentPath, 'jadwal/kelas'))) ? 'active' : '' }}">
+>>>>>>> f6c547e48a0f38fdbcd0cf2d6ef28d576b5eaa7a
                         <i class="fas fa-calendar-check"></i>
                         <span>Manajemen Jadwal</span>
                     </a>
                 </li>
+<<<<<<< HEAD
 
                 <li>
                     <a href="{{ route('manage.siswa.index') }}"
@@ -121,6 +170,28 @@
                 <li>
                     <a href="{{ route('jadwal.pilihKelasLihat') }}"
                         class="{{ Str::startsWith($currentPath, 'jadwal/kelas') ? 'active' : '' }}">
+=======
+                
+                <li>
+                    <a href="{{ route('manage.siswa.index') }}" 
+                       class="{{ Str::startsWith($currentRoute, 'manage.siswa.') || Str::contains($currentPath, 'manage/siswa') ? 'active' : '' }}">
+                        <i class="fas fa-users"></i>
+                        <span>Manajemen Siswa</span>
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="{{ route('kelas.kategori') }}" 
+                       class="{{ in_array($currentRoute, ['kelas.kategori', 'kelas.show', 'kelas.detail']) || (Str::startsWith($currentPath, 'kelas/') && !Str::contains($currentPath, 'manage/kelas')) ? 'active' : '' }}">
+                        <i class="fa-solid fa-people-roof"></i>
+                        <span>Lihat Kelas</span>
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="{{ route('jadwal.pilihKelasLihat') }}" 
+                       class="{{ Str::startsWith($currentPath, 'jadwal/kelas') ? 'active' : '' }}">
+>>>>>>> f6c547e48a0f38fdbcd0cf2d6ef28d576b5eaa7a
                         <i class="fas fa-calendar-alt"></i>
                         <span>Lihat Jadwal</span>
                     </a>
@@ -134,6 +205,7 @@
 
         <!-- Main Content -->
         <main class="content">
+<<<<<<< HEAD
             @php
                 // We need to define currentRoute for the conditional below, in case it wasn't defined before
                 $currentRoute = $currentRoute ?? request()->route()->getName();
@@ -148,11 +220,23 @@
                             <select name="tahun_ajaran"
                                 onchange="window.location.href = '{{ url('manage/tahun-ajaran') }}/' + this.value + '/switch-active';">
                                 @foreach ($tahunAjarans as $tahun)
+=======
+            <!-- Header: Tahun Ajaran + Kelola T.A -->
+            @if ($currentRoute === 'admin.dashboard')
+            <div class="content-header">
+                <h1>Dashboard Overview</h1>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    @if($tahunAjarans->isNotEmpty())
+                        <div class="tahun-ajaran-selector">
+                            <select name="tahun_ajaran" onchange="window.location.href = '{{ url('manage/tahun-ajaran') }}/' + this.value + '/switch-active';">
+                                @foreach($tahunAjarans as $tahun)
+>>>>>>> f6c547e48a0f38fdbcd0cf2d6ef28d576b5eaa7a
                                     <option value="{{ $tahun->id }}" {{ $tahun->is_active ? 'selected' : '' }}>
                                         {{ $tahun->tahun_ajaran }} {{ $tahun->semester }}
                                     </option>
                                 @endforeach
                             </select>
+<<<<<<< HEAD
                             <i class="fas fa-chevron-down"></i>
                         @else
                             <span>Tahun Ajaran Belum Diatur</span>
@@ -163,6 +247,55 @@
             @endif
 
             <!-- CONTENT FROM CHILD VIEWS WILL APPEAR HERE -->
+=======
+                        </div>
+                    @else
+                        <span style="color: #721c24; background-color: #f8d7da; padding: .375rem .75rem; border-radius: .25rem;">
+                            Tahun Ajaran Belum Diatur
+                        </span>
+                    @endif
+                    <button type="button" class="btn-kelola-ta" id="openTahunAjaranModal">Kelola T.A</button>
+                </div>
+            </div>
+
+            <!-- Stats Section -->
+            @if (isset($guruCount))
+                <div class="stats-container">
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-chalkboard-teacher"></i></div>
+                        <div class="stat-value">{{ $guruCount }}</div>
+                        <div class="stat-label">Guru</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-users"></i></div>
+                        <div class="stat-value">{{ $siswaCount }}</div>
+                        <div class="stat-label">Siswa</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-building"></i></div>
+                        <div class="stat-value">{{ $kelasCount }}</div>
+                        <div class="stat-label">Kelas</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-calendar-alt"></i></div>
+                        <div class="stat-value">{{ $jadwalCount }}</div>
+                        <div class="stat-label">Jadwal</div>
+                    </div>
+                </div>
+            @endif
+
+            <!-- Info Section -->
+            <div class="info-section">
+                <div class="info-box">
+                    <h3>Informasi Penting</h3>
+                    <p>Data sekolah selalu up-to-date. Selamat bekerja dan semoga harimu menyenangkan!</p>
+                    <blockquote>"Pendidikan adalah senjata paling ampuh untuk mengubah dunia."</blockquote>
+                </div>
+            </div>
+            @endif
+
+            <!-- CONTENT DARI CHILD VIEW AKAN MUNCUL DI SINI -->
+>>>>>>> f6c547e48a0f38fdbcd0cf2d6ef28d576b5eaa7a
             @yield('content')
         </main>
     </div>
@@ -344,6 +477,7 @@
     <script src="{{ asset('js/script.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
+<<<<<<< HEAD
         // ==================== SIDEBAR TOGGLE - MOBILE & TABLET ====================
         document.addEventListener('DOMContentLoaded', function() {
             const menuToggle = document.getElementById('admin-menu-toggle');
@@ -763,8 +897,23 @@
                 top: 0,
                 behavior: 'smooth'
             });
+=======
+// ==================== SIDEBAR TOGGLE - MOBILE & TABLET ====================
+document.addEventListener('DOMContentLoaded', function () {
+    const menuToggle = document.getElementById('admin-menu-toggle');
+    const sidebar = document.getElementById('admin-sidebar');
+    const backdrop = document.getElementById('admin-backdrop');
+    const body = document.body;
+
+    function openSidebar() {
+        if (sidebar && backdrop) {
+            sidebar.classList.add('show');
+            backdrop.classList.add('show');
+            body.classList.add('sidebar-open');
+>>>>>>> f6c547e48a0f38fdbcd0cf2d6ef28d576b5eaa7a
         }
 
+<<<<<<< HEAD
         // Show/Hide scroll to top button (if you want to add one)
         let scrollTopBtn;
         window.addEventListener('scroll', function() {
@@ -785,8 +934,16 @@
                 currency: 'IDR',
                 minimumFractionDigits: 0
             }).format(amount);
+=======
+    function closeSidebar() {
+        if (sidebar && backdrop) {
+            sidebar.classList.remove('show');
+            backdrop.classList.remove('show');
+            body.classList.remove('sidebar-open');
+>>>>>>> f6c547e48a0f38fdbcd0cf2d6ef28d576b5eaa7a
         }
 
+<<<<<<< HEAD
         // Format date (if needed)
         function formatDate(dateString) {
             const options = {
@@ -930,6 +1087,239 @@
                 });
             });
         });
+=======
+    if (menuToggle) {
+        menuToggle.addEventListener('click', function(e) {
+            e.stopPropagation();
+            if (sidebar && sidebar.classList.contains('show')) {
+                closeSidebar();
+            } else {
+                openSidebar();
+            }
+        });
+    }
+
+    if (backdrop) {
+        backdrop.addEventListener('click', function() {
+            closeSidebar();
+        });
+    }
+
+    const menuItems = document.querySelectorAll('.sidebar-menu a');
+    if (menuItems.length > 0) {
+        menuItems.forEach(item => {
+            item.addEventListener('click', function() {
+                if (window.innerWidth <= 1024) {
+                    setTimeout(closeSidebar, 150);
+                }
+            });
+        });
+    }
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && sidebar && sidebar.classList.contains('show')) {
+            closeSidebar();
+        }
+    });
+});
+
+// ==================== MODAL MANAGEMENT ====================
+document.addEventListener('DOMContentLoaded', function () {
+    const modals = {
+        main: document.getElementById('tahunAjaranModal'),
+        create: document.getElementById('createTahunAjaranModal'),
+        edit: document.getElementById('editTahunAjaranModal')
+    };
+
+    function openModal(modal) {
+        if (modal) {
+            modal.style.display = 'block';
+            modal.offsetHeight;
+            setTimeout(() => modal.classList.add('show'), 10);
+            document.body.style.overflow = 'hidden';
+        }
+    }
+
+    function closeModal(modal) {
+        if (modal) {
+            modal.classList.remove('show');
+            setTimeout(() => {
+                modal.style.display = 'none';
+                document.body.style.overflow = '';
+            }, 300);
+        }
+    }
+
+    const openTahunAjaranBtn = document.getElementById('openTahunAjaranModal');
+    if (openTahunAjaranBtn) {
+        openTahunAjaranBtn.addEventListener('click', () => openModal(modals.main));
+    }
+
+    const createBtn = document.getElementById('openCreateTahunAjaranModal');
+    if (createBtn) {
+        createBtn.addEventListener('click', () => {
+            closeModal(modals.main);
+            setTimeout(() => openModal(modals.create), 350);
+        });
+    }
+
+    document.querySelectorAll('.modal-close-button').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const modal = this.closest('.modal');
+            closeModal(modal);
+        });
+    });
+
+    document.querySelectorAll('[data-close-modal]').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const modalId = this.dataset.closeModal;
+            const modalToClose = document.getElementById(modalId);
+            closeModal(modalToClose);
+        });
+    });
+
+    document.querySelectorAll('.edit-tahun-ajaran').forEach(button => {
+        button.addEventListener('click', function () {
+            const id = this.dataset.id;
+            const form = modals.edit.querySelector('form');
+            
+            form.action = `/manage/tahun-ajaran/${id}`;
+            form.querySelector('#edit_tahun_ajaran').value = this.dataset.tahun_ajaran;
+            form.querySelector('#edit_semester').value = this.dataset.semester;
+            form.querySelector('#edit_is_active').checked = this.dataset.is_active == 1;
+            
+            closeModal(modals.main);
+            setTimeout(() => openModal(modals.edit), 350);
+        });
+    });
+
+    document.querySelectorAll('.delete-tahun-ajaran').forEach(button => {
+        button.addEventListener('click', function () {
+            const id = this.dataset.id;
+            
+            Swal.fire({
+                title: 'Yakin ingin menghapus?',
+                text: "Data yang terhapus tidak dapat dikembalikan!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Ya, hapus!',
+                cancelButtonText: 'Batal',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: 'Menghapus...',
+                        allowOutsideClick: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+
+                    fetch(`/manage/tahun-ajaran/${id}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                            'Accept': 'application/json'
+                        }
+                    })
+                    .then(response => response.json().then(data => ({ status: response.status, body: data })))
+                    .then(({ status, body }) => {
+                        const message = body.message || 'Tidak ada pesan dari server.';
+                        
+                        if (status >= 200 && status < 300) {
+                            Swal.fire({
+                                title: 'Berhasil!',
+                                text: message,
+                                icon: 'success',
+                                confirmButtonColor: '#11998e'
+                            }).then(() => {
+                                window.location.reload();
+                            });
+                        } else {
+                            Swal.fire({
+                                title: 'Gagal!',
+                                text: message,
+                                icon: 'error',
+                                confirmButtonColor: '#11998e'
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        Swal.fire({
+                            title: 'Error!',
+                            text: 'Tidak dapat terhubung ke server atau terjadi kesalahan.',
+                            icon: 'error',
+                            confirmButtonColor: '#11998e'
+                        });
+                    });
+                }
+            });
+        });
+    });
+
+    window.addEventListener('click', function (event) {
+        if (event.target.classList.contains('modal')) {
+            closeModal(event.target);
+        }
+    });
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            Object.values(modals).forEach(modal => {
+                if (modal && modal.classList.contains('show')) {
+                    closeModal(modal);
+                }
+            });
+        }
+    });
+});
+
+// ==================== LOGOUT CONFIRMATION ====================
+function showLogoutConfirmation(event) {
+    event.preventDefault();
+    const link = event.currentTarget.href;
+    
+    Swal.fire({
+        title: 'Yakin akan keluar?',
+        text: "Anda akan keluar dari sesi ini.",
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#11998e',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Ya, keluar!',
+        cancelButtonText: 'Batal',
+        reverseButtons: true
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.href = link;
+        }
+    });
+}
+
+// ==================== FORM VALIDATION ====================
+document.addEventListener('DOMContentLoaded', function() {
+    const tahunAjaranInputs = document.querySelectorAll('input[name="tahun_ajaran"]');
+    
+    tahunAjaranInputs.forEach(input => {
+        input.addEventListener('blur', function() {
+            const pattern = /^\d{4}\/\d{4}$/;
+            if (this.value && !pattern.test(this.value)) {
+                this.setCustomValidity('Format harus YYYY/YYYY (contoh: 2025/2026)');
+                this.reportValidity();
+            } else {
+                this.setCustomValidity('');
+            }
+        });
+
+        input.addEventListener('input', function() {
+            this.setCustomValidity('');
+        });
+    });
+});
+>>>>>>> f6c547e48a0f38fdbcd0cf2d6ef28d576b5eaa7a
     </script>
     @stack('scripts')
 </body>
