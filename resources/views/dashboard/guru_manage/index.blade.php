@@ -25,14 +25,10 @@
                     <i class="fas fa-search"></i> Cari
                 </button>
             </form>
-<<<<<<< HEAD
             <a href="{{ route('manage.guru.import.show') }}" class="btn btn-info btn-tiny">
                 <i class="fas fa-file-import"></i> Import Guru
             </a>
             <a href="{{ route('manage.guru.create') }}" class="btn btn-success btn-tiny">
-=======
-            <a href="{{ route('manage.guru.create') }}" class="btn btn-success">
->>>>>>> 9e68b55 (tampilan admin, default profil, dll)
                 <i class="fas fa-plus"></i> Tambah Guru
             </a>
         </div>
@@ -57,7 +53,11 @@
                     @foreach($gurus as $guru)
                     <tr>
                         <td data-label="Foto" style="text-align: center;">
-                            <img src="{{ $guru->profile_picture ? asset('storage/' . $guru->profile_picture) : asset('img/Default-Profile.png') }}" alt="Foto Profil" style="width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 3px solid var(--border-color);">
+                            <div style="display: inline-flex; align-items: center; justify-content: center;">
+                                <img src="{{ $guru->profile_picture ? asset('storage/' . $guru->profile_picture) : asset('img/Default-Profile.png') }}" 
+                                     alt="Foto {{ $guru->nama }}" 
+                                     style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 3px solid var(--primary-color); box-shadow: 0 2px 8px rgba(17, 153, 142, 0.2);">
+                            </div>
                         </td>
                         <td data-label="Nama" style="font-weight: 500; color: var(--text-color);">{{ $guru->nama }}</td>
                         <td data-label="NIP" style="color: var(--text-light);">{{ $guru->nip }}</td>
