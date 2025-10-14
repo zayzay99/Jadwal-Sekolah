@@ -53,12 +53,21 @@
                     @foreach($gurus as $guru)
                     <tr>
                         <td data-label="Foto" style="text-align: center;">
-                            <div style="display: inline-flex; align-items: center; justify-content: center;">
-                                <img src="{{ $guru->profile_picture ? asset('storage/' . $guru->profile_picture) : asset('img/Default-Profile.png') }}" 
-                                     alt="Foto {{ $guru->nama }}" 
-                                     style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 3px solid var(--primary-color); box-shadow: 0 2px 8px rgba(17, 153, 142, 0.2);">
-                            </div>
-                        </td>
+        <div style="display: inline-flex; align-items: center; justify-content: center;">
+            @php
+                // Tentukan path gambar
+                if ($guru->profile_picture && $guru->profile_picture !== 'default-profile.jpg') {
+                    $imagePath = asset('storage/' . $guru->profile_picture);
+                } else {
+                    $imagePath = asset('img/Default-Profile.png');
+                }
+            @endphp
+            <img src="{{ $imagePath }}" 
+                 alt="Foto {{ $guru->nama }}" 
+                 style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 3px solid var(--primary-color); box-shadow: 0 2px 8px rgba(17, 153, 142, 0.2);"
+                 onerror="this.src='{{ asset('img/Default-Profile.png') }}'">
+        </div>
+    </td>
                         <td data-label="Nama" style="font-weight: 500; color: var(--text-color);">{{ $guru->nama }}</td>
                         <td data-label="NIP" style="color: var(--text-light);">{{ $guru->nip }}</td>
                         <td data-label="Pengampu">

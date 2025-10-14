@@ -82,37 +82,40 @@ class ManageGuruController extends Controller
     }
 
     public function store(Request $request)
-    {
-        $request->validate([
-            'nama' => 'required',
-            'nip' => 'required|unique:gurus',
-            'pengampu' => 'required',
-            'email' => 'required|email|unique:gurus',
-            'password' => 'required|min:6',
-            'max_jp_per_minggu' => 'nullable|integer|min:0',
-            'max_jp_per_hari' => 'nullable|integer|min:0',
-            'profile_picture' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'total_jam_mengajar' => 'required|integer|min:0',
-            'profile_picture' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-        ]);
+{
+    $request->validate([
+        'nama' => 'required',
+        'nip' => 'required|unique:gurus',
+        'pengampu' => 'required',
+        'email' => 'required|email|unique:gurus',
+        'password' => 'required|min:6',
+        'max_jp_per_minggu' => 'nullable|integer|min:0',
+        'max_jp_per_hari' => 'nullable|integer|min:0',
+        'profile_picture' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        'total_jam_mengajar' => 'required|integer|min:0',
+    ]);
 
-        $data = $request->all();
-        $data['tahun_ajaran_id'] = session('tahun_ajaran_id'); // Tetap set tahun ajaran saat dibuat
+    $data = $request->all();
+    $data['tahun_ajaran_id'] = session('tahun_ajaran_id');
 
-        if ($request->hasFile('profile_picture')) {
-            $image = $request->file('profile_picture');
-            $name = 'profile-pictures/' . time().'.'.$image->getClientOriginalExtension();
-            $image->storeAs('public', $name);
-            $data['profile_picture'] = $name;
-        }
-
-        $data['password'] = Hash::make($request->password);
-        $data['sisa_jam_mengajar'] = $request->total_jam_mengajar;
-
-        Guru::create($data);
-
-        return redirect()->route('manage.guru.index')->with('success', 'Guru berhasil ditambahkan!');
+    // Handle profile picture dengan default value
+    if ($request->hasFile('profile_picture')) {
+        $image = $request->file('profile_picture');
+        $name = 'profile-pictures/' . time().'.'.$image->getClientOriginalExtension();
+        $image->storeAs('public', $name);
+        $data['profile_picture'] = $name;
+    } else {
+        // Set default profile picture jika tidak ada file yang diupload
+        $data['profile_picture'] = 'default-profile.jpg';
     }
+
+    $data['password'] = Hash::make($request->password);
+    $data['sisa_jam_mengajar'] = $request->total_jam_mengajar;
+
+    Guru::create($data);
+
+    return redirect()->route('manage.guru.index')->with('success', 'Guru berhasil ditambahkan!');
+}
 
     public function edit($id)
     {
