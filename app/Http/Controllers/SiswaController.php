@@ -107,26 +107,27 @@ class SiswaController extends Controller
         return redirect()->route('siswa.dashboard')->with('success', 'Tahun ajaran berhasil diganti.');
     }
 
-    public function updateFoto(Request $request)
+    // Mengupdate foto profil
+
+    public function updateProfilePicture(Request $request)
     {
-        $user = Auth::guard('siswa')->user();
+        $request->validate([
+            'profile_picture' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
 
-        if ($request->hasFile('foto')) {
-            $path = $request->file('foto')->store('foto_siswa', 'public');
+        $siswa = Auth::guard('siswa')->user();
+        $siswaModel = Siswa::find($siswa->id);
 
-            if ($user->foto && Storage::disk('public')->exists($user->foto)) {
-                Storage::disk('public')->delete($user->foto);
-            }
-
-            $user->foto = $path;
-            $user->save();
-
-            return back()->with('success', 'Foto profil berhasil diperbarui!');
+        if ($request->hasFile('profile_picture') && $siswaModel) {
+            $path = $request->file('profile_picture')->store('profile-pictures/siswa', 'public');
+            $siswaModel->profile_picture = $path;
+            $siswaModel->save();
         }
 
-        return back()->with('error', 'Tidak ada file yang diunggah.');
+        return back()->with('success', 'Foto profil berhasil diperbarui.');
     }
 
+    // Menghapus foto profil
     public function deleteFoto()
     {
         $user = Auth::guard('siswa')->user();

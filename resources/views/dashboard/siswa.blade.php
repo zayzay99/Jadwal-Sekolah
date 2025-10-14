@@ -131,7 +131,6 @@
               <th class="py-3 px-4 text-center border border-[#a1b9db]">Jam</th>
               <th class="py-3 px-4 text-center border border-[#a1b9db]">Mata Pelajaran</th>
               <th class="py-3 px-4 text-center border border-[#a1b9db]">Guru</th>
-              <th class="py-3 px-4 text-center border border-[#a1b9db]">Durasi (JP)</th>
             </tr>
           </thead>
           <tbody>
@@ -151,28 +150,12 @@
                     <td class="py-2 px-4 border border-[#a1b9db]">{{ $jadwal->mapel }}</td>
                     <td class="py-2 px-4 border border-[#a1b9db]">{{ $jadwal->guru ? $jadwal->guru->nama : '-' }}</td>
                   @endif
-                  <td class="py-2 px-4 border border-[#a1b9db] text-center">
-                    @php
-                      $jamParts = explode(' - ', $jadwal->jam);
-                      if (count($jamParts) == 2) {
-                        $jamMulai = \Carbon\Carbon::parse($jamParts[0]);
-                        $jamSelesai = \Carbon\Carbon::parse($jamParts[1]);
-                        $durasiMenit = $jamSelesai->diffInMinutes($jamMulai);
-                        $jp = floor($durasiMenit / 35);
-                        $totalJP += $jp;
-                        echo $jp;
-                      } else {
-                        echo '-';
-                      }
-                    @endphp
+                  
                   </td>
                 </tr>
               @endforeach
             @endforeach
-            <tr class="bg-gray-100 font-bold">
-              <td colspan="4" class="py-2 px-4 text-right border border-[#a1b9db]">Total Jam Pelajaran (JP) per Minggu:</td>
-              <td class="py-2 px-4 text-center border border-[#a1b9db]">{{ $totalJP }}</td>
-            </tr>
+            
           </tbody>
         </table>
       @else
