@@ -93,6 +93,7 @@ class ManageGuruController extends Controller
             'max_jp_per_hari' => 'nullable|integer|min:0',
             'profile_picture' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'total_jam_mengajar' => 'required|integer|min:0',
+            'profile_picture' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
         $data = $request->all();
@@ -130,6 +131,7 @@ class ManageGuruController extends Controller
             'max_jp_per_hari' => 'nullable|integer|min:0',
             'profile_picture' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'total_jam_mengajar' => 'required|integer|min:0',
+            'profile_picture' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
         $guru = Guru::findOrFail($id);

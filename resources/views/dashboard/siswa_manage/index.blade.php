@@ -63,9 +63,7 @@
                 <a href="{{ route('manage.siswa.import.form') }}" class="btn btn-info btn-sm">
                     <i class="fas fa-file-import"></i> Import
                 </a>
-                <a href="{{ route('manage.siswa.export') }}" class="btn btn-secondary btn-sm">
-                    <i class="fas fa-file-export"></i> Export
-                </a>
+                
                 <a href="{{ route('manage.siswa.create') }}" class="btn btn-success btn-sm">
                     <i class="fas fa-plus-circle"></i> Tambah Siswa
                 </a>
@@ -193,14 +191,13 @@
     </div>
 
     <!-- Pagination -->
-    @if($siswas->hasPages())
-    <div style="padding: 20px 30px; border-top: 1px solid var(--border-color); background: rgba(17, 153, 142, 0.02);">
-        <div style="display: flex; justify-content: center;">
-            {{ $siswas->links() }}
-        </div>
+    <div class="pagination-container" style="margin-top: 25px; padding-top: 20px; border-top: 1px solid var(--border-color); display: flex; justify-content: center;">
+        @if ($siswas->hasPages())
+            <nav>
+                {{ $siswas->appends(request()->query())->links() }}
+            </nav>
+        @endif
     </div>
-    @endif
-</div>
 
 <!-- Info Card -->
 <div style="background: linear-gradient(135deg, rgba(0, 180, 219, 0.1) 0%, rgba(0, 131, 176, 0.1) 100%); padding: 20px 25px; border-radius: 15px; border-left: 4px solid #00b4db; margin-top: 20px;">

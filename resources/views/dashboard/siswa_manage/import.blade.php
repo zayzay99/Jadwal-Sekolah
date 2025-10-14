@@ -55,13 +55,7 @@
         <div class="stat-label" style="margin-top: 10px;">Format Excel</div>
         <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 5px;">.xlsx, .xls</div>
     </div>
-    <div class="stat-card">
-        <div class="stat-icon">
-            <i class="fas fa-file-csv"></i>
-        </div>
-        <div class="stat-label" style="margin-top: 10px;">Format CSV</div>
-        <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 5px;">.csv</div>
-    </div>
+    
     <div class="stat-card">
         <div class="stat-icon">
             <i class="fas fa-users"></i>
@@ -151,25 +145,7 @@
                 </div>
             </div>
 
-            <!-- Template Download Section -->
-            <div style="background: linear-gradient(135deg, rgba(242, 153, 74, 0.08), rgba(242, 201, 76, 0.08)); padding: 20px 25px; border-radius: 15px; border-left: 4px solid #f2994a; margin-bottom: 25px;">
-                <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px;">
-                    <div style="display: flex; align-items: center; gap: 12px;">
-                        <i class="fas fa-download" style="font-size: 1.5rem; color: #f2994a;"></i>
-                        <div>
-                            <div style="font-weight: 600; color: var(--text-color); margin-bottom: 4px;">
-                                Belum punya template?
-                            </div>
-                            <div style="font-size: 0.85rem; color: var(--text-light);">
-                                Download template Excel untuk memudahkan import data
-                            </div>
-                        </div>
-                    </div>
-                    <a href="#" class="btn btn-warning" style="background: var(--warning-gradient); white-space: nowrap;">
-                        <i class="fas fa-file-download"></i> Download Template
-                    </a>
-                </div>
-            </div>
+            
 
             <!-- Submit Actions -->
             <div class="form-actions" style="margin-top: 30px;">

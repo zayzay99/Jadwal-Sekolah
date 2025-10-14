@@ -53,7 +53,11 @@
                     @foreach($gurus as $guru)
                     <tr>
                         <td data-label="Foto" style="text-align: center;">
-                            <img src="{{ $guru->profile_picture ? asset('storage/' . $guru->profile_picture) : asset('img/Default-Profile.png') }}" alt="Foto Profil" style="width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 3px solid var(--border-color);">
+                            <div style="display: inline-flex; align-items: center; justify-content: center;">
+                                <img src="{{ $guru->profile_picture ? asset('storage/' . $guru->profile_picture) : asset('img/Default-Profile.png') }}" 
+                                     alt="Foto {{ $guru->nama }}" 
+                                     style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 3px solid var(--primary-color); box-shadow: 0 2px 8px rgba(17, 153, 142, 0.2);">
+                            </div>
                         </td>
                         <td data-label="Nama" style="font-weight: 500; color: var(--text-color);">{{ $guru->nama }}</td>
                         <td data-label="NIP" style="color: var(--text-light);">{{ $guru->nip }}</td>
