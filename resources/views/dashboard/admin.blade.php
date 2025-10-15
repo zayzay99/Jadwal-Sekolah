@@ -37,7 +37,20 @@
         <!-- Sidebar -->
         <aside id="admin-sidebar" class="sidebar">
             <div class="sidebar-header">
-                <img src="{{ asset('img/Klipaa Original.png') }}" alt="Logo Klipaa">
+            <img src="{{ asset('img/Klipaa Original.png') }}" alt="Logo Klipaa">
+                  <div style="
+                    margin-top: 10px;
+                    font-size: 16px;
+                    font-weight: bold;
+                    color: #ffffffff;
+                    padding: 8px 18px;
+                    border-radius: 10px;
+                    box-shadow: 0 2px 8px rgba(33,150,243,0.10);
+                    letter-spacing: 1px;
+                    display: inline-block;
+                    ">
+                    {{ \Carbon\Carbon::now()->locale('id')->translatedFormat('l, d F Y') }}
+                </div>
             </div>
 
             <ul class="sidebar-menu">
