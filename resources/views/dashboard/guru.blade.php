@@ -74,6 +74,7 @@
       <div class="profile-pic-container" style="cursor: pointer;" onclick="document.getElementById('profile_picture_input').click();" title="Klik untuk ganti foto">
         <div class="profile-pic" style="padding: 0; border: none; background: transparent;">
           <img src="{{ $user->profile_picture ? asset('storage/' . $user->profile_picture) : asset('img/Default-Profile.png') }}"
+            onerror="this.onerror=null; this.src='{{ asset('img/Default-Profile.png') }}';"
             alt="Foto Profil"
             style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover;">
         </div>

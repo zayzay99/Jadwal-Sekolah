@@ -139,21 +139,9 @@
                             <i class="fas fa-chalkboard-teacher" style="color: var(--primary-color);"></i> 
                             <span>Pilih Guru & Mata Pelajaran</span>
                         </label>
-                        <div style="position: relative;">
-                            <input 
-                                type="text" 
-                                id="modal-guru-search" 
-                                class="form-control" 
-                                placeholder="🔍 Cari guru atau mata pelajaran..." 
-                                style="font-size: 0.95rem; padding: 13px 15px;"
-                                autocomplete="off"
-                            >
-                            <div id="modal-guru-dropdown" class="searchable-dropdown" style="display: none;">
-                                <!-- Dropdown items will be populated here -->
-                            </div>
-                        </div>
-                        <input type="hidden" id="modal-guru-select">
-                        <div id="modal-guru-selected" style="margin-top: 10px; display: none;"></div>
+                        <select id="modal-guru-select" class="form-control searchable-select" style="font-size: 0.95rem; padding: 13px 15px; width: 100%;">
+                            <option value="">-- Kosong --</option>
+                        </select>
                     </div>
 
                     <!-- Dropdown Kategori (Non-searchable) -->
@@ -162,7 +150,7 @@
                             <i class="fas fa-tag" style="color: var(--primary-color);"></i> 
                             <span>Atau Pilih Kategori Khusus</span>
                         </label>
-                        <select id="modal-kategori-select" class="form-control" style="font-size: 0.95rem; padding: 13px 15px;">
+                        <select id="modal-kategori-select" class="form-control" style="font-size: 0.95rem; padding: 13px 15px; width: 100%;">
                             <option value="">-- Tidak Ada --</option>
                         </select>
                         <div style="display: flex; align-items: flex-start; gap: 8px; margin-top: 10px; padding: 10px 12px; background: rgba(0, 180, 219, 0.08); border-radius: 8px; border-left: 3px solid #00b4db;">
@@ -194,6 +182,7 @@
 
 @push('styles')
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <style>
         /* Time Display */
         .time-display {
@@ -290,95 +279,85 @@
         }
 
         /* Searchable Dropdown Styling */
-        .searchable-dropdown {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            right: 0;
-            background: white;
-            border: 2px solid var(--primary-color);
-            border-radius: 10px;
-            max-height: 300px;
-            overflow-y: auto;
-            z-index: 1000;
-            box-shadow: 0 8px 24px rgba(17, 153, 142, 0.2);
-            margin-top: 5px;
-        }
-
-        .dropdown-item {
-            padding: 12px 15px;
+        .searchable-select {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            padding-right: 40px !important;
             cursor: pointer;
-            transition: all 0.2s;
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            align-items: center;
-            gap: 10px;
         }
 
-        .dropdown-item:last-child {
-            border-bottom: none;
+        .select-wrapper {
+            position: relative;
         }
 
-        .dropdown-item:hover {
-            background: linear-gradient(135deg, rgba(17, 153, 142, 0.1), rgba(56, 239, 125, 0.1));
+        .select-arrow {
+            transition: transform 0.3s ease;
         }
 
-        .dropdown-item i {
-            color: var(--primary-color);
-            font-size: 1rem;
+        .form-control:focus + .select-arrow {
+            transform: translateY(-50%) rotate(180deg);
         }
 
-        .dropdown-item-text {
-            flex: 1;
+        /* Select2 Custom Styling */
+        .select2-container--default .select2-selection--single {
+            height: auto !important;
+            padding: 13px 15px !important;
+            border: 1px solid var(--border-color) !important;
+            border-radius: 8px !important;
+            font-size: 0.95rem !important;
         }
 
-        .dropdown-item-name {
-            font-weight: 600;
-            color: var(--text-color);
-            font-size: 0.95rem;
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            padding: 0 !important;
+            line-height: normal !important;
+            color: var(--text-color) !important;
         }
 
-        .dropdown-item-subject {
-            font-size: 0.85rem;
-            color: var(--text-light);
-            margin-top: 2px;
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 100% !important;
+            right: 10px !important;
         }
 
-        .dropdown-empty {
-            padding: 20px;
-            text-align: center;
-            color: var(--text-muted);
-            font-size: 0.9rem;
+        .select2-container--default.select2-container--open .select2-selection--single {
+            border-color: var(--primary-color) !important;
         }
 
-        .selected-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 10px 15px;
-            background: linear-gradient(135deg, rgba(17, 153, 142, 0.15), rgba(56, 239, 125, 0.15));
-            border: 2px solid var(--primary-color);
-            border-radius: 8px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: var(--text-color);
+        .select2-dropdown {
+            border: 2px solid var(--primary-color) !important;
+            border-radius: 10px !important;
+            box-shadow: 0 8px 24px rgba(17, 153, 142, 0.2) !important;
         }
 
-        .selected-badge i {
-            color: var(--primary-color);
+        .select2-search--dropdown .select2-search__field {
+            border: none !important;
+            border-bottom: 2px solid var(--border-color) !important;
+            border-radius: 0 !important;
+            padding: 12px 15px !important;
+            font-size: 0.95rem !important;
         }
 
-        .selected-badge .remove-btn {
-            margin-left: 5px;
-            cursor: pointer;
-            color: #dc3545;
-            font-weight: bold;
-            font-size: 1.1rem;
-            transition: color 0.2s;
+        .select2-search--dropdown .select2-search__field:focus {
+            border-bottom-color: var(--primary-color) !important;
+            outline: none !important;
         }
 
-        .selected-badge .remove-btn:hover {
-            color: #bd2130;
+        .select2-results__option {
+            padding: 12px 15px !important;
+            font-size: 0.95rem !important;
+        }
+
+        .select2-results__option--highlighted {
+            background: linear-gradient(135deg, rgba(17, 153, 142, 0.1), rgba(56, 239, 125, 0.1)) !important;
+            color: var(--text-color) !important;
+        }
+
+        .select2-results__option--selected {
+            background: linear-gradient(135deg, rgba(17, 153, 142, 0.15), rgba(56, 239, 125, 0.15)) !important;
+        }
+
+        .select2-container {
+            width: 100% !important;
         }
 
         /* Responsive adjustments */
@@ -399,29 +378,25 @@
 
         /* Custom Scrollbar */
         .modal-body::-webkit-scrollbar,
-        .welcome-card > div::-webkit-scrollbar,
-        .searchable-dropdown::-webkit-scrollbar {
+        .welcome-card > div::-webkit-scrollbar {
             width: 8px;
             height: 8px;
         }
         
         .modal-body::-webkit-scrollbar-track,
-        .welcome-card > div::-webkit-scrollbar-track,
-        .searchable-dropdown::-webkit-scrollbar-track {
+        .welcome-card > div::-webkit-scrollbar-track {
             background: var(--bg-primary);
             border-radius: 10px;
         }
         
         .modal-body::-webkit-scrollbar-thumb,
-        .welcome-card > div::-webkit-scrollbar-thumb,
-        .searchable-dropdown::-webkit-scrollbar-thumb {
+        .welcome-card > div::-webkit-scrollbar-thumb {
             background: var(--primary-color);
             border-radius: 10px;
         }
         
         .modal-body::-webkit-scrollbar-thumb:hover,
-        .welcome-card > div::-webkit-scrollbar-thumb:hover,
-        .searchable-dropdown::-webkit-scrollbar-thumb:hover {
+        .welcome-card > div::-webkit-scrollbar-thumb:hover {
             background: var(--primary-dark);
         }
     </style>
@@ -429,6 +404,8 @@
 
 @push('scripts')
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // --- DATA & CONFIG ---
@@ -457,16 +434,9 @@
             const modalDeleteBtn = document.getElementById('modal-delete');
             const modalCloseX = document.getElementById('modal-close-x');
 
-            // Searchable Guru Dropdown Elements
-            const modalGuruSearch = document.getElementById('modal-guru-search');
-            const modalGuruDropdown = document.getElementById('modal-guru-dropdown');
+            // Guru & Kategori Dropdown Elements
             const modalGuruSelect = document.getElementById('modal-guru-select');
-            const modalGuruSelected = document.getElementById('modal-guru-selected');
-
-            // Kategori Dropdown Element
             const modalKategoriSelect = document.getElementById('modal-kategori-select');
-
-            let currentGuruList = [];
 
             // --- STATS UPDATE FUNCTION ---
             function updateStats() {
@@ -490,77 +460,44 @@
                 document.getElementById('empty-slots-count').textContent = emptyCount;
             }
 
-            // --- SEARCHABLE DROPDOWN FUNCTIONS ---
+            // --- TEMPLATE FUNCTIONS ---
+            function populateGuruDropdown(day, jam) {
+                // Destroy existing Select2 if initialized
+                if ($(modalGuruSelect).hasClass("select2-hidden-accessible")) {
+                    $(modalGuruSelect).select2('destroy');
+                }
+
+                let options = '<option value="">-- Kosong --</option>';
+                if (availableGurus[day] && availableGurus[day][jam]) {
+                    availableGurus[day][jam].forEach(guru => {
+                        options += `<option value="guru-${guru.id}">${guru.nama} (${guru.pengampu})</option>`;
+                    });
+                }
+                modalGuruSelect.innerHTML = options;
+                
+                // Initialize Select2 with search
+                $(modalGuruSelect).select2({
+                    placeholder: "-- Kosong --",
+                    allowClear: true,
+                    width: '100%',
+                    dropdownParent: $('#schedule-modal'),
+                    language: {
+                        noResults: function() {
+                            return "Tidak ditemukan";
+                        },
+                        searching: function() {
+                            return "Mencari...";
+                        }
+                    }
+                });
+            }
+
             function populateKategoriDropdown() {
                 let options = '<option value="">-- Tidak Ada --</option>';
                 kategoris.forEach(kategori => {
                     options += `<option value="kategori-${kategori.id}">${kategori.nama_kategori}</option>`;
                 });
                 modalKategoriSelect.innerHTML = options;
-            }
-
-            function renderGuruDropdown(guruList, searchTerm = '') {
-                modalGuruDropdown.innerHTML = '';
-                
-                const filtered = guruList.filter(guru => {
-                    const searchLower = searchTerm.toLowerCase();
-                    return guru.nama.toLowerCase().includes(searchLower) || 
-                           guru.pengampu.toLowerCase().includes(searchLower);
-                });
-
-                if (filtered.length === 0) {
-                    modalGuruDropdown.innerHTML = `
-                        <div class="dropdown-empty">
-                            <i class="fas fa-search"></i><br>
-                            Tidak ada guru yang ditemukan
-                        </div>
-                    `;
-                } else {
-                    filtered.forEach(guru => {
-                        const item = document.createElement('div');
-                        item.className = 'dropdown-item';
-                        item.dataset.guruId = guru.id;
-                        item.innerHTML = `
-                            <i class="fas fa-user-tie"></i>
-                            <div class="dropdown-item-text">
-                                <div class="dropdown-item-name">${guru.nama}</div>
-                                <div class="dropdown-item-subject">${guru.pengampu}</div>
-                            </div>
-                        `;
-                        item.addEventListener('click', () => selectGuru(guru));
-                        modalGuruDropdown.appendChild(item);
-                    });
-                }
-                
-                modalGuruDropdown.style.display = 'block';
-            }
-
-            function selectGuru(guru) {
-                modalGuruSelect.value = `guru-${guru.id}`;
-                modalGuruSearch.value = '';
-                modalGuruDropdown.style.display = 'none';
-                
-                // Clear kategori when guru is selected
-                modalKategoriSelect.value = '';
-                
-                // Show selected badge
-                modalGuruSelected.innerHTML = `
-                    <div class="selected-badge">
-                        <i class="fas fa-user-tie"></i>
-                        <span>${guru.nama} (${guru.pengampu})</span>
-                        <span class="remove-btn" title="Hapus pilihan">×</span>
-                    </div>
-                `;
-                modalGuruSelected.style.display = 'block';
-                
-                // Add remove functionality
-                modalGuruSelected.querySelector('.remove-btn').addEventListener('click', clearGuruSelection);
-            }
-
-            function clearGuruSelection() {
-                modalGuruSelect.value = '';
-                modalGuruSelected.style.display = 'none';
-                modalGuruSearch.value = '';
             }
 
             // --- MODAL LOGIC ---
@@ -580,21 +517,19 @@
 
                 modalSubtitle.innerHTML = `<i class="fas fa-calendar-day"></i> ${day}, <i class="fas fa-clock"></i> Jam ${jam}`;
                 
-                // Populate kategori dropdown
+                // Populate both dropdowns
+                populateGuruDropdown(day, jam);
                 populateKategoriDropdown();
 
-                // Get available gurus for this slot
-                currentGuruList = (availableGurus[day] && availableGurus[day][jam]) ? availableGurus[day][jam] : [];
-
                 // Reset selections
-                clearGuruSelection();
+                modalGuruSelect.value = '';
                 modalKategoriSelect.value = '';
 
                 // Set current values if editing
                 if (currentSchedule) {
                     if (currentSchedule.guru_id) {
-                        const guru = gurus.find(g => g.id == currentSchedule.guru_id);
-                        if (guru) selectGuru(guru);
+                        const guruValue = `guru-${currentSchedule.guru_id}`;
+                        $(modalGuruSelect).val(guruValue).trigger('change');
                     } else if (currentSchedule.jadwal_kategori_id) {
                         modalKategoriSelect.value = `kategori-${currentSchedule.jadwal_kategori_id}`;
                     }
@@ -612,7 +547,6 @@
                 setTimeout(() => {
                     modal.style.display = 'none';
                     modal.classList.remove('show');
-                    modalGuruDropdown.style.display = 'none';
                 }, 300);
             }
 
@@ -653,8 +587,7 @@
                 
                 renderCellContent(day, jam);
                 closeModal();
-            }
-            
+            }            
             function deleteModalData() {
                 const day = modalDay.value;
                 const jam = modalJam.value;
@@ -730,33 +663,17 @@
                 }
             });
 
-            // Guru search input
-            modalGuruSearch.addEventListener('input', function(e) {
-                const searchTerm = e.target.value;
-                if (searchTerm.trim() === '') {
-                    modalGuruDropdown.style.display = 'none';
-                } else {
-                    renderGuruDropdown(currentGuruList, searchTerm);
+            // When guru is selected, clear kategori
+            $(document).on('change', '#modal-guru-select', function() {
+                if ($(this).val()) {
+                    modalKategoriSelect.value = '';
                 }
             });
 
-            modalGuruSearch.addEventListener('focus', function(e) {
-                if (e.target.value.trim() !== '') {
-                    renderGuruDropdown(currentGuruList, e.target.value);
-                }
-            });
-
-            // When kategori is selected, clear guru selection
+            // When kategori is selected, clear guru
             modalKategoriSelect.addEventListener('change', function() {
                 if (this.value) {
-                    clearGuruSelection();
-                }
-            });
-
-            // Close dropdown when clicking outside
-            document.addEventListener('click', function(e) {
-                if (!modalGuruSearch.contains(e.target) && !modalGuruDropdown.contains(e.target)) {
-                    modalGuruDropdown.style.display = 'none';
+                    $(modalGuruSelect).val('').trigger('change');
                 }
             });
 
