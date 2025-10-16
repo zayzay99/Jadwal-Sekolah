@@ -182,7 +182,7 @@
         <label for="arsip_tahun_ajaran" class="block text-sm font-medium text-gray-700">Pilih Tahun Ajaran:</label>
         <div class="flex">
           <select name="arsip_tahun_ajaran_id" id="arsip_tahun_ajaran" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-            @foreach($tahunAjarans as $tahun)
+            @foreach($allTahunAjarans as $tahun)
               <option value="{{ $tahun->id }}">{{ $tahun->tahun_ajaran }} {{ $tahun->semester }}</option>
             @endforeach
           </select>
