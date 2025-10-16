@@ -7,8 +7,11 @@
             @if($tahunAjarans->isNotEmpty())
                 <span>Tahun Ajaran</span>
                 <select name="tahun_ajaran" onchange="window.location.href = '{{ url('manage/tahun-ajaran') }}/' + this.value + '/switch-active';">
+                    @php
+                        $activeId = session('tahun_ajaran_id');
+                    @endphp
                     @foreach($tahunAjarans as $tahun)
-                        <option value="{{ $tahun->id }}" {{ $tahun->is_active ? 'selected' : '' }}>
+                        <option value="{{ $tahun->id }}" {{ $tahun->id == $activeId ? 'selected' : '' }}>
                             {{ $tahun->tahun_ajaran }} {{ $tahun->semester }}
                         </option>
                     @endforeach

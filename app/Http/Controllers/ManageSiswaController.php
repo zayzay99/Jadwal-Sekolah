@@ -17,21 +17,48 @@ class ManageSiswaController extends Controller
         $search = $request->input('search');
         $activeTahunAjaranId = session('tahun_ajaran_id');
 
-        $siswas = Siswa::with(['kelas' => function ($query) use ($activeTahunAjaranId) {
-                // Hanya load kelas yang sesuai dengan tahun ajaran aktif
+        // Base query: ONLY get students who are registered in the active school year via the pivot table.
+        $baseQuery = Siswa::whereHas('kelas', function ($query) use ($activeTahunAjaranId) {
+            $query->where('kelas_siswa.tahun_ajaran_id', $activeTahunAjaranId);
+        });
+
+        // Clone the base query for stats to avoid search filters affecting totals.
+        $statsQuery = clone $baseQuery;
+
+        // Apply search if exists
+        if ($search) {
+            $baseQuery->where(function($query) use ($search, $activeTahunAjaranId) {
+                $query->where('nama', 'like', "%{$search}%")
+                      ->orWhere('nis', 'like', "%{$search}%")
+                      ->orWhere('email', 'like', "%{$search}%")
+                      // Search by class name within the already filtered students for the active year
+                      ->orWhereHas('kelas', function ($q) use ($search, $activeTahunAjaranId) {
+                          $q->where('nama_kelas', 'like', "%{$search}%")
+                            ->where('kelas_siswa.tahun_ajaran_id', $activeTahunAjaranId);
+                      });
+            });
+        }
+
+        // Eager load the relationship and paginate
+        $siswas = $baseQuery->with(['kelas' => function ($query) use ($activeTahunAjaranId) {
                 $query->where('kelas_siswa.tahun_ajaran_id', $activeTahunAjaranId);
             }])
-            ->when($search, function ($query, $search) {
-                return $query->where('nama', 'like', "%{$search}%")
-                             ->orWhere('nis', 'like', "%{$search}%")
-                             ->orWhere('email', 'like', "%{$search}%")
-                             ->orWhereHas('kelas', function ($q) use ($search) {
-                                 $q->where('nama_kelas', 'like', "%{$search}%"); // Pencarian ini mungkin perlu disesuaikan jika ingin mencari di tahun ajaran aktif saja
-                             });
-            })
-            ->orderBy('nama', 'asc')->paginate(10);
+            ->orderBy('nama', 'asc')
+            ->paginate(10);
 
-        return view('dashboard.siswa_manage.index', compact('siswas', 'search'));
+        // Calculate stats based on the students IN THIS YEAR
+        $totalSiswa = $statsQuery->count();
+        // Based on the query, all students shown are in a class for this year.
+        $siswaSudahDikelas = $totalSiswa;
+        $siswaBelumDikelas = 0;
+
+        return view('dashboard.siswa_manage.index', compact(
+            'siswas',
+            'search',
+            'totalSiswa',
+            'siswaSudahDikelas',
+            'siswaBelumDikelas'
+        ));
     }
 
     public function create()

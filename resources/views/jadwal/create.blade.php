@@ -110,7 +110,7 @@
         </div>
     </div>
 
-    <!-- Schedule Edit Modal -->
+    <!-- Schedule Edit Modal with Separated Dropdowns -->
     <div id="schedule-modal" class="modal">
         <div class="modal-content" style="max-width: 550px;">
             <span class="modal-close-button" id="modal-close-x">&times;</span>
@@ -133,18 +133,30 @@
                     <input type="hidden" id="modal-day">
                     <input type="hidden" id="modal-jam">
 
-                    <div class="form-group" style="margin-bottom: 0;">
-                        <label for="modal-select" style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px; font-size: 0.95rem;">
-                            <i class="fas fa-list-ul" style="color: var(--primary-color);"></i> 
-                            <span>Pilih Jadwal</span>
+                    <!-- Dropdown Guru dengan Search -->
+                    <div class="form-group" style="margin-bottom: 20px;">
+                        <label for="modal-guru-select" style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px; font-size: 0.95rem;">
+                            <i class="fas fa-chalkboard-teacher" style="color: var(--primary-color);"></i> 
+                            <span>Pilih Guru & Mata Pelajaran</span>
                         </label>
-                        <select id="modal-select" class="form-control" style="font-size: 0.95rem; padding: 13px 15px;">
+                        <select id="modal-guru-select" class="form-control searchable-select" style="font-size: 0.95rem; padding: 13px 15px; width: 100%;">
                             <option value="">-- Kosong --</option>
+                        </select>
+                    </div>
+
+                    <!-- Dropdown Kategori (Non-searchable) -->
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label for="modal-kategori-select" style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px; font-size: 0.95rem;">
+                            <i class="fas fa-tag" style="color: var(--primary-color);"></i> 
+                            <span>Atau Pilih Kategori Khusus</span>
+                        </label>
+                        <select id="modal-kategori-select" class="form-control" style="font-size: 0.95rem; padding: 13px 15px; width: 100%;">
+                            <option value="">-- Tidak Ada --</option>
                         </select>
                         <div style="display: flex; align-items: flex-start; gap: 8px; margin-top: 10px; padding: 10px 12px; background: rgba(0, 180, 219, 0.08); border-radius: 8px; border-left: 3px solid #00b4db;">
                             <i class="fas fa-info-circle" style="color: #00b4db; margin-top: 2px; font-size: 0.9rem;"></i>
                             <small style="color: var(--text-light); font-size: 0.85rem; line-height: 1.5;">
-                                Pilih guru dengan mata pelajaran atau kategori khusus untuk slot jadwal ini
+                                Pilih guru untuk pelajaran regular atau kategori untuk kegiatan khusus (Sholat Dhuha, Istirahat, dll)
                             </small>
                         </div>
                     </div>
@@ -170,6 +182,7 @@
 
 @push('styles')
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <style>
         /* Time Display */
         .time-display {
@@ -265,6 +278,88 @@
             color: var(--primary-color);
         }
 
+        /* Searchable Dropdown Styling */
+        .searchable-select {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            padding-right: 40px !important;
+            cursor: pointer;
+        }
+
+        .select-wrapper {
+            position: relative;
+        }
+
+        .select-arrow {
+            transition: transform 0.3s ease;
+        }
+
+        .form-control:focus + .select-arrow {
+            transform: translateY(-50%) rotate(180deg);
+        }
+
+        /* Select2 Custom Styling */
+        .select2-container--default .select2-selection--single {
+            height: auto !important;
+            padding: 13px 15px !important;
+            border: 1px solid var(--border-color) !important;
+            border-radius: 8px !important;
+            font-size: 0.95rem !important;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            padding: 0 !important;
+            line-height: normal !important;
+            color: var(--text-color) !important;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 100% !important;
+            right: 10px !important;
+        }
+
+        .select2-container--default.select2-container--open .select2-selection--single {
+            border-color: var(--primary-color) !important;
+        }
+
+        .select2-dropdown {
+            border: 2px solid var(--primary-color) !important;
+            border-radius: 10px !important;
+            box-shadow: 0 8px 24px rgba(17, 153, 142, 0.2) !important;
+        }
+
+        .select2-search--dropdown .select2-search__field {
+            border: none !important;
+            border-bottom: 2px solid var(--border-color) !important;
+            border-radius: 0 !important;
+            padding: 12px 15px !important;
+            font-size: 0.95rem !important;
+        }
+
+        .select2-search--dropdown .select2-search__field:focus {
+            border-bottom-color: var(--primary-color) !important;
+            outline: none !important;
+        }
+
+        .select2-results__option {
+            padding: 12px 15px !important;
+            font-size: 0.95rem !important;
+        }
+
+        .select2-results__option--highlighted {
+            background: linear-gradient(135deg, rgba(17, 153, 142, 0.1), rgba(56, 239, 125, 0.1)) !important;
+            color: var(--text-color) !important;
+        }
+
+        .select2-results__option--selected {
+            background: linear-gradient(135deg, rgba(17, 153, 142, 0.15), rgba(56, 239, 125, 0.15)) !important;
+        }
+
+        .select2-container {
+            width: 100% !important;
+        }
+
         /* Responsive adjustments */
         @media (max-width: 768px) {
             .schedule-cell {
@@ -309,6 +404,8 @@
 
 @push('scripts')
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // --- DATA & CONFIG ---
@@ -330,13 +427,16 @@
             const modal = document.getElementById('schedule-modal');
             const modalTitle = document.getElementById('modal-title');
             const modalSubtitle = document.getElementById('modal-subtitle');
-            const modalSelect = document.getElementById('modal-select');
             const modalDay = document.getElementById('modal-day');
             const modalJam = document.getElementById('modal-jam');
             const modalSaveBtn = document.getElementById('modal-save');
             const modalCancelBtn = document.getElementById('modal-cancel');
             const modalDeleteBtn = document.getElementById('modal-delete');
             const modalCloseX = document.getElementById('modal-close-x');
+
+            // Guru & Kategori Dropdown Elements
+            const modalGuruSelect = document.getElementById('modal-guru-select');
+            const modalKategoriSelect = document.getElementById('modal-kategori-select');
 
             // --- STATS UPDATE FUNCTION ---
             function updateStats() {
@@ -361,21 +461,141 @@
             }
 
             // --- TEMPLATE FUNCTIONS ---
-            function getModalOptions(day, jam) {
+            function populateGuruDropdown(day, jam) {
+                // Destroy existing Select2 if initialized
+                if ($(modalGuruSelect).hasClass("select2-hidden-accessible")) {
+                    $(modalGuruSelect).select2('destroy');
+                }
+
                 let options = '<option value="">-- Kosong --</option>';
-                options += '<optgroup label="📚 Pelajaran">';
                 if (availableGurus[day] && availableGurus[day][jam]) {
                     availableGurus[day][jam].forEach(guru => {
-                        options += `<option value="guru-${guru.id}" data-mapel="${guru.pengampu}">${guru.nama} (${guru.pengampu})</option>`;
+                        options += `<option value="guru-${guru.id}">${guru.nama} (${guru.pengampu})</option>`;
                     });
                 }
-                options += '</optgroup>';
-                options += '<optgroup label="⚡ Kategori Khusus">';
+                modalGuruSelect.innerHTML = options;
+                
+                // Initialize Select2 with search
+                $(modalGuruSelect).select2({
+                    placeholder: "-- Kosong --",
+                    allowClear: true,
+                    width: '100%',
+                    dropdownParent: $('#schedule-modal'),
+                    language: {
+                        noResults: function() {
+                            return "Tidak ditemukan";
+                        },
+                        searching: function() {
+                            return "Mencari...";
+                        }
+                    }
+                });
+            }
+
+            function populateKategoriDropdown() {
+                let options = '<option value="">-- Tidak Ada --</option>';
                 kategoris.forEach(kategori => {
                     options += `<option value="kategori-${kategori.id}">${kategori.nama_kategori}</option>`;
                 });
-                options += '</optgroup>';
-                return options;
+                modalKategoriSelect.innerHTML = options;
+            }
+
+            // --- MODAL LOGIC ---
+            function openModal(day, jam) {
+                modalDay.value = day;
+                modalJam.value = jam;
+
+                const currentSchedule = scheduleData[jam] && scheduleData[jam][day] ? scheduleData[jam][day] : null;
+
+                if (currentSchedule) {
+                    modalTitle.textContent = 'Edit Jadwal';
+                    modalDeleteBtn.style.display = 'inline-block';
+                } else {
+                    modalTitle.textContent = 'Tambah Jadwal';
+                    modalDeleteBtn.style.display = 'none';
+                }
+
+                modalSubtitle.innerHTML = `<i class="fas fa-calendar-day"></i> ${day}, <i class="fas fa-clock"></i> Jam ${jam}`;
+                
+                // Populate both dropdowns
+                populateGuruDropdown(day, jam);
+                populateKategoriDropdown();
+
+                // Reset selections
+                modalGuruSelect.value = '';
+                modalKategoriSelect.value = '';
+
+                // Set current values if editing
+                if (currentSchedule) {
+                    if (currentSchedule.guru_id) {
+                        const guruValue = `guru-${currentSchedule.guru_id}`;
+                        $(modalGuruSelect).val(guruValue).trigger('change');
+                    } else if (currentSchedule.jadwal_kategori_id) {
+                        modalKategoriSelect.value = `kategori-${currentSchedule.jadwal_kategori_id}`;
+                    }
+                }
+
+                modal.style.display = 'block';
+                modal.classList.add('show');
+                setTimeout(() => {
+                    modal.style.opacity = '1';
+                }, 10);
+            }
+
+            function closeModal() {
+                modal.style.opacity = '0';
+                setTimeout(() => {
+                    modal.style.display = 'none';
+                    modal.classList.remove('show');
+                }, 300);
+            }
+
+            function saveModalData() {
+                const day = modalDay.value;
+                const jam = modalJam.value;
+                const selectedGuru = modalGuruSelect.value;
+                const selectedKategori = modalKategoriSelect.value;
+
+                if (!scheduleData[jam]) scheduleData[jam] = {};
+
+                // Priority: Guru over Kategori
+                if (selectedGuru) {
+                    const [type, id] = selectedGuru.split('-');
+                    const guru = gurus.find(g => g.id == id);
+                    
+                    scheduleData[jam][day] = {
+                        guru_id: id,
+                        jadwal_kategori_id: null,
+                        guru: guru,
+                        kategori: null,
+                        mapel: guru ? guru.pengampu : null
+                    };
+                } else if (selectedKategori) {
+                    const [type, id] = selectedKategori.split('-');
+                    const kategori = kategoris.find(k => k.id == id);
+                    
+                    scheduleData[jam][day] = {
+                        guru_id: null,
+                        jadwal_kategori_id: id,
+                        guru: null,
+                        kategori: kategori,
+                        mapel: null
+                    };
+                } else {
+                    scheduleData[jam][day] = null;
+                }
+                
+                renderCellContent(day, jam);
+                closeModal();
+            }            
+            function deleteModalData() {
+                const day = modalDay.value;
+                const jam = modalJam.value;
+                if (scheduleData[jam] && scheduleData[jam][day]) {
+                    scheduleData[jam][day] = null;
+                    renderCellContent(day, jam);
+                }
+                closeModal();
             }
 
             function renderCellContent(day, jam) {
@@ -397,87 +617,6 @@
                 }
                 cell.innerHTML = content;
                 updateStats();
-            }
-
-            // --- MODAL LOGIC ---
-            function openModal(day, jam) {
-                modalDay.value = day;
-                modalJam.value = jam;
-
-                const currentSchedule = scheduleData[jam] && scheduleData[jam][day] ? scheduleData[jam][day] : null;
-
-                if (currentSchedule) {
-                    modalTitle.textContent = 'Edit Jadwal';
-                    modalDeleteBtn.style.display = 'inline-block';
-                } else {
-                    modalTitle.textContent = 'Tambah Jadwal';
-                    modalDeleteBtn.style.display = 'none';
-                }
-
-                modalSubtitle.innerHTML = `<i class="fas fa-calendar-day"></i> ${day}, <i class="fas fa-clock"></i> Jam ${jam}`;
-                
-                modalSelect.innerHTML = getModalOptions(day, jam);
-
-                if (currentSchedule) {
-                    if (currentSchedule.guru_id) {
-                        modalSelect.value = `guru-${currentSchedule.guru_id}`;
-                    } else if (currentSchedule.jadwal_kategori_id) {
-                        modalSelect.value = `kategori-${currentSchedule.jadwal_kategori_id}`;
-                    }
-                } else {
-                    modalSelect.value = '';
-                }
-
-                modal.style.display = 'block';
-                modal.classList.add('show');
-                setTimeout(() => {
-                    modal.style.opacity = '1';
-                }, 10);
-            }
-
-            function closeModal() {
-                modal.style.opacity = '0';
-                setTimeout(() => {
-                    modal.style.display = 'none';
-                    modal.classList.remove('show');
-                }, 300);
-            }
-
-            function saveModalData() {
-                const day = modalDay.value;
-                const jam = modalJam.value;
-                const selectedValue = modalSelect.value;
-
-                if (!scheduleData[jam]) scheduleData[jam] = {};
-
-                if (!selectedValue) {
-                    scheduleData[jam][day] = null;
-                } else {
-                    const [type, id] = selectedValue.split('-');
-                    const guru = type === 'guru' ? gurus.find(g => g.id == id) : null;
-                    const kategori = type === 'kategori' ? kategoris.find(k => k.id == id) : null;
-
-                    scheduleData[jam][day] = {
-                        guru_id: type === 'guru' ? id : null,
-                        jadwal_kategori_id: type === 'kategori' ? id : null,
-                        guru: guru,
-                        kategori: kategori,
-                        mapel: guru ? guru.pengampu : null
-                    };
-                }
-                
-                renderCellContent(day, jam);
-                closeModal();
-            }
-            
-            function deleteModalData() {
-                const day = modalDay.value;
-                const jam = modalJam.value;
-                if (scheduleData[jam] && scheduleData[jam][day]) {
-                    scheduleData[jam][day] = null;
-                    renderCellContent(day, jam);
-                }
-                closeModal();
             }
 
             // --- INITIALIZE VIEW ---
@@ -515,6 +654,8 @@
             }
 
             // --- EVENT LISTENERS ---
+            
+            // Schedule cell click
             scheduleBody.addEventListener('click', function(e) {
                 const cell = e.target.closest('.schedule-cell');
                 if (cell) {
@@ -522,6 +663,21 @@
                 }
             });
 
+            // When guru is selected, clear kategori
+            $(document).on('change', '#modal-guru-select', function() {
+                if ($(this).val()) {
+                    modalKategoriSelect.value = '';
+                }
+            });
+
+            // When kategori is selected, clear guru
+            modalKategoriSelect.addEventListener('change', function() {
+                if (this.value) {
+                    $(modalGuruSelect).val('').trigger('change');
+                }
+            });
+
+            // Modal buttons
             modalSaveBtn.addEventListener('click', saveModalData);
             modalDeleteBtn.addEventListener('click', deleteModalData);
             modalCancelBtn.addEventListener('click', closeModal);
@@ -533,6 +689,7 @@
                 }
             });
 
+            // Bulk save
             bulkSaveBtn.addEventListener('click', async function() {
                 this.disabled = true;
                 const originalText = this.innerHTML;

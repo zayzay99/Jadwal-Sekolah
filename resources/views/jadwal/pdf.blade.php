@@ -440,7 +440,7 @@
     <!-- Footer -->
     <div class="footer">
         <div class="print-date">
-            Dicetak: {{ \Carbon\Carbon::now()->locale('id')->isoFormat('dddd, D MMMM YYYY - HH:mm') }} WIB
+            Dicetak: {{ \Carbon\Carbon::now('Asia/Jakarta')->locale('id')->isoFormat('dddd, D MMMM YYYY - HH:mm') }} WIB
         </div>
         <div class="copyright">
             © {{ date('Y') }} Sistem Informasi Akademik - Klipaa Solusi Indonesia

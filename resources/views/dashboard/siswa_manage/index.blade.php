@@ -18,22 +18,22 @@
         <div class="stat-icon">
             <i class="fas fa-user-graduate"></i>
         </div>
-        <div class="stat-value">{{ $siswas->total() }}</div>
+        <div class="stat-value">{{ $totalSiswa }}</div>
         <div class="stat-label">Total Siswa</div>
     </div>
     <div class="stat-card">
         <div class="stat-icon">
             <i class="fas fa-user-check"></i>
         </div>
-        <div class="stat-value">{{ $siswas->where('kelas', '!=', null)->count() }}</div>
-        <div class="stat-label">Sudah Dikelas</div>
+        <div class="stat-value">{{ $siswaSudahDikelas }}</div>
+        <div class="stat-label">Sudah Dikelas (Thn. Aktif)</div>
     </div>
     <div class="stat-card">
         <div class="stat-icon">
             <i class="fas fa-user-clock"></i>
         </div>
-        <div class="stat-value">{{ $siswas->where('kelas', '==', null)->count() }}</div>
-        <div class="stat-label">Belum Dikelas</div>
+        <div class="stat-value">{{ $siswaBelumDikelas }}</div>
+        <div class="stat-label">Belum Dikelas (Thn. Aktif)</div>
     </div>
     <div class="stat-card">
         <div class="stat-icon">
@@ -191,13 +191,62 @@
     </div>
 
     <!-- Pagination -->
-    <div class="pagination-container" style="margin-top: 25px; padding-top: 20px; border-top: 1px solid var(--border-color); display: flex; justify-content: center;">
-        @if ($siswas->hasPages())
-            <nav>
-                {{ $siswas->appends(request()->query())->links() }}
-            </nav>
-        @endif
-    </div>
+     <div class="pagination-container" style="margin-top: 25px; padding-top: 20px; border-top: 1px solid var(--border-color); display: flex; justify-content: center;">
+    @if ($siswas->hasPages())
+        <nav>
+            <ul class="pagination" style="display: flex; gap: 8px; list-style: none; padding: 0; margin: 0;">
+                
+                {{-- Tombol Previous --}}
+                @if ($siswas->onFirstPage())
+                    <li style="opacity: 0.5; pointer-events: none;">
+                        <span class="page-link" style="padding: 8px 14px; border-radius: 10px; background: var(--border-color); color: var(--text-light);">
+                            <i class="fas fa-chevron-left"></i>
+                        </span>
+                    </li>
+                @else
+                    <li>
+                        <a href="{{ $siswas->previousPageUrl() }}" class="page-link" style="padding: 8px 14px; border-radius: 10px; background: var(--primary-color); color: white; text-decoration: none;">
+                            <i class="fas fa-chevron-left"></i>
+                        </a>
+                    </li>
+                @endif
+
+                {{-- Nomor Halaman --}}
+                @foreach ($siswas->getUrlRange(1, $siswas->lastPage()) as $page => $url)
+                    @if ($page == $siswas->currentPage())
+                        <li>
+                            <span class="page-link active" style="padding: 8px 14px; border-radius: 10px; background: var(--primary-gradient); color: white; font-weight: bold;">
+                                {{ $page }}
+                            </span>
+                        </li>
+                    @else
+                        <li>
+                            <a href="{{ $url }}" class="page-link" style="padding: 8px 14px; border-radius: 10px; background: var(--border-color); color: var(--text-color); text-decoration: none;">
+                                {{ $page }}
+                            </a>
+                        </li>
+                    @endif
+                @endforeach
+
+                {{-- Tombol Next --}}
+                @if ($siswas->hasMorePages())
+                    <li>
+                        <a href="{{ $siswas->nextPageUrl() }}" class="page-link" style="padding: 8px 14px; border-radius: 10px; background: var(--primary-color); color: white; text-decoration: none;">
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </li>
+                @else
+                    <li style="opacity: 0.5; pointer-events: none;">
+                        <span class="page-link" style="padding: 8px 14px; border-radius: 10px; background: var(--border-color); color: var(--text-light);">
+                            <i class="fas fa-chevron-right"></i>
+                        </span>
+                    </li>
+                @endif
+
+            </ul>
+        </nav>
+    @endif
+</div>
 
 <!-- Info Card -->
 <div style="background: linear-gradient(135deg, rgba(0, 180, 219, 0.1) 0%, rgba(0, 131, 176, 0.1) 100%); padding: 20px 25px; border-radius: 15px; border-left: 4px solid #00b4db; margin-top: 20px;">
