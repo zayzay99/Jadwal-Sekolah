@@ -18,22 +18,22 @@
         <div class="stat-icon">
             <i class="fas fa-user-graduate"></i>
         </div>
-        <div class="stat-value">{{ $siswas->total() }}</div>
+        <div class="stat-value">{{ $totalSiswa }}</div>
         <div class="stat-label">Total Siswa</div>
     </div>
     <div class="stat-card">
         <div class="stat-icon">
             <i class="fas fa-user-check"></i>
         </div>
-        <div class="stat-value">{{ $siswas->where('kelas', '!=', null)->count() }}</div>
-        <div class="stat-label">Sudah Dikelas</div>
+        <div class="stat-value">{{ $siswaSudahDikelas }}</div>
+        <div class="stat-label">Sudah Dikelas (Thn. Aktif)</div>
     </div>
     <div class="stat-card">
         <div class="stat-icon">
             <i class="fas fa-user-clock"></i>
         </div>
-        <div class="stat-value">{{ $siswas->where('kelas', '==', null)->count() }}</div>
-        <div class="stat-label">Belum Dikelas</div>
+        <div class="stat-value">{{ $siswaBelumDikelas }}</div>
+        <div class="stat-label">Belum Dikelas (Thn. Aktif)</div>
     </div>
     <div class="stat-card">
         <div class="stat-icon">

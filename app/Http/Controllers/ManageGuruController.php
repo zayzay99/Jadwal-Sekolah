@@ -54,8 +54,10 @@ class ManageGuruController extends Controller
     public function index(Request $request)
     {
         $search = $request->input('search');
-        
-        $query = Guru::query();
+        $activeTahunAjaranId = session('tahun_ajaran_id');
+
+        // Start query and filter by the active school year
+        $query = Guru::where('tahun_ajaran_id', $activeTahunAjaranId);
 
         if ($search) {
             $query->where(function($q) use ($search) {
