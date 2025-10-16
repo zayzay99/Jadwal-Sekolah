@@ -6,6 +6,7 @@ use App\Models\Kelas;
 use App\Models\Guru;
 use App\Models\Siswa;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ManageKelasController extends Controller
 {
@@ -76,14 +77,21 @@ class ManageKelasController extends Controller
             'tahun_ajaran_id' => $activeTahunAjaranId,
         ]);
 
-        // Prepare data for sync, including the pivot data
-        $siswaSyncData = [];
         if ($request->has('siswa_ids')) {
+            $insertData = [];
             foreach ($request->siswa_ids as $siswaId) {
-                $siswaSyncData[$siswaId] = ['tahun_ajaran_id' => $activeTahunAjaranId];
+                $insertData[] = [
+                    'kelas_id' => $kelas->id,
+                    'siswa_id' => $siswaId,
+                    'tahun_ajaran_id' => $activeTahunAjaranId,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
+            }
+            if (!empty($insertData)) {
+                DB::table('kelas_siswa')->insert($insertData);
             }
         }
-        $kelas->siswas()->sync($siswaSyncData);
 
         return redirect()->route('manage.kelas.index')->with('success', 'Kelas "' . $nama_kelas . '" berhasil ditambahkan.');
     }
@@ -150,18 +158,24 @@ class ManageKelasController extends Controller
             'guru_id' => $request->guru_id,
         ]);
 
-        // Prepare data for sync, including the pivot data
-        $siswaSyncData = [];
+        // Detach all students for the current year and re-attach the new set.
+        DB::table('kelas_siswa')->where('kelas_id', $id)->where('tahun_ajaran_id', $activeTahunAjaranId)->delete();
+
+        $insertData = [];
         if ($request->has('siswa_ids')) {
             foreach ($request->siswa_ids as $siswaId) {
-                $siswaSyncData[$siswaId] = ['tahun_ajaran_id' => $activeTahunAjaranId];
+                $insertData[] = [
+                    'kelas_id' => $id,
+                    'siswa_id' => $siswaId,
+                    'tahun_ajaran_id' => $activeTahunAjaranId,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
             }
         }
-        
-        // Detach all students for the current year and re-attach the new set.
-        // This is simpler and less error-prone than calculating the diff.
-        $kelas->siswas()->where('kelas_siswa.tahun_ajaran_id', $activeTahunAjaranId)->detach();
-        $kelas->siswas()->attach($siswaSyncData);
+        if (!empty($insertData)) {
+            DB::table('kelas_siswa')->insert($insertData);
+        }
 
 
         return redirect()->route('manage.kelas.index')->with('success', 'Kelas "' . $nama_kelas . '" berhasil diupdate.');

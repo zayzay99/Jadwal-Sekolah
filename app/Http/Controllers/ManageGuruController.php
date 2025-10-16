@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\Rule;
 
 class ManageGuruController extends Controller
 {
@@ -80,9 +81,20 @@ class ManageGuruController extends Controller
 {
     $request->validate([
         'nama' => 'required',
-        'nip' => 'required|unique:gurus',
+        'nip' => [
+            'required',
+            Rule::unique('gurus')->where(function ($query) {
+                return $query->where('tahun_ajaran_id', session('tahun_ajaran_id'));
+            }),
+        ],
         'pengampu' => 'required',
-        'email' => 'required|email|unique:gurus',
+        'email' => [
+            'required',
+            'email',
+            Rule::unique('gurus')->where(function ($query) {
+                return $query->where('tahun_ajaran_id', session('tahun_ajaran_id'));
+            }),
+        ],
         'password' => 'required|min:6',
         'max_jp_per_minggu' => 'nullable|integer|min:0',
         'max_jp_per_hari' => 'nullable|integer|min:0',
@@ -120,19 +132,29 @@ class ManageGuruController extends Controller
 
     public function update(Request $request, $id)
     {
+        $guru = Guru::findOrFail($id);
+
         $request->validate([
             'nama' => 'required',
-            'nip' => 'required|unique:gurus,nip,'.$id,
+            'nip' => [
+                'required',
+                Rule::unique('gurus')->where(function ($query) use ($guru) {
+                    return $query->where('tahun_ajaran_id', $guru->tahun_ajaran_id);
+                })->ignore($id),
+            ],
             'pengampu' => 'required',
-            'email' => 'required|email|unique:gurus,email,'.$id,
+            'email' => [
+                'required',
+                'email',
+                Rule::unique('gurus')->where(function ($query) use ($guru) {
+                    return $query->where('tahun_ajaran_id', $guru->tahun_ajaran_id);
+                })->ignore($id),
+            ],
             'max_jp_per_minggu' => 'nullable|integer|min:0',
             'max_jp_per_hari' => 'nullable|integer|min:0',
             'profile_picture' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'total_jam_mengajar' => 'required|integer|min:0',
-            'profile_picture' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
-
-        $guru = Guru::findOrFail($id);
         $data = $request->all();
 
         if ($request->hasFile('profile_picture')) {
