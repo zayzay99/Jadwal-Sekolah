@@ -98,8 +98,36 @@ class TahunAjaranController extends Controller
                 ->get();
 
             if ($request->boolean('skip_kelas_assignments')) {
-                // Jika "Kosongkan Penempatan Siswa" dicentang, maka jangan salin data penempatan siswa.
-                // Siswa akan ditempatkan secara manual nanti.
+                // Jika "Kosongkan Penempatan Siswa" dicentang:
+                // 1. Buat atau cari kelas "Belum Ditempatkan" untuk tahun ajaran baru ini.
+                $unassignedKelas = Kelas::firstOrCreate(
+                    [
+                        'nama_kelas' => '[Belum Ditempatkan]',
+                        'tahun_ajaran_id' => $newYearId,
+                    ],
+                    [
+                        'guru_id' => null, // Tidak ada wali kelas
+                    ]
+                );
+
+                // 2. Ambil semua ID siswa unik dari tahun ajaran sumber.
+                $siswaIds = $sourceKelasSiswa->pluck('siswa_id')->unique();
+                $newKelasSiswaData = [];
+
+                // 3. Daftarkan siswa ke tahun ajaran baru dengan menempatkan mereka di kelas "Belum Ditempatkan".
+                foreach ($siswaIds as $siswaId) {
+                    $newKelasSiswaData[] = [
+                        'siswa_id' => $siswaId,
+                        'kelas_id' => $unassignedKelas->id,
+                        'tahun_ajaran_id' => $newYearId,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ];
+                }
+
+                if (!empty($newKelasSiswaData)) {
+                    DB::table('kelas_siswa')->insert($newKelasSiswaData);
+                }
             } else {
                 // Jika checkbox TIDAK dicentang: Salin siswa dengan kelas seperti biasa
                 $newKelasSiswaData = [];
