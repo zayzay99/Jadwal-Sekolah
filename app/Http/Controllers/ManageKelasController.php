@@ -153,6 +153,26 @@ class ManageKelasController extends Controller
                 ->withInput();
         }
 
+        // === VALIDASI BARU: CEK SISWA DI KELAS LAIN ===
+        // Cek apakah ada siswa yang dipilih sudah terdaftar di kelas lain pada tahun ajaran ini.
+        if ($request->has('siswa_ids')) {
+            $conflictingStudents = DB::table('kelas_siswa')
+                ->join('siswas', 'kelas_siswa.siswa_id', '=', 'siswas.id')
+                ->join('kelas', 'kelas_siswa.kelas_id', '=', 'kelas.id')
+                ->whereIn('kelas_siswa.siswa_id', $request->siswa_ids)
+                ->where('kelas_siswa.tahun_ajaran_id', $activeTahunAjaranId)
+                ->where('kelas_siswa.kelas_id', '!=', $id) // Cek di kelas lain
+                ->select('siswas.nama as nama_siswa', 'kelas.nama_kelas')
+                ->get();
+
+            if ($conflictingStudents->isNotEmpty()) {
+                $errorMessages = $conflictingStudents->map(function ($conflict) {
+                    return "Gagal: Siswa '{$conflict->nama_siswa}' sudah terdaftar di kelas '{$conflict->nama_kelas}'.";
+                })->all();
+                return back()->withErrors(['siswa_ids' => $errorMessages])->withInput();
+            }
+        }
+
         $kelas->update([
             'nama_kelas' => $nama_kelas,
             'guru_id' => $request->guru_id,
