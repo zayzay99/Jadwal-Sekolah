@@ -107,7 +107,7 @@
   </section>
 
   <!-- Jadwal Pelajaran -->
-  <section class="bg-white rounded-2xl shadow p-6 max-w-3xl mx-auto border border-gray-100">
+  <section id="jadwal-section" class="bg-white rounded-2xl shadow p-6 max-w-3xl mx-auto border border-gray-100">
     <div class="flex justify-between items-center mb-4">
       <h3 class="text-lg font-semibold text-[#3b7ca5] flex items-center gap-2">
         <i class="fa-solid fa-calendar-days"></i> Jadwal Pelajaran Untuk Kelas {{ $kelasSiswa?->nama_kelas ?? '-' }}
@@ -116,10 +116,10 @@
         <button id="arsipBtn" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded transition duration-300">
           Lihat Arsip
         </button>
-        <a href="{{ route('siswa.jadwal.cetak') }}" target="_blank"
+        <button id="cetakJadwalBtn"
           class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-300">
           Cetak Jadwal
-        </a>
+        </button>
       </div>
     </div>
     <div class="table-container overflow-x-auto">
@@ -295,6 +295,35 @@ document.addEventListener('DOMContentLoaded', function() {
       confirmButtonText: 'Tutup'
     });
   @endif
+});
+
+// Print Jadwal
+document.getElementById('cetakJadwalBtn')?.addEventListener('click', function () {
+    const jadwalSection = document.getElementById('jadwal-section').cloneNode(true);
+    
+    const buttonsContainer = jadwalSection.querySelector('.flex.justify-between.items-center .flex.items-center.space-x-2');
+    if (buttonsContainer) {
+        buttonsContainer.remove();
+    }
+
+    const printWindow = window.open('', '', 'height=800,width=800');
+    printWindow.document.write('<html><head><title>Cetak Jadwal</title>');
+    printWindow.document.write('<script src="https://cdn.tailwindcss.com"><\/script>');
+    printWindow.document.write('<style>body { padding: 2rem; } .table-container { overflow: visible !important; } table { width: 100%; border-collapse: collapse; } th, td { border: 1px solid #ddd; padding: 8px; } th { background-color: #f2f2f2; } h3 { font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem; } </style>');
+    printWindow.document.write('</head><body class="font-[Inter]">');
+    printWindow.document.write(jadwalSection.innerHTML);
+    printWindow.document.write('</body></html>');
+    printWindow.document.close();
+
+    setTimeout(() => {
+        try {
+            printWindow.print();
+            printWindow.close();
+        } catch (e) {
+            console.error('Could not print:', e);
+            printWindow.close();
+        }
+    }, 500);
 });
 </script>
 
