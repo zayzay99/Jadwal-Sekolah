@@ -204,10 +204,30 @@ class ManageGuruController extends Controller
         $availabilities = GuruAvailability::where('guru_id', $id)->get()->groupBy('hari')->map(function ($item) {
             return $item->pluck('jam')->toArray();
         });
-        $days = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
-        $timeSlots = Tabelj::orderBy('jam_mulai')->get();
 
-        return view('dashboard.guru_manage.availability', compact('guru', 'availabilities', 'days', 'timeSlots'));
+        $days = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+        $timeSlots = Tabelj::orderBy('jam_mulai')->get()->map(function ($slot) {
+            $slot->jam_mulai = Carbon::parse($slot->jam_mulai)->format('H:i');
+            $slot->jam_selesai = Carbon::parse($slot->jam_selesai)->format('H:i');
+            return $slot;
+        });
+
+        // Mengambil semua jadwal yang ada untuk validasi bentrok di frontend
+        $activeTahunAjaranId = session('tahun_ajaran_id');
+        $existingSchedules = Jadwal::where('tahun_ajaran_id', $activeTahunAjaranId)
+            ->whereNotNull('guru_id')
+            ->with('kelas:id,nama_kelas', 'guru:id,nama')
+            ->get(['guru_id', 'kelas_id', 'hari', 'jam']);
+
+        // Mengorganisir jadwal untuk akses cepat di JavaScript
+        $scheduleClashData = [];
+        foreach ($existingSchedules as $schedule) {
+            $scheduleClashData[$schedule->hari][$schedule->jam][$schedule->guru_id] = $schedule->kelas->nama_kelas ?? 'Kelas tidak diketahui';
+        }
+
+        return view('dashboard.guru_manage.availability', compact(
+            'guru', 'availabilities', 'days', 'timeSlots', 'scheduleClashData'
+        ));
     }
 
     public function updateAvailability(Request $request, $id)

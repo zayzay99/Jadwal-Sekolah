@@ -404,6 +404,84 @@ class JadwalController extends Controller
         return view('jadwal.jadwal_per_kelas', compact('kelas', 'jadwals', 'is_management'));
     }
 
+    public function updateInline(Request $request, $id)
+    {
+        $validated = $request->validate([
+            'type' => 'required|in:guru,kategori',
+            'guru_id' => 'nullable|required_if:type,guru|exists:gurus,id',
+            'jadwal_kategori_id' => 'nullable|required_if:type,kategori|exists:jadwal_kategoris,id',
+        ]);
+
+        $jadwal = Jadwal::findOrFail($id);
+        $activeTahunAjaranId = session('tahun_ajaran_id');
+
+        DB::beginTransaction();
+        try {
+            $oldGuruId = $jadwal->guru_id;
+            $newGuruId = null;
+            $newMapel = null;
+
+            // --- Validasi Bentrok ---
+            if ($validated['type'] === 'guru') {
+                $newGuruId = $validated['guru_id'];
+                $teacherClash = Jadwal::where('guru_id', $newGuruId)
+                    ->where('hari', $jadwal->hari)
+                    ->where('jam', $jadwal->jam)
+                    ->where('tahun_ajaran_id', $activeTahunAjaranId)
+                    ->where('id', '!=', $id) // Exclude current schedule
+                    ->first();
+
+                if ($teacherClash) {
+                    $kelasBentrok = Kelas::find($teacherClash->kelas_id);
+                    return response()->json(['success' => false, 'message' => "Jadwal bentrok! Guru tersebut sudah mengajar di kelas {$kelasBentrok->nama_kelas} pada waktu yang sama."], 422);
+                }
+            }
+
+            // --- Kalkulasi Ulang Jam Guru ---
+            $duration = $this->calculateDuration($jadwal->jam);
+            
+            // Kembalikan jam ke guru lama jika ada
+            if ($oldGuruId) {
+                Guru::where('id', $oldGuruId)->increment('sisa_jam_mengajar', $duration);
+            }
+
+            // Kurangi jam dari guru baru jika ada
+            if ($newGuruId) {
+                $guruBaru = Guru::find($newGuruId);
+                if ($guruBaru->sisa_jam_mengajar < $duration) {
+                    DB::rollBack();
+                    return response()->json(['success' => false, 'message' => 'Guru ' . $guruBaru->nama . ' akan melebihi total jam mengajar.'], 422);
+                }
+                $guruBaru->decrement('sisa_jam_mengajar', $duration);
+                $newMapel = $guruBaru->pengampu;
+            }
+
+            // --- Update Jadwal ---
+            if ($validated['type'] === 'guru') {
+                $jadwal->guru_id = $newGuruId;
+                $jadwal->mapel = $newMapel;
+                $jadwal->jadwal_kategori_id = null;
+            } else { // type 'kategori'
+                $jadwal->guru_id = null;
+                $jadwal->mapel = null;
+                $jadwal->jadwal_kategori_id = $validated['jadwal_kategori_id'];
+            }
+            $jadwal->save();
+
+            DB::commit();
+
+            // Ambil data terbaru untuk dikirim kembali ke frontend
+            $updatedJadwal = Jadwal::with('guru', 'kategori')->find($id);
+
+            return response()->json(['success' => true, 'message' => 'Jadwal berhasil diperbarui.', 'data' => $updatedJadwal]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Inline update error: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Gagal memperbarui jadwal. Terjadi kesalahan server.'], 500);
+        }
+    }
+
     public function cetakJadwal($kelas_id)
     {
         $kelas = Kelas::findOrFail($kelas_id);
