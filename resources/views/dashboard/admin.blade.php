@@ -13,6 +13,63 @@
     <link rel="icon" type="image/png" sizes="60x60" href="{{ asset('img/Klipaa Original.png') }}">
 
     @stack('styles')
+    <style>
+        /* User Profile Dropdown */
+        .user-dropdown-container {
+            position: relative;
+        }
+        .user-avatar {
+            cursor: pointer;
+        }
+        .user-dropdown-menu {
+            position: absolute;
+            top: calc(100% + 15px);
+            right: 0;
+            background-color: var(--bg-secondary);
+            border-radius: 15px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+            border: 1px solid var(--border-color);
+            width: 240px;
+            z-index: 1100;
+            overflow: hidden;
+            display: none;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.2s ease, transform 0.2s ease;
+        }
+        .user-dropdown-menu.show {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .user-dropdown-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-primary);
+        }
+        .user-dropdown-header strong {
+            display: block;
+            color: var(--text-color);
+            font-weight: 600;
+        }
+        .user-dropdown-header small {
+            color: var(--text-light);
+            font-size: 0.85rem;
+        }
+        .user-dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 20px;
+            color: var(--text-light);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        .user-dropdown-item:hover {
+            background-color: var(--bg-primary);
+            color: var(--primary-color);
+        }
+    </style>
 </head>
 <body>
     <div id="admin-backdrop" class="backdrop"></div>
@@ -25,10 +82,42 @@
             </button>
             <h2>Admin Dashboard</h2>
         </div>
-        <div class="nav-user">
-            <span>Welcome, {{ Auth::guard('web')->user()->name }}</span>
-            <div class="user-avatar">
-                <i class="fas fa-user"></i>
+        <div class="nav-user" style="display: flex; align-items: center; gap: 20px;">
+            <!-- Tahun Ajaran Selector -->
+            <div class="tahun-ajaran-selector" id="tahunAjaranSelector">
+                @if($tahunAjarans->isNotEmpty())
+                    <span>Tahun Ajaran</span>
+                    <select name="tahun_ajaran" onchange="window.location.href = '{{ url('manage/tahun-ajaran') }}/' + this.value + '/switch-active';">
+                        @php
+                            $activeId = session('tahun_ajaran_id');
+                        @endphp
+                        @foreach($tahunAjarans as $tahun)
+                            <option value="{{ $tahun->id }}" {{ $tahun->id == $activeId ? 'selected' : '' }}>
+                                {{ $tahun->tahun_ajaran }} {{ $tahun->semester }}
+                            </option>
+                        @endforeach
+                    </select>
+                    <i class="fas fa-chevron-down"></i>
+                @else
+                    <span>Tahun Ajaran Belum Diatur</span>
+                @endif
+            </div>
+            <button type="button" class="btn-kelola-ta" id="openTahunAjaranModal">Kelola T.A</button>
+            
+            <!-- User Profile Dropdown -->
+            <div class="user-dropdown-container">
+                <div class="user-avatar" id="user-menu-toggle" title="Welcome, {{ Auth::guard('web')->user()->name }}">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div id="user-dropdown-menu" class="user-dropdown-menu">
+                    <div class="user-dropdown-header">
+                        <strong>{{ Auth::guard('web')->user()->name }}</strong>
+                        <small>{{ Auth::guard('web')->user()->email }}</small>
+                    </div>
+                    <a href="{{ route('logout') }}" class="user-dropdown-item" onclick="showLogoutConfirmation(event)">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
+                </div>
             </div>
         </div>
     </nav>
@@ -483,6 +572,7 @@
                     closeModal(event.target);
                 }
             });
+
         });
     </script>
     @stack('scripts')

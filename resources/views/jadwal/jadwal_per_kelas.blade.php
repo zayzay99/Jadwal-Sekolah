@@ -40,6 +40,9 @@
                     <th>Jam</th>
                     <th>Mata Pelajaran</th>
                     <th>Guru</th>
+                    @if($is_management)
+                        <th>Aksi</th>
+                    @endif
                 </tr>
             </thead>
             <tbody>
@@ -60,6 +63,21 @@
                                 @else
                                     <td>{{ $jadwal->mapel }}</td>
                                     <td>{{ $jadwal->guru ? $jadwal->guru->nama : '-' }}</td>
+                                @endif
+
+                                @if($is_management)
+                                    <td style="text-align: center;">
+                                        <form action="{{ route('jadwal.destroy', $jadwal->id) }}" 
+                                              method="POST" 
+                                              style="display:inline;" 
+                                              class="delete-single-form">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-danger btn-sm" title="Hapus Jadwal">
+                                                <i class="fas fa-trash"></i> Hapus
+                                            </button>
+                                        </form>
+                                    </td>
                                 @endif
                             </tr>
                         @endforeach
@@ -106,4 +124,33 @@ function showDeleteAllConfirmation(event) {
     });
 }
 </script>
+
+{{-- Script untuk SweetAlert konfirmasi hapus jadwal individual --}}
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const deleteSingleForms = document.querySelectorAll('.delete-single-form');
+
+    deleteSingleForms.forEach(form => {
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();
+            Swal.fire({
+                title: 'Apakah Anda yakin?',
+                text: "Jadwal ini akan dihapus secara permanen!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Ya, hapus!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
+        });
+    });
+});
+</script>
+@endpush
 @endsection

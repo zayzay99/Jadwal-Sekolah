@@ -2,27 +2,7 @@
 
 @section('content')
     <!-- Header: Tahun Ajaran + Kelola T.A -->
-    <div class="content-header">
-        <div class="tahun-ajaran-selector" id="tahunAjaranSelector">
-            @if($tahunAjarans->isNotEmpty())
-                <span>Tahun Ajaran</span>
-                <select name="tahun_ajaran" onchange="window.location.href = '{{ url('manage/tahun-ajaran') }}/' + this.value + '/switch-active';">
-                    @php
-                        $activeId = session('tahun_ajaran_id');
-                    @endphp
-                    @foreach($tahunAjarans as $tahun)
-                        <option value="{{ $tahun->id }}" {{ $tahun->id == $activeId ? 'selected' : '' }}>
-                            {{ $tahun->tahun_ajaran }} {{ $tahun->semester }}
-                        </option>
-                    @endforeach
-                </select>
-                <i class="fas fa-chevron-down"></i>
-            @else
-                <span>Tahun Ajaran Belum Diatur</span>
-            @endif
-        </div>
-        <button type="button" class="btn-kelola-ta" id="openTahunAjaranModal">Kelola T.A</button>
-    </div>
+    <div class="content-header"></div>
 
     <!-- Welcome Card -->
     <div class="welcome-card">
