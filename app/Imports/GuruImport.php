@@ -47,9 +47,15 @@ class GuruImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnFail
         return [
             // Validasi untuk setiap baris, menggunakan wildcard '*'
             'nama' => 'required|string|max:255',
-            'nip' => 'required|integer|unique:gurus,nip',
+            'nip' => [
+                'required', 'integer',
+                \Illuminate\Validation\Rule::unique('gurus')->where(fn ($query) => $query->where('tahun_ajaran_id', session('tahun_ajaran_id'))),
+            ],
             'pengampu' => 'required|string|max:255',
-            'email' => 'required|email|unique:gurus,email',
+            'email' => [
+                'required', 'email',
+                \Illuminate\Validation\Rule::unique('gurus')->where(fn ($query) => $query->where('tahun_ajaran_id', session('tahun_ajaran_id'))),
+            ],
             'total_jam_mengajar' => 'required|integer|min:0',
         ];
     }

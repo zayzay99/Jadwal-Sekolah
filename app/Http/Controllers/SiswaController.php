@@ -78,11 +78,11 @@ class SiswaController extends Controller
         $user = Auth::guard('siswa')->user();
         $selected = $this->getSelectedTahunAjaranId();
 
-        $kelas = $user->kelas()->where('kelas_siswa.tahun_ajaran_id', $selected)->first();
+        $kelasSiswa = $user->kelas()->with('tahunAjaran')->where('kelas_siswa.tahun_ajaran_id', $selected)->first();
 
         $jadwals = collect();
-        if ($kelas) {
-            $jadwals = Jadwal::where('kelas_id', $kelas->id)
+        if ($kelasSiswa) {
+            $jadwals = Jadwal::where('kelas_id', $kelasSiswa->id)
                 ->where('tahun_ajaran_id', $selected)
                 ->with('guru', 'kategori')
                 ->get()
@@ -96,7 +96,7 @@ class SiswaController extends Controller
                 ->groupBy('hari');
         }
 
-        $pdf = Pdf::loadView('print.jadwal-siswa', compact('jadwals', 'user', 'kelas'));
+        $pdf = Pdf::loadView('dashboard.jadwal-siswa', compact('jadwals', 'user', 'kelasSiswa'));
         return $pdf->stream('jadwal-' . $user->nis . '.pdf');
     }
 

@@ -11,9 +11,12 @@ class Kelas extends Model
     protected $table = 'kelas';
     protected $fillable = ['nama_kelas', 'guru_id', 'tahun_ajaran_id'];
 
-
-
-    
+    /**
+     * Mendapatkan tahun ajaran tempat kelas ini berada.
+     */
+    public function tahunAjaran() {
+        return $this->belongsTo(TahunAjaran::class, 'tahun_ajaran_id');
+    }
     public function siswas()
     {
         return $this->belongsToMany(Siswa::class, 'kelas_siswa', 'kelas_id', 'siswa_id')->withPivot('tahun_ajaran_id');
