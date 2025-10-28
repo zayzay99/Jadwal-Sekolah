@@ -349,6 +349,7 @@ class JadwalController extends Controller
         $kategoriList = ['VII', 'VIII', 'IX', 'X', 'XI', 'XII'];
         $kategoriData = [];
 
+        $activeTahunAjaran = \App\Models\TahunAjaran::find(session('tahun_ajaran_id'));
         $activeTahunAjaranId = session('tahun_ajaran_id');
 
         foreach ($kategoriList as $kategori) {
@@ -364,7 +365,7 @@ class JadwalController extends Controller
                 'kelas_count' => $kelasCount,
             ];
         }
-        return view('jadwal.pilih_kelas', ['kategori' => $kategoriData]);
+        return view('jadwal.pilih_kelas', ['kategori' => $kategoriData, 'activeTahunAjaran' => $activeTahunAjaran]);
     }
 
     public function pilihSubKelas($kategori)

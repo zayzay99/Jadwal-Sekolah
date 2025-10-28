@@ -43,8 +43,14 @@
         <div class="stat-icon">
             <i class="fas fa-calendar-check"></i>
         </div>
-        <h3 class="stat-value">{{ now()->format('Y') }}</h3>
         <p class="stat-label">Tahun Ajaran</p>
+        @if($activeTahunAjaran)
+        <h3 class="stat-value">{{ $activeTahunAjaran->tahun_ajaran }}</h3>
+        <p class="stat-label">{{ $activeTahunAjaran->semester }}</p>
+        @else
+        <h3 class="stat-value" style="font-size: 1rem;">-</h3>
+        <p class="stat-label">Tahun Ajaran Belum Aktif</p>
+        @endif
     </div>
 </div>
 
