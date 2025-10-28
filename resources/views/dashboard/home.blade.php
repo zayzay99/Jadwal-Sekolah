@@ -8,7 +8,7 @@
     <div class="welcome-card">
         <div class="welcome-text">
             <h2>Selamat datang di<br><strong>halaman Admin</strong></h2>
-            <p>Selamat bekerja! Semoga lorem ipsum</p>
+            <p>Selamat bekerja! Semoga sehat selalu</p>
         </div>
         <div class="welcome-icon">
             <i class="fas fa-book-open"></i>

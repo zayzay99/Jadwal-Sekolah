@@ -394,6 +394,7 @@ class JadwalController extends Controller
         $kelas = Kelas::findOrFail($kelas_id);
         $activeTahunAjaranId = session('tahun_ajaran_id');
         $jadwals = Jadwal::where('kelas_id', $kelas_id)
+            ->where('tahun_ajaran_id', $activeTahunAjaranId) // Filter by active academic year
             ->with('guru', 'kategori')
             ->orderByRaw("FIELD(hari, 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu')")
             ->orderBy('jam')
