@@ -159,6 +159,11 @@
                     </a>
                 </li>
                 <li>
+                    <a href="{{ route('manage.siswa.index') }}" class="menu-item {{ request()->routeIs('manage.siswa.*') ? 'active' : '' }}">
+                        <i class="fas fa-users"></i><span>Manajemen Siswa</span>
+                    </a>
+                </li>
+                <li>
                     <a href="{{ route('manage.kelas.index') }}" class="menu-item {{ request()->routeIs('manage.kelas.*') ? 'active' : '' }}">
                         <i class="fas fa-building"></i><span>Manajemen Kelas</span>
                     </a>

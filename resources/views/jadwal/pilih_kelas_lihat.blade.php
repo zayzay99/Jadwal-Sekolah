@@ -10,10 +10,10 @@
 
 <div class="form-container" style="background: white; border-radius: 20px; padding: 40px; box-shadow: var(--card-shadow); border: 1px solid var(--border-color);">
 
-    <div style="background: var(--bg-primary); padding: 25px; border-radius: 15px; margin-bottom: 25px; border-left: 4px solid var(--primary-color);">
+    <div style="background: var(--bg-primary); padding: 25px; border-radius: 15px; border-left: 4px solid var(--primary-color);">
         <h3 style="margin: 0 0 20px 0; font-size: 1.2rem; color: var(--text-color); display: flex; align-items: center; gap: 10px;">
             <i class="fas fa-chalkboard-teacher" style="color: var(--primary-color);"></i>
-            Pilih Kelas
+            Pilih Kelas untuk Melihat Jadwal
         </h3>
         
         <div class="form-group">
@@ -33,8 +33,9 @@
         </div>
     </div>
 
-    <div id="jadwal-info" style="text-align: center; padding: 20px; background: var(--bg-primary); border-radius: 15px; display: none;">
-        <p>Mengarahkan ke halaman jadwal...</p>
+    {{-- Info div for user feedback --}}
+    <div id="jadwal-info" style="text-align: center; padding: 20px; background: var(--bg-primary); border-radius: 15px; display: none; margin-top: 20px;">
+        <p><i class="fas fa-spinner fa-spin"></i> Mengarahkan ke halaman jadwal...</p>
     </div>
 
 </div>
@@ -44,7 +45,7 @@
 <!-- Select2 CSS -->
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <style>
-    /* Custom Select2 Styling from create.blade.php */
+    /* Custom Select2 Styling */
     .select2-container--default .select2-selection--single {
         height: 48px;
         border: 2px solid var(--border-color);
@@ -100,7 +101,7 @@
 $(document).ready(function() {
     // Initialize Select2 for Kelas dropdown
     $('.select2-kelas').select2({
-        placeholder: "🔍 Cari nama kelas...",
+        placeholder: "🔍 Cari dan pilih nama kelas...",
         allowClear: true,
         width: '100%',
         language: {
@@ -113,20 +114,24 @@ $(document).ready(function() {
         }
     });
 
-    // Handle selection change
+    // Handle selection change for redirection
     $('#kelas_id').on('change', function() {
         var kelasId = $(this).val();
         if (kelasId) {
             // Show loading/redirecting info
             $('#jadwal-info').slideDown();
 
-            // Construct the URL
-            var url = "{{ route('jadwal.perKelas', ['kelas' => ':id']) }}";
-            url = url.replace(':id', kelasId);
+            // Define the URL template from the route.
+            // This uses a placeholder ':id' which we'll replace.
+            var urlTemplate = "{{ route('jadwal.perKelas', ['kelas' => ':id']) }}";
             
-            // Redirect to the schedule page
+            // Replace the placeholder with the actual selected ID.
+            var url = urlTemplate.replace(':id', kelasId);
+            
+            // Redirect to the schedule page.
             window.location.href = url;
         } else {
+            // Hide the info box if no class is selected
             $('#jadwal-info').slideUp();
         }
     });
