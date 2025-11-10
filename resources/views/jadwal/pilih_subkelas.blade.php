@@ -36,19 +36,18 @@
                     Pilih kelas untuk mulai membuat jadwal
                 </p>
             </div>
-            <a href="{{ route('jadwal.pilihKelas') }}" 
-               class="btn btn-secondary" 
-               style="display: flex; align-items: center; gap: 8px; text-decoration: none;">
-                <i class="fas fa-arrow-left"></i>
-                <span>Kembali</span>
-            </a>
-            <button id="printSelectedBtn" class="btn btn-primary" style="display: none; align-items: center; gap: 8px;">
-                <i class="fas fa-print"></i>
-                <span>Cetak Jadwal Terpilih</span>
-            </button>
-                <i class="fas fa-arrow-left"></i>
-                <span>Kembali</span>
-            </a>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <a href="{{ route('jadwal.pilihKelas') }}" 
+                   class="btn btn-secondary" 
+                   style="display: flex; align-items: center; gap: 8px; text-decoration: none;">
+                    <i class="fas fa-arrow-left"></i>
+                    <span>Kembali</span>
+                </a>
+                <button id="printSelectedBtn" class="btn btn-primary" style="display: none; align-items: center; gap: 8px;">
+                    <i class="fas fa-print"></i>
+                    <span>Cetak Jadwal Terpilih</span>
+                </button>
+            </div>
         </div>
         
         <!-- Search Bar -->
@@ -78,22 +77,20 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th style="width: 5%;">
+                    <th style="width: 5%; text-align: center;">
                         <input type="checkbox" id="selectAllClasses" class="form-check-input">
                     </th>
                     <th style="width: 55%;">Nama Kelas</th>
-                    <th style="text-align: center; width: 30%;">Aksi</th>
+                    <th style="text-align: center; width: 40%;">Aksi</th>
                 </tr>
             </thead>
             <tbody>
                 @forelse($subkelas as $k)
                 <tr>
-                    <td style="font-weight: 500; color: var(--text-color);">
-                        <div style="display: flex; align-items: center; gap: 12px;">
-                    <td>
+                    <td style="text-align: center; vertical-align: middle;">
                         <input type="checkbox" name="selected_classes[]" value="{{ $k->id }}" class="class-checkbox form-check-input">
                     </td>
-                    <td style="font-weight: 500; color: var(--text-color);">
+                    <td style="font-weight: 500; color: var(--text-color); vertical-align: middle;">
                         <div style="display: flex; align-items: center; gap: 12px;">
                             <div style="width: 45px; height: 45px; border-radius: 12px; background: var(--primary-gradient); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
                                 <i class="fas fa-chalkboard" style="color: white; font-size: 1.1rem;"></i>
@@ -109,7 +106,7 @@
                             </div>
                         </div>
                     </td>
-                    <td style="text-align: center; padding: 16px 20px;">
+                    <td style="text-align: center; padding: 16px 20px; vertical-align: middle;">
                         <a href="{{ route('jadwal.create', $k->id) }}" 
                            class="btn btn-primary" 
                            style="display: inline-flex; align-items: center; gap: 8px; text-decoration: none;">
@@ -209,12 +206,11 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Filter rows
         tableRows.forEach(row => {
-            const kelasName = row.querySelector('td:first-child').textContent.toLowerCase();
+            const kelasName = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
             
             if (kelasName.includes(searchTerm)) {
                 row.style.display = '';
                 visibleCount++;
-                // Add highlight animation
                 row.style.animation = 'fadeIn 0.3s ease';
             } else {
                 row.style.display = 'none';
@@ -233,7 +229,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     const noResultRow = document.createElement('tr');
                     noResultRow.setAttribute('data-no-results', 'true');
                     noResultRow.innerHTML = `
-                        <td colspan="2" style="text-align: center; padding: 40px 20px; color: var(--text-muted);">
+                        <td colspan="3" style="text-align: center; padding: 40px 20px; color: var(--text-muted);">
                             <i class="fas fa-search" style="font-size: 2.5rem; opacity: 0.3; display: block; margin-bottom: 15px;"></i>
                             <p style="margin: 0; font-size: 1rem; font-weight: 600;">Tidak Ada Hasil</p>
                             <p style="margin: 5px 0 0 0; font-size: 0.85rem;">
@@ -271,7 +267,12 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     selectAllClasses.addEventListener('change', function() {
-        classCheckboxes.forEach(checkbox => {
+        const visibleCheckboxes = Array.from(classCheckboxes).filter(cb => {
+            const row = cb.closest('tr');
+            return row && row.style.display !== 'none';
+        });
+        
+        visibleCheckboxes.forEach(checkbox => {
             checkbox.checked = this.checked;
         });
         updatePrintButtonVisibility();
@@ -279,20 +280,22 @@ document.addEventListener('DOMContentLoaded', function() {
 
     classCheckboxes.forEach(checkbox => {
         checkbox.addEventListener('change', function() {
-            if (!this.checked) {
-                selectAllClasses.checked = false;
-            } else {
-                const allChecked = Array.from(classCheckboxes).every(cb => cb.checked);
-                selectAllClasses.checked = allChecked;
-            }
+            const visibleCheckboxes = Array.from(classCheckboxes).filter(cb => {
+                const row = cb.closest('tr');
+                return row && row.style.display !== 'none';
+            });
+            
+            const allVisibleChecked = visibleCheckboxes.every(cb => cb.checked);
+            selectAllClasses.checked = allVisibleChecked && visibleCheckboxes.length > 0;
+            
             updatePrintButtonVisibility();
         });
     });
 
     printSelectedBtn.addEventListener('click', function() {
         const selectedClassIds = Array.from(classCheckboxes)
-                                    .filter(cb => cb.checked)
-                                    .map(cb => cb.value);
+            .filter(cb => cb.checked)
+            .map(cb => cb.value);
 
         if (selectedClassIds.length > 0) {
             const url = "{{ route('admin.jadwal.cetak.bulk') }}?" + new URLSearchParams({
@@ -300,25 +303,21 @@ document.addEventListener('DOMContentLoaded', function() {
             }).toString();
             window.open(url, '_blank');
         } else {
-            Swal.fire({
-                icon: 'warning',
-                title: 'Peringatan',
-                text: 'Pilih setidaknya satu kelas untuk dicetak.',
-                confirmButtonColor: 'var(--primary-color)'
-            });
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Peringatan',
+                    text: 'Pilih setidaknya satu kelas untuk dicetak.',
+                    confirmButtonColor: 'var(--primary-color)'
+                });
+            } else {
+                alert('Pilih setidaknya satu kelas untuk dicetak.');
+            }
         }
     });
 
     // Initial check for print button visibility
     updatePrintButtonVisibility();
-
-    // Adjust search info colspan for new checkbox column
-    const searchInfoColspan = document.querySelector('#searchInfo');
-    if (searchInfoColspan) {
-        searchInfoColspan.closest('div').previousElementSibling.querySelector('table thead tr').children[0].setAttribute('colspan', '2');
-        // This is a bit hacky, better to adjust the colspan dynamically in the search function
-        // For now, let's assume the empty row will also need adjustment.
-    }
     
     // Clear button hover effect
     clearBtn.addEventListener('mouseenter', function() {
@@ -403,7 +402,7 @@ document.addEventListener('DOMContentLoaded', function() {
         padding: 25px 20px;
     }
     
-    .table td:first-child > div {
+    .table td:nth-child(2) > div {
         flex-direction: column;
         text-align: center;
     }
