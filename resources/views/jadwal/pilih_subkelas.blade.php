@@ -42,6 +42,13 @@
                 <i class="fas fa-arrow-left"></i>
                 <span>Kembali</span>
             </a>
+            <button id="printSelectedBtn" class="btn btn-primary" style="display: none; align-items: center; gap: 8px;">
+                <i class="fas fa-print"></i>
+                <span>Cetak Jadwal Terpilih</span>
+            </button>
+                <i class="fas fa-arrow-left"></i>
+                <span>Kembali</span>
+            </a>
         </div>
         
         <!-- Search Bar -->
@@ -71,13 +78,21 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th style="width: 60%;">Nama Kelas</th>
-                    <th style="text-align: center; width: 40%;">Aksi</th>
+                    <th style="width: 5%;">
+                        <input type="checkbox" id="selectAllClasses" class="form-check-input">
+                    </th>
+                    <th style="width: 55%;">Nama Kelas</th>
+                    <th style="text-align: center; width: 30%;">Aksi</th>
                 </tr>
             </thead>
             <tbody>
                 @forelse($subkelas as $k)
                 <tr>
+                    <td style="font-weight: 500; color: var(--text-color);">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                    <td>
+                        <input type="checkbox" name="selected_classes[]" value="{{ $k->id }}" class="class-checkbox form-check-input">
+                    </td>
                     <td style="font-weight: 500; color: var(--text-color);">
                         <div style="display: flex; align-items: center; gap: 12px;">
                             <div style="width: 45px; height: 45px; border-radius: 12px; background: var(--primary-gradient); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
@@ -105,7 +120,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="2" style="text-align: center; padding: 60px 20px; color: var(--text-muted);">
+                    <td colspan="3" style="text-align: center; padding: 60px 20px; color: var(--text-muted);">
                         <i class="fas fa-inbox" style="font-size: 3.5rem; opacity: 0.3; display: block; margin-bottom: 20px;"></i>
                         <p style="margin: 0; font-size: 1.1rem; font-weight: 600;">Tidak Ada Kelas Tersedia</p>
                         <p style="margin: 8px 0 0 0; font-size: 0.9rem;">
@@ -244,6 +259,66 @@ document.addEventListener('DOMContentLoaded', function() {
         searchInput.dispatchEvent(new Event('input'));
         searchInput.focus();
     });
+
+    // Bulk print functionality
+    const selectAllClasses = document.getElementById('selectAllClasses');
+    const classCheckboxes = document.querySelectorAll('.class-checkbox');
+    const printSelectedBtn = document.getElementById('printSelectedBtn');
+
+    function updatePrintButtonVisibility() {
+        const anyChecked = Array.from(classCheckboxes).some(cb => cb.checked);
+        printSelectedBtn.style.display = anyChecked ? 'flex' : 'none';
+    }
+
+    selectAllClasses.addEventListener('change', function() {
+        classCheckboxes.forEach(checkbox => {
+            checkbox.checked = this.checked;
+        });
+        updatePrintButtonVisibility();
+    });
+
+    classCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            if (!this.checked) {
+                selectAllClasses.checked = false;
+            } else {
+                const allChecked = Array.from(classCheckboxes).every(cb => cb.checked);
+                selectAllClasses.checked = allChecked;
+            }
+            updatePrintButtonVisibility();
+        });
+    });
+
+    printSelectedBtn.addEventListener('click', function() {
+        const selectedClassIds = Array.from(classCheckboxes)
+                                    .filter(cb => cb.checked)
+                                    .map(cb => cb.value);
+
+        if (selectedClassIds.length > 0) {
+            const url = "{{ route('admin.jadwal.cetak.bulk') }}?" + new URLSearchParams({
+                kelas_ids: selectedClassIds.join(',')
+            }).toString();
+            window.open(url, '_blank');
+        } else {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Peringatan',
+                text: 'Pilih setidaknya satu kelas untuk dicetak.',
+                confirmButtonColor: 'var(--primary-color)'
+            });
+        }
+    });
+
+    // Initial check for print button visibility
+    updatePrintButtonVisibility();
+
+    // Adjust search info colspan for new checkbox column
+    const searchInfoColspan = document.querySelector('#searchInfo');
+    if (searchInfoColspan) {
+        searchInfoColspan.closest('div').previousElementSibling.querySelector('table thead tr').children[0].setAttribute('colspan', '2');
+        // This is a bit hacky, better to adjust the colspan dynamically in the search function
+        // For now, let's assume the empty row will also need adjustment.
+    }
     
     // Clear button hover effect
     clearBtn.addEventListener('mouseenter', function() {

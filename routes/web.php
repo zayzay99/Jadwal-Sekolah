@@ -66,6 +66,7 @@ Route::middleware('auth:web')->group(function () {
     Route::get('/jadwal/kelas', [JadwalController::class, 'pilihKelasLihat'])->name('jadwal.pilihKelasLihat');
     Route::get('/jadwal/kelas/{kelas}', [JadwalController::class, 'jadwalPerKelas'])->name('jadwal.perKelas');
     Route::get('/jadwal/kelas/{kelas}/cetak', [JadwalController::class, 'cetakJadwal'])->name('admin.jadwal.cetak');
+    Route::get('/jadwal/cetak-bulk', [JadwalController::class, 'cetakJadwalBulk'])->name('admin.jadwal.cetak.bulk');
     Route::post('/jadwal/bulk-store', [JadwalController::class, 'bulkStore'])->name('jadwal.bulkStore');
     Route::delete('/jadwal/{jadwal}', [JadwalController::class, 'destroy'])->name('jadwal.destroy');
     Route::delete('/jadwal/destroy-all/{kelas_id}', [JadwalController::class, 'destroyAll'])->name('jadwal.destroyAll');

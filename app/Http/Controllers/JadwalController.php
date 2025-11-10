@@ -499,6 +499,37 @@ class JadwalController extends Controller
         return $pdf->download('jadwal-' . $kelas->nama_kelas . '.pdf');
     }
 
+    public function cetakJadwalBulk(Request $request)
+    {
+        $request->validate([
+            'kelas_ids' => 'required|string', // Comma-separated string of IDs
+        ]);
+
+        $kelasIds = explode(',', $request->kelas_ids);
+        $activeTahunAjaranId = session('tahun_ajaran_id');
+
+        $allKelasData = [];
+        foreach ($kelasIds as $kelas_id) {
+            $kelas = Kelas::findOrFail($kelas_id);
+            $jadwals = Jadwal::where('kelas_id', $kelas_id)
+                ->where('tahun_ajaran_id', $activeTahunAjaranId)
+                ->with('guru', 'kategori')
+                ->orderByRaw("FIELD(hari, 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu')")
+                ->orderBy('jam')
+                ->get()
+                ->groupBy('hari');
+            
+            $allKelasData[] = [
+                'kelas' => $kelas,
+                'jadwals' => $jadwals,
+            ];
+        }
+        $firstKelasNameParts = explode('-', $allKelasData[0]['kelas']->nama_kelas);
+        $angkatanName = $firstKelasNameParts[0] ?? 'Unknown';
+        $pdf = Pdf::loadView('jadwal.pdf_bulk', compact('allKelasData'));
+        return $pdf->download('jadwal-angkatan-' . $angkatanName . '.pdf');
+    }
+
     public function destroy($id)
     {
         $jadwal = Jadwal::findOrFail($id);
@@ -579,14 +610,11 @@ class JadwalController extends Controller
         }
     }
 
-    private function calculateDuration($jamString)
-    {
-        try {
-            $parts = explode(' - ', $jamString);
+    private function calculateDuration($jamString){
+                   $parts = explode(' - ', $jamString);
             if (count($parts) !== 2) return 0;
             $start = \Carbon\Carbon::parse($parts[0]);
             $end = \Carbon\Carbon::parse($parts[1]);
-            return $end->diffInMinutes($start);
-        } catch (\Exception $e) { return 0; }
-    }
+    } 
 }
+        
