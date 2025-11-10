@@ -3,7 +3,7 @@ FROM php:8.2-fpm
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
     libzip-dev unzip curl git libpng-dev libonig-dev libxml2-dev \
-    && docker-php-ext-install zip pdo pdo_mysql mbstring bcmath
+    && docker-php-ext-install zip pdo pdo_mysql mbstring bcmath **gd**
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -27,9 +27,6 @@ EXPOSE 8000
 # Start server
 CMD php artisan serve --host=0.0.0.0 --port=8000
 
-
-# Instal ekstensi PHP GD yang dibutuhkan
-RUN docker-php-ext-install gd
-
-# Instal Laravel dependencies
-RUN composer install --no-dev --optimize-autoloader
+# HAPUS BARIS INI:
+# RUN docker-php-ext-install gd
+# RUN composer install --no-dev --optimize-autoloader
