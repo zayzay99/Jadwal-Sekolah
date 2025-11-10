@@ -26,3 +26,10 @@ EXPOSE 8000
 
 # Start server
 CMD php artisan serve --host=0.0.0.0 --port=8000
+
+
+# Instal ekstensi PHP GD yang dibutuhkan
+RUN docker-php-ext-install gd
+
+# Instal Laravel dependencies
+RUN composer install --no-dev --optimize-autoloader
