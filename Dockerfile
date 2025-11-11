@@ -24,16 +24,16 @@ COPY . .
 # Install Laravel dependencies
 RUN composer install --no-dev --optimize-autoloader
 
-# Set permissions
+# =======================================================
+# PERBAIKAN Izin Akses File UNTUK MENGHINDARI CRASH (502)
+# =======================================================
 RUN chown -R www-data:www-data /var/www \
-    && chmod -R 755 /var/www/storage
+    # Pastikan 'storage' dan 'bootstrap/cache' bisa ditulis oleh user www-data
+    && chmod -R 775 /var/www/storage \
+    && chmod -R 775 /var/www/bootstrap/cache
 
-# Expose port
+# Expose port (sudah benar, meski opsional)
 EXPOSE 8000
 
-# Start server
+# Start server (sudah benar untuk Railway)
 CMD php artisan serve --host=0.0.0.0 --port=${PORT}
-
-# HAPUS BARIS INI:
-# RUN docker-php-ext-install gd
-# RUN composer install --no-dev --optimize-autoloader
