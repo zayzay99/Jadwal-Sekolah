@@ -9,324 +9,453 @@
             box-sizing: border-box;
         }
 
+        @page {
+            size: A4 landscape;
+            margin: 10mm;
+        }
+
         body {
             font-family: 'Segoe UI', 'Arial', sans-serif;
-            padding: 25px;
+            padding: 10px;
             background: #ffffff;
             color: #2c3e50;
-            line-height: 1.6;
+            line-height: 1.2;
+            font-size: 9px;
         }
 
-        /* Header - Enhanced */
-        .header {
+        /* Main Header - Full Width */
+        .main-header {
             text-align: center;
-            margin-bottom: 30px;
-            padding: 30px 25px;
+            margin-bottom: 12px;
+            padding: 12px 15px;
             background: linear-gradient(135deg, #11998e 0%, #0d7377 100%);
-            border-radius: 10px;
+            border-radius: 5px;
             color: white;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
         }
 
-        .header h2 {
-            font-size: 28px;
+        .main-header h2 {
+            font-size: 16px;
             font-weight: 700;
-            margin-bottom: 10px;
+            margin-bottom: 3px;
             letter-spacing: 0.5px;
         }
 
-        .header .subtitle {
-            font-size: 13px;
+        .main-header .subtitle {
+            font-size: 9px;
             opacity: 0.95;
             font-weight: 500;
         }
 
-        /* Info Box - Improved */
+        /* Container for 2 columns */
+        .schedule-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        /* Class Section */
+        .class-section {
+            break-inside: avoid;
+            page-break-inside: avoid;
+        }
+
+        /* Info Box - Compact */
         .info-box {
             background: linear-gradient(to right, #f0f8f7, #ffffff);
-            border-left: 5px solid #11998e;
-            padding: 18px 22px;
-            margin-bottom: 12px;
-            border-radius: 6px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            border-left: 3px solid #11998e;
+            padding: 6px 10px;
+            margin-bottom: 8px;
+            border-radius: 3px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
         }
 
         .info-box .info-label {
-            font-size: 10px;
+            font-size: 7px;
             color: #11998e;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 6px;
+            letter-spacing: 0.6px;
+            margin-bottom: 2px;
             font-weight: 700;
         }
 
         .info-box .info-value {
-            font-size: 16px;
+            font-size: 10px;
             font-weight: 600;
             color: #2c3e50;
         }
 
-        /* Section Divider - Cleaner */
+        /* Section Divider - Compact */
         .section-divider {
-            margin: 28px 0 20px 0;
+            margin: 10px 0 8px 0;
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 8px;
         }
 
         .section-divider::before,
         .section-divider::after {
             content: '';
             flex: 1;
-            height: 2px;
+            height: 1px;
             background: #11998e;
         }
 
         .section-divider span {
-            font-size: 13px;
+            font-size: 8px;
             font-weight: 700;
             color: #11998e;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 0.6px;
             white-space: nowrap;
         }
 
-        /* Day Section */
-        .day-section {
-            page-break-inside: avoid;
-            margin-bottom: 20px;
-        }
-
-        /* Table - Better Spacing */
-        table {
+        /* Table - Horizontal Format - Very Compact */
+        .schedule-table {
             width: 100%;
             border-collapse: collapse;
             background: white;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-            border-radius: 6px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+            border-radius: 3px;
             overflow: hidden;
+            font-size: 6.5px;
         }
 
-        thead {
+        .schedule-table thead {
             background: #11998e;
             color: white;
         }
 
-        th {
-            padding: 14px 16px;
-            font-size: 11px;
+        .schedule-table th {
+            padding: 5px 4px;
+            font-size: 6px;
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.6px;
-            text-align: left;
-            border: none;
-        }
-
-        tbody tr {
-            border-bottom: 1px solid #ecf0f1;
-            transition: background 0.2s;
-        }
-
-        tbody tr:last-child {
-            border-bottom: none;
-        }
-
-        tbody tr:nth-child(even) {
-            background: #f8fafa;
-        }
-
-        tbody tr:nth-child(odd) {
-            background: #ffffff;
-        }
-
-        td {
-            padding: 14px 16px;
-            font-size: 13px;
-            color: #2c3e50;
+            letter-spacing: 0.3px;
+            text-align: center;
+            border-right: 1px solid rgba(255,255,255,0.2);
             vertical-align: middle;
         }
 
-        /* Day Column */
-        .day-column {
-            background: #11998e;
-            color: white;
-            font-weight: 700;
-            font-size: 13px;
+        .schedule-table th:first-child {
+            text-align: left;
+            padding-left: 6px;
+            width: 55px;
+        }
+
+        .schedule-table th:last-child {
+            border-right: none;
+        }
+
+        .schedule-table tbody tr {
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        .schedule-table tbody tr:last-child {
+            border-bottom: none;
+        }
+
+        .schedule-table tbody tr:nth-child(even) {
+            background: #f8fafa;
+        }
+
+        .schedule-table tbody tr:nth-child(odd) {
+            background: #ffffff;
+        }
+
+        .schedule-table td {
+            padding: 4px 3px;
+            font-size: 6.5px;
+            color: #2c3e50;
+            vertical-align: top;
+            border-right: 1px solid #ecf0f1;
             text-align: center;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            width: 110px;
         }
 
-        /* Break/Istirahat Cell */
-        .kategori-cell {
-            text-align: center;
-            font-weight: 600;
-            background: #fef3cd;
-            color: #8a6d3b;
-            font-size: 13px;
-            border-radius: 4px;
-            padding: 14px;
-        }
-
-        /* Subject Name */
-        .mapel-cell {
-            font-weight: 600;
-            color: #11998e;
-            font-size: 13px;
-        }
-
-        /* Teacher/Class Name */
-        .teacher-cell {
-            color: #555555;
-            font-size: 13px;
-            font-weight: 500;
-        }
-
-        /* Time */
-        .time-cell {
-            font-family: 'Courier New', monospace;
+        .schedule-table td:first-child {
+            text-align: left;
             font-weight: 600;
             color: #11998e;
-            font-size: 12px;
-            text-align: center;
             background: #f0f8f7;
-            width: 140px;
-            border-radius: 4px;
+            padding-left: 6px;
+        }
+
+        .schedule-table td:last-child {
+            border-right: none;
+        }
+
+        /* Subject Cell */
+        .subject-name {
+            font-weight: 600;
+            color: #11998e;
+            margin-bottom: 2px;
+            font-size: 6.5px;
+            line-height: 1.3;
+        }
+
+        .teacher-name {
+            font-size: 6px;
+            color: #555555;
+            font-weight: 500;
+            line-height: 1.2;
+        }
+
+        /* Break Cell */
+        .break-cell {
+            background: #fef3cd !important;
+            color: #8a6d3b;
+            font-weight: 600;
+            font-size: 6.5px;
+            padding: 4px !important;
+        }
+
+        /* Empty Cell */
+        .empty-cell {
+            color: #bdc3c7;
+            font-size: 6px;
+            font-style: italic;
         }
 
         /* Empty State */
         .empty-state {
             text-align: center;
-            padding: 50px 30px;
+            padding: 20px 15px;
             background: #fef3cd;
-            border-radius: 8px;
+            border-radius: 4px;
             border: 2px dashed #ffc107;
         }
 
         .empty-state p {
-            font-size: 15px;
+            font-size: 9px;
             color: #8a6d3b;
             font-weight: 500;
         }
 
         /* Footer */
         .footer {
-            margin-top: 35px;
-            padding-top: 18px;
+            margin-top: 15px;
+            padding-top: 10px;
             border-top: 2px solid #11998e;
             text-align: center;
-            page-break-before: always; /* Ensure footer is on a new page if content is long */
+            clear: both;
         }
 
         .footer .print-date {
-            font-size: 11px;
+            font-size: 7px;
             color: #11998e;
             font-weight: 600;
-            margin-bottom: 6px;
+            margin-bottom: 3px;
         }
 
         .footer .copyright {
-            font-size: 10px;
+            font-size: 6px;
             color: #999999;
+        }
+
+        /* Page Break Control */
+        .page-break {
+            page-break-after: always;
+            break-after: always;
         }
 
         /* Print Optimization */
         @media print {
             body {
-                padding: 15px;
+                padding: 8px;
                 background: white;
             }
-            .class-section {
-                page-break-after: always; /* Each class schedule on a new page */
+            
+            .main-header {
+                margin-bottom: 10px;
+                padding: 10px 12px;
             }
-            .class-section:last-of-type {
-                page-break-after: auto; /* No page break after the last class */
+            
+            .main-header h2 {
+                font-size: 14px;
             }
-            .header, .info-box, .section-divider, .day-section, .footer {
-                page-break-inside: avoid;
+            
+            .main-header .subtitle {
+                font-size: 8px;
             }
-            table {
-                page-break-after: auto;
+            
+            .schedule-container {
+                gap: 12px;
+                margin-bottom: 12px;
             }
-            thead {
-                display: table-header-group;
+            
+            .info-box {
+                padding: 5px 8px;
+                margin-bottom: 6px;
             }
-            tbody tr {
-                page-break-inside: avoid;
+            
+            .section-divider {
+                margin: 8px 0 6px 0;
+            }
+            
+            .schedule-table {
+                font-size: 6px;
+            }
+            
+            .schedule-table th {
+                padding: 4px 3px;
+                font-size: 5.5px;
+            }
+            
+            .schedule-table th:first-child {
+                width: 50px;
+            }
+            
+            .schedule-table td {
+                padding: 3px 2px;
+                font-size: 6px;
+            }
+            
+            .subject-name {
+                font-size: 6px;
+            }
+            
+            .teacher-name {
+                font-size: 5.5px;
+            }
+            
+            .break-cell {
+                font-size: 6px;
+            }
+            
+            .footer {
+                margin-top: 12px;
+                padding-top: 8px;
+            }
+            
+            .footer .print-date {
+                font-size: 6px;
+            }
+            
+            .footer .copyright {
+                font-size: 5px;
+            }
+
+            .page-break {
+                page-break-after: always;
             }
         }
     </style>
 </head>
 <body>
-    <div class="header">
+    <div class="main-header">
         <h2>JADWAL PELAJARAN KELAS</h2>
         <div class="subtitle">Tahun Ajaran {{ date('Y') }}/{{ date('Y') + 1 }}</div>
     </div>
 
-    @forelse($allKelasData as $data)
-        <div class="class-section">
-            <div class="info-box">
-                <div class="info-label">Kelas</div>
-                <div class="info-value">{{ $data['kelas']->nama_kelas }}</div>
-            </div>
+    @if(count($allKelasData) > 0)
+        @foreach(array_chunk($allKelasData, 2) as $chunkIndex => $kelasChunk)
+            <div class="schedule-container">
+                @foreach($kelasChunk as $data)
+                    <div class="class-section">
+                        <div class="info-box">
+                            <div class="info-label">Kelas</div>
+                            <div class="info-value">{{ $data['kelas']->nama_kelas }}</div>
+                        </div>
 
-            <div class="section-divider">
-                <span>Jadwal Mingguan</span>
-            </div>
+                        <div class="section-divider">
+                            <span>Jadwal Mingguan</span>
+                        </div>
 
-            @if($data['jadwals']->count() > 0)
-                @foreach($data['jadwals'] as $hari => $jadwalHarian)
-                    <div class="day-section">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Hari</th>
-                                    <th>Mata Pelajaran</th>
-                                    <th>Guru Pengajar</th>
-                                    <th style="text-align: center;">Waktu</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($jadwalHarian as $index => $jadwal)
+                        @if($data['jadwals']->count() > 0)
+                            @php
+                                // Define the correct order of days
+                                $daysOrder = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+                                
+                                // Get the days that actually have schedules from the data
+                                $activeDays = $data['jadwals']->keys();
+                                
+                                // Sort the active days according to the defined order
+                                $sortedActiveDays = collect($daysOrder)->filter(function($day) use ($activeDays) {
+                                    return $activeDays->contains($day);
+                                });
+
+                                // Collect all unique time slots from ALL active days
+                                $allTimeSlots = [];
+                                foreach($data['jadwals'] as $hari => $jadwalHarian) {
+                                    foreach($jadwalHarian as $jadwal) {
+                                        $timeSlot = $jadwal->jam;
+                                        if (!in_array($timeSlot, $allTimeSlots)) {
+                                            $allTimeSlots[] = $timeSlot;
+                                        }
+                                    }
+                                }
+                                
+                                // Sort time slots chronologically based on start time
+                                usort($allTimeSlots, function($a, $b) {
+                                    // Extracts HH:MM part for comparison
+                                    $startTimeA = substr($a, 0, 5);
+                                    $startTimeB = substr($b, 0, 5);
+                                    return strtotime($startTimeA) - strtotime($startTimeB);
+                                });
+                                
+                                // Create a mapping: [time][day] => jadwal object
+                                $scheduleGrid = [];
+                                foreach($data['jadwals'] as $hari => $jadwalHarian) {
+                                    foreach($jadwalHarian as $jadwal) {
+                                        $scheduleGrid[$jadwal->jam][$hari] = $jadwal;
+                                    }
+                                }
+                            @endphp
+
+                            <table class="schedule-table">
+                                <thead>
                                     <tr>
-                                        @if($index === 0)
-                                            <td rowspan="{{ count($jadwalHarian) }}" class="day-column">{{ strtoupper($hari) }}</td>
-                                        @endif
-                                        
-                                        @if($jadwal->kategori)
-                                            <td colspan="2" class="kategori-cell">
-                                                {{ $jadwal->kategori->nama_kategori }}
-                                            </td>
-                                        @else
-                                            <td class="mapel-cell">
-                                                {{ $jadwal->mapel ?? '-' }}
-                                            </td>
-                                            <td class="teacher-cell">
-                                                {{ $jadwal->guru ? $jadwal->guru->nama : '-' }}
-                                            </td>
-                                        @endif
-                                        
-                                        <td class="time-cell">
-                                            {{ $jadwal->jam }}
-                                        </td>
+                                        <th>JAM</th>
+                                        @foreach($sortedActiveDays as $day)
+                                            <th>{{ strtoupper($day) }}</th>
+                                        @endforeach
                                     </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    @foreach($allTimeSlots as $timeSlot)
+                                        <tr>
+                                            <td>{{ $timeSlot }}</td>
+                                            @foreach($sortedActiveDays as $day)
+                                                @if(isset($scheduleGrid[$timeSlot][$day]))
+                                                    @php $jadwal = $scheduleGrid[$timeSlot][$day]; @endphp
+                                                    
+                                                    @if($jadwal->kategori)
+                                                        <td class="break-cell">
+                                                            {{ $jadwal->kategori->nama_kategori }}
+                                                        </td>
+                                                    @else
+                                                        <td>
+                                                            <div class="subject-name">{{ $jadwal->mapel ?? '-' }}</div>
+                                                            <div class="teacher-name">{{ $jadwal->guru ? $jadwal->guru->nama : '-' }}</div>
+                                                        </td>
+                                                    @endif
+                                                @else
+                                                    <td class="empty-cell">-</td>
+                                                @endif
+                                            @endforeach
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        @else
+                            <div class="empty-state">
+                                <p>Jadwal belum tersedia untuk kelas {{ $data['kelas']->nama_kelas }}</p>
+                            </div>
+                        @endif
                     </div>
                 @endforeach
-            @else
-                <div class="empty-state">
-                    <p>Jadwal belum tersedia untuk kelas {{ $data['kelas']->nama_kelas }}</p>
-                </div>
+            </div>
+            
+            @if(!$loop->last)
+                <div class="page-break"></div>
             @endif
-        </div>
-    @empty
+        @endforeach
+    @else
         <div class="empty-state">
             <p>Tidak ada kelas yang dipilih atau jadwal tidak tersedia.</p>
         </div>
-    @endforelse
+    @endif
 
     <div class="footer">
         <div class="print-date">
