@@ -35,5 +35,9 @@ RUN chown -R www-data:www-data /var/www \
 # Expose port (sudah benar, meski opsional)
 EXPOSE 8000
 
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
 # Start server (sudah benar untuk Railway)
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 CMD ["php-fpm"]
