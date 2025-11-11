@@ -32,4 +32,4 @@ EXPOSE 8000
 # --- FIX: Using dynamic $PORT for Railway deployment ---
 # Menggunakan ${PORT:-8000} agar aplikasi mendengarkan pada port yang disediakan Railway (yang mungkin bukan 8000).
 # Ini penting untuk menghindari error 502 Bad Gateway.
-CMD php artisan serve --host=0.0.0.0 --port=${PORT:-8000}
+CMD php artisan serve --host=0.0.0.0 --port=8000
