@@ -50,4 +50,3 @@ RUN chmod +x /usr/local/bin/entrypoint.sh
 
 # Perintah untuk menjalankan container
 CMD ["/usr/local/bin/entrypoint.sh"]
-```eof
