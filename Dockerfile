@@ -18,13 +18,17 @@ RUN composer update --no-dev --optimize-autoloader
 # --- STAGE 2: PRODUCTION Ready Image (Minimal) ---
 FROM php:8.2-fpm-alpine AS final
 
-# Install Nginx, Supervisor, dan Bash (Bash penting untuk entrypoint script)
+# Install Nginx, Supervisor, dan Bash
 RUN apk add --no-cache nginx supervisor bash
+
+# --- FIX KRITIS: Instal Ekstensi PHP di Stage Final ---
+# Ekstensi ini diperlukan oleh PHP-FPM untuk berjalan dan mengatasi error "unable to load dynamic library".
+RUN apk add --no-cache libzip-dev libpng-dev libxml2-dev oniguruma-dev \
+    && docker-php-ext-install pdo pdo_mysql zip gd
 
 # Copy PHP extensions/binaries from the builder stage
 COPY --from=builder /usr/local/etc/php/conf.d/ /usr/local/etc/php/conf.d/
 COPY --from=builder /usr/local/etc/php-fpm.d/ /usr/local/etc/php-fpm.d/
-# Composer tidak disalin karena hanya digunakan saat build
 
 # Copy application code
 WORKDIR /var/www
@@ -37,9 +41,6 @@ COPY supervisord.conf /etc/supervisord.conf
 # Set permissions
 RUN chown -R www-data:www-data /var/www \
     && chmod -R 775 /var/www/storage
-
-# Pembersihan Cache dipindahkan sepenuhnya ke entrypoint.sh (Runtime)
-# Baris RUN php /var/www/artisan config:clear Dihapus dari sini.
 
 # Expose port
 EXPOSE 8080
