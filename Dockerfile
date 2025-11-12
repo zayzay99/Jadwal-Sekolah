@@ -1,4 +1,4 @@
-FROM php:8.2-fpm
+FROM php:8.2-cli
 
 RUN apt-get update && apt-get install -y \
     libzip-dev unzip curl git libpng-dev libonig-dev libxml2-dev libwebp-dev \
@@ -14,7 +14,6 @@ COPY composer.json composer.lock ./
 
 
 RUN composer install --no-dev --optimize-autoloader --no-scripts
-RUN php artisan optimize:clear && php artisan storage:link && php artisan migrate --force
 
 COPY . .
 
