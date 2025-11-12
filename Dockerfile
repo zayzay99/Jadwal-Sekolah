@@ -20,7 +20,7 @@ COPY . .
 # Install Laravel dependencies
 RUN composer update
 RUN composer install --no-dev --optimize-autoloader
-RUN composer install maatwebsite/excel
+RUN composer install require maatwebsite/excel
 
 # Set permissions
 RUN chown -R www-data:www-data /var/www \
