@@ -1,6 +1,6 @@
 FROM php:8.2-fpm
 
-# Install system dependencies & extensions
+# Install system dependencies & extensions (Langkah 1 & 2)
 RUN apt-get update && apt-get install -y \
     libzip-dev unzip curl git libpng-dev libonig-dev libxml2-dev libwebp-dev \
     && rm -rf /var/lib/apt/lists/*
@@ -12,16 +12,24 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Set working directory
 WORKDIR /var/www
 
-# --- OPTIMASI CACHE DIMULAI DI SINI ---
-# 1. Copy hanya file Composer
+# --- OPTIMASI CACHE & ARTISAN FIX ---
+
+# 1. Copy hanya file Composer untuk instalasi
 COPY composer.json composer.lock ./
 
-# 2. Install dependencies (Langkah ini akan dicache jika lock file tidak berubah)
-RUN composer install --no-dev --optimize-autoloader
+# 2. Instal dependencies (Tanpa menjalankan script post-install apapun)
+# Kita tambahkan flag --no-scripts
+RUN composer install --no-dev --optimize-autoloader --no-scripts
+
+# 3. Copy sisa project (Termasuk file artisan)
+COPY . .
+
+# 4. Instal library khusus (maatwebsite/excel) jika belum ada di composer.lock
+# Karena Anda menggunakannya di baris terpisah, kita biarkan saja.
 RUN composer install maatwebsite/excel
 
-# 3. Copy sisa project
-COPY . .
+# 5. Jalankan script pasca-instalasi secara manual SETELAH artisan ada
+RUN php artisan package:discover --ansi
 
 # Set permissions
 RUN chown -R www-data:www-data /var/www \
