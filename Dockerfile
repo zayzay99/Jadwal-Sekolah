@@ -28,4 +28,4 @@ RUN chown -R www-data:www-data /var/www \
 
 # Start server
 # Start server
-CMD php artisan serve --host=0.0.0.0 --port=8000
+php artisan serve --host=0.0.0.0 --port=8000
