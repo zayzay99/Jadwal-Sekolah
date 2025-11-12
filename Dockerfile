@@ -15,7 +15,7 @@ WORKDIR /var/www
 COPY . .
 
 # Install Laravel dependencies
-RUN composer install --no-dev --optimize-autoloader
+RUN composer install 
 RUN composer update
 RUN composer install maatwebsite/excel
 
