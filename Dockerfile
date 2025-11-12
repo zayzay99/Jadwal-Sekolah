@@ -12,7 +12,8 @@ WORKDIR /var/www
 
 COPY composer.json composer.lock ./
 
-RUN composer install --no-dev --optimize-autoloader --no-scripts
+RUN composer install && php artisan optimize:clear && php artisan storage:link && php artisan migrate --force
+# composer install --no-dev --optimize-autoloader --no-scripts
 
 COPY . .
 
@@ -21,3 +22,4 @@ RUN php artisan package:discover --ansi
 RUN chown -R www-data:www-data /var/www \
     && chmod -R 755 /var/www/storage
 CMD php artisan serve --host=0.0.0.0 --port=${PORT}
+
