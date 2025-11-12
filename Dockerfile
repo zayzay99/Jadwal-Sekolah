@@ -1,6 +1,6 @@
 FROM php:8.2-fpm
 
-# Install system dependencies & extensions (Langkah 1 & 2)
+# Install system dependencies & extensions
 RUN apt-get update && apt-get install -y \
     libzip-dev unzip curl git libpng-dev libonig-dev libxml2-dev libwebp-dev \
     && rm -rf /var/lib/apt/lists/*
@@ -14,21 +14,16 @@ WORKDIR /var/www
 
 # --- OPTIMASI CACHE & ARTISAN FIX ---
 
-# 1. Copy hanya file Composer untuk instalasi
+# 1. Copy hanya file Composer
 COPY composer.json composer.lock ./
 
-# 2. Instal dependencies (Tanpa menjalankan script post-install apapun)
-# Kita tambahkan flag --no-scripts
+# 2. Instal dependencies (Menginstal SEMUA package, termasuk maatwebsite/excel)
 RUN composer install --no-dev --optimize-autoloader --no-scripts
 
 # 3. Copy sisa project (Termasuk file artisan)
 COPY . .
 
-# 4. Instal library khusus (maatwebsite/excel) jika belum ada di composer.lock
-# Karena Anda menggunakannya di baris terpisah, kita biarkan saja.
-RUN composer install maatwebsite/excel
-
-# 5. Jalankan script pasca-instalasi secara manual SETELAH artisan ada
+# 4. Jalankan script pasca-instalasi secara manual SETELAH artisan ada
 RUN php artisan package:discover --ansi
 
 # Set permissions
