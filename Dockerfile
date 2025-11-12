@@ -12,8 +12,9 @@ WORKDIR /var/www
 
 COPY composer.json composer.lock ./
 
-RUN composer install && php artisan optimize:clear && php artisan storage:link && php artisan migrate --force
-# composer install --no-dev --optimize-autoloader --no-scripts
+
+RUN composer install --no-dev --optimize-autoloader --no-scripts
+RUN php artisan optimize:clear && php artisan storage:link && php artisan migrate --force
 
 COPY . .
 
