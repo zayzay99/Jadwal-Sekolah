@@ -3,7 +3,7 @@
 
 # 1. FIX KRITIS NGINX PORT: Ganti port 8080 di nginx.conf dengan $PORT Railway.
 # Ini memastikan Nginx mendengarkan pada port yang benar.
-sed -i "s/listen 8080;/listen ${PORT:-8080};/" /etc/nginx/conf.d/default.conf
+sed -i "s/listen 8000;/listen ${PORT:-8000};/" /etc/nginx/conf.d/default.conf
 
 # 2. Persiapan Laravel (Pembersihan Cache dan Migrasi)
 
