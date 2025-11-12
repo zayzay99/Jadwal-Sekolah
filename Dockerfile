@@ -27,4 +27,4 @@ RUN chown -R www-data:www-data /var/www \
     && chmod -R 755 /var/www/storage
 
 # Start server
-CMD php artisan serve --host=0.0.0.0 --port=${port}
+CMD php artisan serve --host=0.0.0.0 --port=${PORT}
