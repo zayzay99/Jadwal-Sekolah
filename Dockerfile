@@ -18,6 +18,7 @@ RUN composer install --no-dev --optimize-autoloader --no-scripts
 COPY . .
 
 RUN php artisan package:discover --ansi
+RUN php artisan storage:link
 
 RUN chown -R www-data:www-data /var/www \
     && chmod -R 755 /var/www/storage
