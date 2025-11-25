@@ -326,10 +326,6 @@ class JadwalController extends Controller
             // --- Update Teacher Hours ---
             // Update sisa jam mengajar untuk semua guru yang terlibat
             foreach ($guruMinutesChange as $guruId => $menitPerubahan) {
-                // Gunakan query update untuk menghindari masalah race condition
-                // dan lebih efisien. `sisa_jam_mengajar = sisa_jam_mengajar - (perubahan)`
-                // Jika menitPerubahan positif (jam bertambah), sisa jam berkurang.
-                // Jika menitPerubahan negatif (jam berkurang), sisa jam bertambah.
                 Guru::where('id', $guruId)
                     ->decrement('sisa_jam_mengajar', $menitPerubahan);
             }
@@ -611,10 +607,11 @@ class JadwalController extends Controller
     }
 
     private function calculateDuration($jamString){
-                   $parts = explode(' - ', $jamString);
-            if (count($parts) !== 2) return 0;
-            $start = \Carbon\Carbon::parse($parts[0]);
-            $end = \Carbon\Carbon::parse($parts[1]);
+        $parts = explode(' - ', $jamString);
+        if (count($parts) !== 2) return 0;
+        $start = \Carbon\Carbon::parse($parts[0]);
+        $end = \Carbon\Carbon::parse($parts[1]);
+        return $end->diffInMinutes($start);
     } 
 }
         
