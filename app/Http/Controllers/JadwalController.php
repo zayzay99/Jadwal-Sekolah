@@ -100,6 +100,8 @@ class JadwalController extends Controller
             }
         }
 
+        $bulkStoreUrl = route('jadwal.bulkStore');
+
         return view('jadwal.create', compact(
             'kelas',
             'gurus',
@@ -110,7 +112,8 @@ class JadwalController extends Controller
             'timeSlots',
             'scheduleGrid',
             'allSchedules',
-            'availableGurus'
+            'availableGurus',
+            'bulkStoreUrl'
         ));
     }
 
