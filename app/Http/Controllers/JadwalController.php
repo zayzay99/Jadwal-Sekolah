@@ -326,8 +326,12 @@ class JadwalController extends Controller
             // --- Update Teacher Hours ---
             // Update sisa jam mengajar untuk semua guru yang terlibat
             foreach ($guruMinutesChange as $guruId => $menitPerubahan) {
-                Guru::where('id', $guruId)
-                    ->decrement('sisa_jam_mengajar', $menitPerubahan);
+                if ($menitPerubahan > 0) {
+                    Guru::where('id', $guruId)->decrement('sisa_jam_mengajar', $menitPerubahan);
+                } elseif ($menitPerubahan < 0) {
+                    // Jika menitPerubahan negatif, kita ingin MENAMBAH sisa jam, jadi kita increment dengan nilai absolutnya
+                    Guru::where('id', $guruId)->increment('sisa_jam_mengajar', abs($menitPerubahan));
+                }
             }
 
             DB::commit();
