@@ -5,6 +5,7 @@ namespace App\Providers;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\View;
 use App\Models\TahunAjaran;
+use Illuminate\Support\Facades\URL;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -21,6 +22,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+         if ($this->app->environment('production')) {
+            URL::forceScheme('https');
+        }
+    
         View::composer('dashboard.*', function ($view) {
             // Logic to ensure an active academic year is always set
             $activeTahunAjaran = TahunAjaran::where('is_active', true)->first();
