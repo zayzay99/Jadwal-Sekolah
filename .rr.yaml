@@ -1,0 +1,40 @@
+version: '3'
+
+server:
+  command: "php artisan octane:roadrunner --host=0.0.0.0 --port=${PORT:-8000}"
+  relay: "pipes"
+  relay_timeout: 300s
+
+http:
+  address: 0.0.0.0:${PORT:-8000}
+  middleware: [ "static" ]
+  pool:
+    num_workers: auto
+    max_jobs: 0
+    allocate_timeout: 300s
+    destroy_timeout: 300s
+
+  static:
+    dir: "public"
+    forbid: [ "" ]
+
+  trusted_subnets:
+    - "10.0.0.0/8"
+    - "127.0.0.0/8"
+    - "172.16.0.0/12"
+    - "192.168.0.0/16"
+    - "::1/128"
+    - "fc00::/7"
+    - "fe80::/10"
+
+logs:
+  level: error
+  mode: production
+
+rpc:
+  listen: tcp://127.0.0.1:6001
+
+metrics:
+  address: 0.0.0.0:2112
+  collect:
+    http: true
