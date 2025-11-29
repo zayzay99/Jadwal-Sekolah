@@ -16,7 +16,7 @@
   <div class="container">
     <div class="circle"></div>
     <div class="marquee">
-      <span>Selamat Datang!! Silhakan login untuk melanjutkan.</span>
+      <span>Selamat Datang!! Silahkan login untuk melanjutkan.</span>
     </div>
 
     <form method="POST" action="{{ route('login') }}">

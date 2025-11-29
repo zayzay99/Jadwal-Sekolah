@@ -77,6 +77,7 @@ Route::middleware('auth:web')->group(function () {
         'index' => 'manage.tabelj.index',
         'create' => 'manage.tabelj.create',
         'store' => 'manage.tabelj.store',
+        
         'edit' => 'manage.tabelj.edit',
         'update' => 'manage.tabelj.update',
         'destroy' => 'manage.tabelj.destroy',
